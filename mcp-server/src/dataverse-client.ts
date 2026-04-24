@@ -16,11 +16,11 @@ import { getDataverseToken } from "./obo-auth.js";
 const CRM_URL = process.env.CRM_URL || "https://orge2a9a349.crm.dynamics.com";
 const API_BASE = `${CRM_URL}/api/data/v9.2`;
 
-function escapeOData(value: string): string {
+export function escapeOData(value: string): string {
   return value.replace(/'/g, "''");
 }
 
-function validateTicker(ticker: string): void {
+export function validateTicker(ticker: string): void {
   if (!/^[A-Z0-9.\-]{1,10}$/i.test(ticker)) {
     throw new Error(`Invalid ticker format: ${ticker}`);
   }

@@ -14,6 +14,7 @@ concurrency:
 permissions:
   id-token: write
   contents: read
+  packages: write
 
 env:
   REGISTRY: portfolioagentacr.azurecr.io
@@ -49,14 +50,43 @@ jobs:
         run: az acr login --name portfolioagentacr
 
       - name: Build & push MCP Server
+        id: build-mcp
         run: |
           docker build -t ${{ env.REGISTRY }}/portfolio-agent:${{ github.sha }} -t ${{ env.REGISTRY }}/portfolio-agent:latest ./mcp-server
           docker push ${{ env.REGISTRY }}/portfolio-agent --all-tags
+          MCP_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ env.REGISTRY }}/portfolio-agent:${{ github.sha }} 2>/dev/null || \
+            docker manifest inspect ${{ env.REGISTRY }}/portfolio-agent:${{ github.sha }} -v | jq -r '.Descriptor.digest')
+          echo "digest=${MCP_DIGEST}" >> "$GITHUB_OUTPUT"
 
       - name: Build & push Digital Worker
+        id: build-worker
         run: |
           docker build -t ${{ env.REGISTRY }}/digital-worker:${{ github.sha }} -t ${{ env.REGISTRY }}/digital-worker:latest ./digital-worker
           docker push ${{ env.REGISTRY }}/digital-worker --all-tags
+          WORKER_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ env.REGISTRY }}/digital-worker:${{ github.sha }} 2>/dev/null || \
+            docker manifest inspect ${{ env.REGISTRY }}/digital-worker:${{ github.sha }} -v | jq -r '.Descriptor.digest')
+          echo "digest=${WORKER_DIGEST}" >> "$GITHUB_OUTPUT"
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@dc72c7d5c4d10cd6bcb8cf6e3fd625a9e5e537da # v3.7.0
+
+      - name: Sign MCP Server image
+        run: cosign sign --yes ${{ steps.build-mcp.outputs.digest }}
+
+      - name: Sign Digital Worker image
+        run: cosign sign --yes ${{ steps.build-worker.outputs.digest }}
+
+      - name: Generate SLSA provenance — MCP Server
+        run: |
+          cosign attest --yes --type slsaprovenance \
+            --predicate <(echo '{"buildType":"https://github.com/robdye/PortfolioManager","builder":{"id":"github-actions"},"invocation":{"configSource":{"uri":"git+https://github.com/robdye/PortfolioManager@refs/heads/main","digest":{"sha1":"${{ github.sha }}"}}},"materials":[{"uri":"git+https://github.com/robdye/PortfolioManager","digest":{"sha1":"${{ github.sha }}"}}]}') \
+            ${{ steps.build-mcp.outputs.digest }}
+
+      - name: Generate SLSA provenance — Digital Worker
+        run: |
+          cosign attest --yes --type slsaprovenance \
+            --predicate <(echo '{"buildType":"https://github.com/robdye/PortfolioManager","builder":{"id":"github-actions"},"invocation":{"configSource":{"uri":"git+https://github.com/robdye/PortfolioManager@refs/heads/main","digest":{"sha1":"${{ github.sha }}"}}},"materials":[{"uri":"git+https://github.com/robdye/PortfolioManager","digest":{"sha1":"${{ github.sha }}"}}]}') \
+            ${{ steps.build-worker.outputs.digest }}
 
   deploy-staging:
     name: Deploy to Staging
