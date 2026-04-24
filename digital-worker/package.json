@@ -33,7 +33,7 @@
     "exceljs": "^4.4.0",
     "express": "^5.1.0",
     "openai": "^4.77.0",
-    "pptxgenjs": "^3.12.0",
+    "pptxgenjs": "^4.0.1",
     "ws": "^8.20.0"
   },
   "devDependencies": {
