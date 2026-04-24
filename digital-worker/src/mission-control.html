@@ -752,6 +752,32 @@ function initGraph() {
     for (let i = 1; i < tools.length; i++) graphEdges.push({ source: tools[0], target: tools[i] });
   }
 
+  // ── Pulse Particles — animated dots traveling along edges to show data flow ──
+  const particles = [];
+  const PARTICLE_SPEED = 0.008;
+  const MAX_PARTICLES = 80;
+
+  function spawnParticle() {
+    if (particles.length >= MAX_PARTICLES) return;
+    const centerEdges = graphEdges.filter(e => e.source === '__center__' || e.target === '__center__');
+    const edge = centerEdges[Math.floor(Math.random() * centerEdges.length)] || graphEdges[Math.floor(Math.random() * graphEdges.length)];
+    if (!edge) return;
+    const outward = Math.random() > 0.3; // 70% outward (data flowing out), 30% inward
+    particles.push({
+      edge,
+      progress: 0,
+      speed: PARTICLE_SPEED + Math.random() * 0.006,
+      outward,
+      size: 1.5 + Math.random() * 2,
+      opacity: 0.6 + Math.random() * 0.4,
+    });
+  }
+
+  // Spawn initial burst
+  for (let i = 0; i < 25; i++) spawnParticle();
+  // Continuously spawn new particles
+  setInterval(() => { for (let i = 0; i < 3; i++) spawnParticle(); }, 200);
+
   // Animation loop
   function animate() {
     if (!document.getElementById('view-neural-core').classList.contains('active')) { requestAnimationFrame(animate); return; }
@@ -803,6 +829,38 @@ function initGraph() {
       ctx.lineWidth = s.id === '__center__' ? 1.5 : 0.8;
       ctx.stroke();
     }
+    // Pulse particles — animate along edges to show data flow direction
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.progress += p.speed;
+      if (p.progress >= 1) { particles.splice(i, 1); continue; }
+      const s = graphNodes.find(n => n.id === p.edge.source);
+      const t = graphNodes.find(n => n.id === p.edge.target);
+      if (!s || !t) { particles.splice(i, 1); continue; }
+      // Direction: outward = source→target, inward = target→source
+      const from = p.outward ? s : t, to = p.outward ? t : s;
+      const px = from.x + (to.x - from.x) * p.progress;
+      const py = from.y + (to.y - from.y) * p.progress;
+      // Fade in/out at start and end
+      const fadeIn = Math.min(p.progress * 5, 1);
+      const fadeOut = Math.min((1 - p.progress) * 5, 1);
+      const alpha = p.opacity * fadeIn * fadeOut;
+      // Get color from target node for outward, source for inward
+      const colorNode = p.outward ? t : s;
+      const pColor = colorNode.id === '__center__' ? '#f0883e' : colorNode.color;
+      // Glow trail
+      ctx.beginPath(); ctx.arc(px, py, p.size + 3, 0, Math.PI * 2);
+      const trailGlow = ctx.createRadialGradient(px, py, 0, px, py, p.size + 3);
+      trailGlow.addColorStop(0, pColor + Math.round(alpha * 60).toString(16).padStart(2, '0'));
+      trailGlow.addColorStop(1, 'transparent');
+      ctx.fillStyle = trailGlow; ctx.fill();
+      // Core dot
+      ctx.beginPath(); ctx.arc(px, py, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = pColor;
+      ctx.globalAlpha = alpha;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
     // Nodes
     for (const n of graphNodes) {
       const sz = n.size + (n.calls > 0 ? Math.min(n.calls * 0.5, 8) : 0);
@@ -830,7 +888,25 @@ function updateGraph(analytics) {
   if (!graphInitialized || !analytics || !analytics.tools) return;
   for (const t of analytics.tools) {
     const node = graphNodes.find(n => n.id === t.name);
-    if (node) node.calls = t.callCount;
+    if (node) {
+      // Spawn burst of particles when new calls detected
+      if (t.callCount > node.calls && typeof particles !== 'undefined') {
+        const edge = graphEdges.find(e => e.target === t.name && e.source === '__center__');
+        if (edge) {
+          for (let i = 0; i < Math.min(t.callCount - node.calls, 5); i++) {
+            particles.push({
+              edge,
+              progress: Math.random() * 0.2,
+              speed: 0.01 + Math.random() * 0.008,
+              outward: true,
+              size: 2.5 + Math.random() * 1.5,
+              opacity: 0.8 + Math.random() * 0.2,
+            });
+          }
+        }
+      }
+      node.calls = t.callCount;
+    }
   }
 }
 

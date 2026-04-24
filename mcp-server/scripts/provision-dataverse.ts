@@ -5,7 +5,7 @@
  * Run: node --env-file=.env --import tsx scripts/provision-dataverse.ts
  */
 
-const CRM_URL = process.env.CRM_URL || "https://orge2a9a349.crm.dynamics.com";
+const CRM_URL = process.env.CRM_URL || "";
 const API = `${CRM_URL}/api/data/v9.2`;
 
 async function getToken(): Promise<string> {
@@ -302,7 +302,7 @@ async function getGraphToken(): Promise<string> {
 }
 
 async function readExcelViaGraph(token: string): Promise<Array<Record<string, any>>> {
-  const host = process.env.SHAREPOINT_HOST || "absx68251802.sharepoint.com";
+  const host = process.env.SHAREPOINT_HOST || "";
   const filename = process.env.PORTFOLIO_FILENAME || "AlphaAnalyzer-Portfolio.xlsx";
 
   // Resolve site → drive → file

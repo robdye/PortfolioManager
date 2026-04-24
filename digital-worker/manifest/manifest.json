@@ -1,6 +1,6 @@
 {
   "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/vdevPreview/MicrosoftTeams.schema.json",
-  "id": "f474b197-7795-4c14-a01f-4ac8517145eb",
+  "id": "<YOUR_AGENT_BLUEPRINT_ID>",
   "name": {
     "short": "Portfolio Manager Blueprint",
     "full": "Portfolio Manager Blueprint"

@@ -3,8 +3,8 @@
 
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = 'https://portfolio-manager-worker.jollysand-88b78b02.eastus.azurecontainerapps.io';
-const SECRET = 'portfolio-scheduler-2026';
+const BASE_URL = process.env.WORKER_URL || 'http://localhost:3978';
+const SECRET = process.env.SCHEDULED_SECRET || 'test-secret';
 
 const headers = {
   'x-scheduled-secret': SECRET,

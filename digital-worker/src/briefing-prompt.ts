@@ -9,6 +9,8 @@ export function buildBriefingPrompt(data: {
   holdings: unknown;
   pipeline: unknown;
   quotes: Array<{ ticker: string; data: unknown }>;
+  rvShifts?: string;  // Pre-formatted RV shift summary
+  marketOpportunities?: string;  // Market-wide hot picks
 }): string {
   const today = new Date().toLocaleDateString('en-GB', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
@@ -42,6 +44,9 @@ export function buildBriefingPrompt(data: {
     }
   } catch { /* use unavailable */ }
 
+  const rvShiftContent = data.rvShifts || 'No data available';
+  const marketOpportunitiesContent = data.marketOpportunities || 'No data available';
+
   return `You are producing a Morning Briefing for ${today}. Use the real portfolio data provided below.
 
 === REAL PORTFOLIO DATA ===
@@ -55,7 +60,14 @@ MARKET DATA: ${JSON.stringify(data.quotes)}
 Focus on financial services, wealth platforms, AI-driven innovation. Only last 14 days.
 Include direct links for all cited stories. Cover key market moves and sector trends.
 
-**2. Prospects Section**
+**2. Relative Value Shifts** (NEW — from overnight analysis)
+${rvShiftContent}
+
+What became expensive overnight in the fund? What's cheap that analysts recommend buying?
+Highlight the top 3-5 moves with specific PE changes and analyst consensus.
+If any holding crossed from "cheap" to "expensive" relative to peers, flag it prominently.
+
+**3. Prospects Section**
 From the CRM pipeline data above, identify companies in prospect/qualify stages.
 Search for recent news for each prospect company. Include ONLY prospects with relevant news.
 For each company with news, format as:
@@ -64,7 +76,7 @@ For each company with news, format as:
 - Group related updates together
 Add prospects with no material news to the Appendix.
 
-**3. Clients Section**
+**4. Clients Section**
 From the portfolio holdings data, identify current holdings (Shares > 0) as clients.
 Search for recent news for each holding. Include ONLY clients with relevant news.
 For each company with news, format as:
@@ -73,20 +85,26 @@ For each company with news, format as:
 - Concise bullet points on material developments
 Add clients with no material news to the Appendix.
 
-**4. C-Suite & Leadership Moves**
+**5. C-Suite & Leadership Moves**
 Any executive appointments, departures, or board changes across holdings and prospects.
 
-**5. Overall Commentary**
+**6. Overall Commentary**
 Executive summary synthesising trends for portfolio positioning. 2-3 paragraphs max.
 Strategic implications and recommended actions.
 
-**6. In the News — Microsoft**
+**7. Market Opportunities**
+${marketOpportunitiesContent}
+
+Hot sectors and stocks outside the current portfolio that are attracting attention.
+Only include if data is provided.
+
+**8. In the News — Microsoft**
 Search for recent Microsoft stories relevant to financial services, AI, and enterprise:
 - Azure AI / Copilot developments
 - Financial services partnerships
 - Regulatory or market-moving announcements
 
-**7. Appendix**
+**9. Appendix**
 List companies searched with no material news, grouped into:
 - **Prospects**: [list]
 - **Clients**: [list]

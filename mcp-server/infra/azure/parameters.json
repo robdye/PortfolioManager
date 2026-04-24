@@ -5,8 +5,8 @@
     "location": { "value": "eastus" },
     "environmentName": { "value": "portfolio-agent-mcp" },
     "containerAppName": { "value": "portfolio-agent-app" },
-    "containerImage": { "value": "portfolioagentacr.azurecr.io/portfolio-agent:latest" },
-    "containerRegistryServer": { "value": "portfolioagentacr.azurecr.io" },
+    "containerImage": { "value": "<YOUR_ACR_NAME>.azurecr.io/portfolio-agent:latest" },
+    "containerRegistryServer": { "value": "<YOUR_ACR_NAME>.azurecr.io" },
     "envVars": { "value": [{ "name": "LOG_LEVEL", "value": "info" }] }
   }
 }

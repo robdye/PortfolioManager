@@ -1,14 +1,14 @@
-FROM node:22-slim AS builder
+FROM node:20-slim AS builder
 WORKDIR /app
 COPY package.json package-lock.json* ./
-RUN npm ci
+RUN npm install
 COPY . .
 RUN npm run build:widgets
 
-FROM node:22-slim AS runtime
+FROM node:20-slim AS runtime
 WORKDIR /app
-COPY package.json package-lock.json* ./
-RUN npm ci --omit=dev
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/assets ./assets
 COPY --from=builder /app/tsconfig.json ./

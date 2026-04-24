@@ -5,3 +5,6 @@ appPackage/build/
 *.local.env
 .azurite/
 mcp-server/assets/
+worker-config.json
+a365.generated.config.json
+e2e-tests/auth/

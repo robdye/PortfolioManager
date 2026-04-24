@@ -81,3 +81,51 @@ export async function simulateTradeWithExcel(description: string): Promise<{ jso
   const xlsx = await generateTradeSimXlsx(rows, description, totalValue);
   return { json, xlsx };
 }
+
+// ── Trade Order Persistence ──────────────────────────────────────────────
+
+export interface TradeOrder {
+  ticker: string;
+  action: 'buy' | 'sell';
+  shares: number;
+  targetPrice: number;
+  currentPrice: number;
+  estimatedValue: number;
+  rationale: string;
+  status: 'draft' | 'pending_approval' | 'approved' | 'rejected' | 'executed';
+  createdAt: string;
+  correlationId: string;  // Links back to simulation
+}
+
+export async function createTradeOrder(order: TradeOrder): Promise<{ success: boolean; orderId?: string; error?: string }> {
+  try {
+    const crmEndpoint = process.env.MCP_CRM_ENDPOINT || '';
+    if (!crmEndpoint) {
+      return { success: false, error: 'CRM endpoint not configured' };
+    }
+
+    // Use the CRM MCP server's crud-form tool to create a record
+    // The Dataverse entity for trade orders: pm_tradeorders
+    const result = await mcpClient.callTool(crmEndpoint, 'crud-form', {
+      operation: 'create',
+      entity: 'pm_tradeorders',
+      data: {
+        pm_ticker: order.ticker,
+        pm_action: order.action,
+        pm_shares: order.shares,
+        pm_targetprice: order.targetPrice,
+        pm_currentprice: order.currentPrice,
+        pm_estimatedvalue: order.estimatedValue,
+        pm_rationale: order.rationale,
+        pm_status: order.status,
+        pm_correlationid: order.correlationId,
+      },
+    });
+
+    console.log(`[Trade] Created trade order for ${order.ticker}: ${order.action} ${order.shares} shares`);
+    return { success: true, orderId: typeof result === 'object' && result !== null ? (result as any).id : undefined };
+  } catch (err) {
+    console.error('[Trade] Failed to create trade order:', (err as Error).message);
+    return { success: false, error: (err as Error).message };
+  }
+}

@@ -58,7 +58,7 @@
 <div class="footer"><span>Portfolio Manager - Finnhub + D365 CRM</span></div>
 <div class="nav"><span class="nav-lbl">Navigate:</span><button class="btn" onclick="nav('Read my portfolio and show the Portfolio Command Center')">Dashboard</button><button class="btn" onclick="nav('Show me the CRM pipeline dashboard')">Pipeline</button><button class="btn" onclick="nav('Read my portfolio and show the Macro Stress Test')">Stress Test</button></div>
 <script>
-var D=null,CRM_BASE='https://orge2a9a349.crm.dynamics.com';
+var D=null,CRM_BASE=window.CRM_BASE_URL||'';
 function esc(s){var d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
 function rh(){if(window.openai&&window.openai.notifyIntrinsicHeight)window.openai.notifyIntrinsicHeight(document.body.scrollHeight);}
 function olink(u){if(window.openai&&window.openai.openExternal)window.openai.openExternal({href:u});else window.open(u,'_blank');}

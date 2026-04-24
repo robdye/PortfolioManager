@@ -95,6 +95,7 @@ let RV_SHIFT: Widget;
 let CHALLENGE_HOLDINGS: Widget;
 let BENCHMARK_COMPARISON: Widget;
 
+
 function loadWidgets() {
   DASHBOARD = {
     id: "portfolio-dashboard",
@@ -514,6 +515,7 @@ export function createPortfolioServer(): Server {
       _meta: descriptorMeta(BENCHMARK_COMPARISON),
       annotations: { readOnlyHint: true },
     },
+    // Neural Core removed — now only in Mission Control dashboard
     // Data-only tools (no widget)
     {
       name: "get-basic-financials",

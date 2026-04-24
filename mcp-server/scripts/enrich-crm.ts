@@ -4,7 +4,7 @@
  * Run: node --import tsx scripts/enrich-crm.ts
  */
 
-const CRM_URL = "https://orge2a9a349.crm.dynamics.com";
+const CRM_URL = process.env.CRM_URL || "";
 const API = `${CRM_URL}/api/data/v9.2`;
 
 async function getToken(): Promise<string> {

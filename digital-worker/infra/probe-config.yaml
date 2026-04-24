@@ -2,7 +2,7 @@ properties:
   template:
     containers:
       - name: portfolio-manager-worker
-        image: portfolioagentacr.azurecr.io/digital-worker:v4
+        image: <YOUR_ACR_NAME>.azurecr.io/digital-worker:latest
         probes:
           - type: startup
             httpGet:

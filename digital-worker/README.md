@@ -33,7 +33,7 @@ An **Agent 365 Digital Worker** that operates as an autonomous Portfolio Manager
 │  │ MCP      │    │   MCP    │    │   MCP             │          │
 │  │(market)  │    │ (D365)   │    │  (holdings)       │          │
 │  └──────────┘    └──────────┘    └──────────────────┘          │
-│   portfolio-agent-app.jollysand-88b78b02.eastus...             │
+│   portfolio-agent-app.<YOUR_ENV>.eastus...             │
 └────────────────────────────────────────────────────────────────┘
 ```
 

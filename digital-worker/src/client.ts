@@ -19,9 +19,9 @@ import {
   Builder,
   InferenceOperationType,
   AgentDetails,
-  TenantDetails,
   InferenceDetails,
   Agent365ExporterOptions,
+  Request as ObservabilityRequest,
 } from '@microsoft/agents-a365-observability';
 import { OpenAIAgentsTraceInstrumentor } from '@microsoft/agents-a365-observability-extensions-openai';
 import { tokenResolver } from './token-cache';
@@ -246,14 +246,14 @@ class OpenAIClient implements Client {
     const agentDetails: AgentDetails = {
       agentId: 'portfolio-manager-digital-worker',
       agentName: 'Portfolio Manager Digital Worker',
+      tenantId: process.env.connections__service_connection__settings__tenantId || process.env.TENANT_ID || 'default-tenant',
+    };
+
+    const request: ObservabilityRequest = {
       conversationId: `conv-${Date.now()}`,
     };
 
-    const tenantDetails: TenantDetails = {
-      tenantId: process.env.connections__service_connection__settings__tenantId || 'default-tenant',
-    };
-
-    const scope = InferenceScope.start(inferenceDetails, agentDetails, tenantDetails);
+    const scope = InferenceScope.start(request, inferenceDetails, agentDetails);
     try {
       await scope.withActiveSpanAsync(async () => {
         try {
@@ -277,9 +277,28 @@ class OpenAIClient implements Client {
 
   private async connectToServers(): Promise<void> {
     if (this.agent.mcpServers && this.agent.mcpServers.length > 0) {
+      const validServers: typeof this.agent.mcpServers = [];
       for (const server of this.agent.mcpServers) {
-        await server.connect();
+        try {
+          // Validate URL before attempting connection
+          const serverAny = server as any;
+          if (serverAny.url) {
+            new URL(serverAny.url); // throws if invalid
+          }
+          await server.connect();
+          validServers.push(server);
+        } catch (err) {
+          const msg = (err as Error).message || String(err);
+          const name = (server as any).name || 'unknown';
+          if (msg.includes('Invalid URL')) {
+            console.warn(`[MCP] Skipping server "${name}" — invalid URL: ${(server as any).url}`);
+          } else {
+            console.warn(`[MCP] Failed to connect to server "${name}": ${msg}`);
+          }
+        }
       }
+      // Keep only successfully connected servers
+      this.agent.mcpServers = validServers;
     }
   }
 

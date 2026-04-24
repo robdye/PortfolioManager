@@ -8,6 +8,7 @@ import { mcpClient } from './mcp-client';
 import { sendEmail, resolveUserEmail } from './email-service';
 import { postToChannel } from './teams-channel';
 import { simulateTrade } from './trade-simulation';
+import { createTradeOrder, type TradeOrder } from './trade-simulation';
 import { acknowledgeAction, markActed, dismissAction, deferAction, getPendingActions, getAction, getRecentActions, getActionSummary, getActionsForSymbol, recordOutcome } from './action-tracker';
 import { getActiveWorkflows, getWorkflow, getWorkflowSummary, getWorkflowsForSymbol } from './workflow-engine';
 import { type Holding, parseMcpArray } from './types';
@@ -329,6 +330,44 @@ export const agentTools = [
       description: z.string().describe('Natural language description of the trade'),
     }),
     execute: async ({ description }) => stringify(await simulateTrade(description)),
+  }),
+
+  tool({
+    name: 'create_trade_order',
+    description: 'Create a trade order in Dataverse for review and approval. Use this AFTER simulating a trade to persist the order for the portfolio manager to approve.',
+    parameters: z.object({
+      ticker: z.string().describe('Stock ticker symbol'),
+      action: z.enum(['buy', 'sell']).describe('Buy or sell'),
+      shares: z.number().describe('Number of shares'),
+      targetPrice: z.number().describe('Target price per share'),
+      rationale: z.string().describe('Reason for the trade'),
+    }),
+    execute: async ({ ticker, action, shares, targetPrice, rationale }) => {
+      // Fetch current price for the ticker
+      let currentPrice = targetPrice;
+      try {
+        const quote = await mcpClient.getBasicFinancials(ticker);
+        const quoteStr = typeof quote === 'string' ? quote : JSON.stringify(quote);
+        const priceMatch = quoteStr.match(/"c":\s*([\d.]+)/);
+        if (priceMatch) currentPrice = parseFloat(priceMatch[1]);
+      } catch { /* use target price as fallback */ }
+
+      const order: TradeOrder = {
+        ticker: ticker.toUpperCase(),
+        action,
+        shares,
+        targetPrice,
+        currentPrice,
+        estimatedValue: shares * targetPrice,
+        rationale,
+        status: 'pending_approval',
+        createdAt: new Date().toISOString(),
+        correlationId: `sim-${Date.now()}-${ticker.toUpperCase()}`,
+      };
+
+      const result = await createTradeOrder(order);
+      return stringify({ ...result, order });
+    },
   }),
 
   tool({

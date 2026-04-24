@@ -17,7 +17,7 @@ function fetchWithTimeout(url: string | URL, options: RequestInit = {}, timeoutM
 const TENANT_ID = process.env.GRAPH_TENANT_ID || "";
 const CLIENT_ID = process.env.GRAPH_CLIENT_ID || "";
 const CLIENT_SECRET = process.env.GRAPH_CLIENT_SECRET || "";
-const CRM_URL = process.env.CRM_URL || "https://orge2a9a349.crm.dynamics.com";
+const CRM_URL = process.env.CRM_URL || "";
 
 interface TokenCache {
   token: string;

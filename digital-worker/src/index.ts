@@ -498,8 +498,8 @@ server.post('/api/actions/:id/acknowledge', async (req: express.Request, res: Re
 });
 
 server.post('/api/actions/:id/act', async (req: express.Request, res: Response) => {
-  const note = req.body?.note || '';
-  const result = await markActed(req.params.id, note);
+  const priceAtAction = req.body?.priceAtAction ? Number(req.body.priceAtAction) : undefined;
+  const result = await markActed(req.params.id, priceAtAction);
   if (!result) { res.status(404).json({ error: 'Action not found' }); return; }
   res.status(200).json(result);
 });
@@ -513,14 +513,15 @@ server.post('/api/actions/:id/dismiss', async (req: express.Request, res: Respon
 
 server.post('/api/actions/:id/defer', async (req: express.Request, res: Response) => {
   const hours = req.body?.hours || 24;
-  const result = await deferAction(req.params.id, hours);
+  const untilMs = Date.now() + (hours * 60 * 60 * 1000);
+  const result = await deferAction(req.params.id, untilMs);
   if (!result) { res.status(404).json({ error: 'Action not found' }); return; }
   res.status(200).json(result);
 });
 
 server.post('/api/actions/:id/outcome', async (req: express.Request, res: Response) => {
   const { outcomeNote, priceAtOutcome } = req.body || {};
-  const result = await recordOutcome(req.params.id, outcomeNote, priceAtOutcome);
+  const result = await recordOutcome(req.params.id, priceAtOutcome, outcomeNote);
   if (!result) { res.status(404).json({ error: 'Action not found' }); return; }
   res.status(200).json(result);
 });

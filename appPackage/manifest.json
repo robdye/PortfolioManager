@@ -4,7 +4,7 @@
     "version": "1.0.0",
     "id": "${{TEAMS_APP_ID}}",
     "developer": {
-        "name": "ABSx68251802",
+        "name": "<YOUR_TENANT>",
         "websiteUrl": "https://www.microsoft.com",
         "privacyUrl": "https://www.microsoft.com/privacy",
         "termsOfUseUrl": "https://www.microsoft.com/termofuse"

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0a0e17;font-family:"Segoe UI",system-ui,sans-serif;color:#e6edf3;overflow:hidden;height:100vh;width:100vw}
+#app{display:flex;height:100vh;width:100vw}
+#graph-area{flex:1;position:relative;overflow:hidden}
+canvas#starfield{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0}
+svg#graph{position:absolute;top:0;left:0;width:100%;height:100%;z-index:1}
+#top-bar{position:absolute;top:0;left:0;right:0;z-index:10;padding:14px 20px;display:flex;align-items:center;gap:16px;
+  background:linear-gradient(180deg,rgba(10,14,23,.95) 0%,rgba(10,14,23,.7) 80%,transparent 100%)}
+#top-bar h1{font-size:18px;font-weight:700;white-space:nowrap}
+#top-bar h1 span{font-size:11px;font-weight:400;color:#8b949e;display:block;margin-top:2px}
+#search{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:7px 12px;color:#e6edf3;font-size:13px;width:220px;outline:none}
+#search:focus{border-color:#58a6ff}
+#search::placeholder{color:#484f58}
+#right-panel{width:280px;min-width:280px;background:#0d1117;border-left:1px solid #30363d;display:flex;flex-direction:column;z-index:5;overflow-y:auto}
+.panel-section{padding:14px 16px;border-bottom:1px solid #1c2128}
+.panel-title{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#8b949e;margin-bottom:10px}
+#node-info .ni-empty{color:#484f58;font-size:12px;font-style:italic}
+#node-info .ni-name{font-size:16px;font-weight:700;margin-bottom:4px}
+#node-info .ni-community{font-size:11px;padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:8px}
+#node-info .ni-conns{font-size:12px;color:#8b949e;margin-top:6px}
+#node-info .ni-conns li{list-style:none;padding:2px 0;color:#c9d1d9}
+#node-info .ni-conns li::before{content:"→ ";color:#484f58}
+.legend-item{display:flex;align-items:center;gap:8px;padding:4px 0;cursor:pointer;font-size:12px;border-radius:4px;transition:background .15s}
+.legend-item:hover{background:rgba(255,255,255,.04)}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.legend-count{margin-left:auto;color:#484f58;font-size:11px}
+#feed{flex:1;min-height:120px;display:flex;flex-direction:column}
+#feed-list{flex:1;overflow:hidden;position:relative}
+.feed-msg{font-size:11px;padding:6px 0;border-bottom:1px solid #1c2128;animation:fadeIn .5s ease}
+.feed-msg .ts{color:#484f58;font-size:10px;margin-right:6px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.node-label{font-size:9px;fill:#8b949e;text-anchor:middle;pointer-events:none;user-select:none}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="graph-area">
+    <canvas id="starfield"></canvas>
+    <svg id="graph"></svg>
+    <div id="top-bar">
+      <h1>🧠 Portfolio Manager — Neural Core<span>prototype starfield · pulses while agent thinks</span></h1>
+      <input id="search" type="text" placeholder="Search nodes…"/>
+    </div>
+  </div>
+  <div id="right-panel">
+    <div class="panel-section" id="node-info">
+      <div class="panel-title">Node Info</div>
+      <div class="ni-empty">Click a node to inspect</div>
+    </div>
+    <div class="panel-section" id="communities-panel">
+      <div class="panel-title">Communities</div>
+      <div id="legend"></div>
+    </div>
+    <div class="panel-section" id="feed">
+      <div class="panel-title">Live Agent Feed</div>
+      <div id="feed-list"></div>
+    </div>
+  </div>
+</div>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+(function(){
+const communities = {
+  Core:          {color:"#58a6ff", nodes:["portfolioAgent","digitalWorker","mcpServer","client","index"]},
+  "Market Data": {color:"#3fb950", nodes:["finnhubAPI","stockQuotes","analystConsensus","newsFeed","earningsCalendar"]},
+  Portfolio:     {color:"#d29922", nodes:["dataverse","dynamicsCRM","holdingsManager","mcpPortfolio","mcpCRM"]},
+  Intelligence:  {color:"#f85149", nodes:["decisionEngine","challengeMonitor","relativeValue","stressTest","benchmarkAnalysis"]},
+  Scheduling:    {color:"#8b5cf6", nodes:["morningBriefing","marketMonitor","complianceCheck","workdayLoop","earningsWatch"]},
+  Communication: {color:"#f97316", nodes:["teamsChat","emailAlerts","webhookManager","voiceAgent"]},
+  Dashboards:    {color:"#06b6d4", nodes:["commandCenter","concentrationRisk","rvShiftDashboard","challengeHoldings","client360"]},
+  Reports:       {color:"#ec4899", nodes:["docGenerator","tradeSimulation","fxAnalysis"]},
+  Security:      {color:"#64748b", nodes:["oboAuth","securityModule","keyVault"]}
+};
+
+const labels = {
+  portfolioAgent:"Portfolio Agent",digitalWorker:"Digital Worker",mcpServer:"MCP Server",client:"Agent Client",index:"Entry Point",
+  finnhubAPI:"Finnhub API",stockQuotes:"Stock Quotes",analystConsensus:"Analyst Consensus",newsFeed:"News Feed",earningsCalendar:"Earnings Calendar",
+  dataverse:"Dataverse",dynamicsCRM:"Dynamics CRM",holdingsManager:"Holdings Mgr",mcpPortfolio:"MCP Portfolio",mcpCRM:"MCP CRM",
+  decisionEngine:"Decision Engine",challengeMonitor:"Challenge Monitor",relativeValue:"Relative Value",stressTest:"Stress Test",benchmarkAnalysis:"Benchmark",
+  morningBriefing:"Morning Brief",marketMonitor:"Market Monitor",complianceCheck:"Compliance",workdayLoop:"Workday Loop",earningsWatch:"Earnings Watch",
+  teamsChat:"Teams Chat",emailAlerts:"Email Alerts",webhookManager:"Webhooks",voiceAgent:"Voice Agent",
+  commandCenter:"Command Center",concentrationRisk:"Concentration Risk",rvShiftDashboard:"RV Shifts",challengeHoldings:"Challenge Holdings",client360:"Client 360",
+  docGenerator:"Doc Generator",tradeSimulation:"Trade Sim",fxAnalysis:"FX Analysis",
+  oboAuth:"OBO Auth",securityModule:"Security",keyVault:"Key Vault"
+};
+
+const edgeList = [
+  ["teamsChat","digitalWorker"],["digitalWorker","client"],["client","portfolioAgent"],
+  ["portfolioAgent","mcpServer"],["mcpServer","finnhubAPI"],["mcpServer","dataverse"],["mcpServer","dynamicsCRM"],
+  ["finnhubAPI","stockQuotes"],["finnhubAPI","analystConsensus"],["finnhubAPI","newsFeed"],["finnhubAPI","earningsCalendar"],
+  ["dataverse","holdingsManager"],["dynamicsCRM","mcpCRM"],["holdingsManager","mcpPortfolio"],
+  ["decisionEngine","finnhubAPI"],["decisionEngine","dataverse"],["decisionEngine","challengeMonitor"],["decisionEngine","relativeValue"],
+  ["challengeMonitor","analystConsensus"],["relativeValue","stockQuotes"],["stressTest","holdingsManager"],["benchmarkAnalysis","holdingsManager"],
+  ["morningBriefing","decisionEngine"],["marketMonitor","finnhubAPI"],["complianceCheck","holdingsManager"],["workdayLoop","decisionEngine"],["earningsWatch","earningsCalendar"],
+  ["decisionEngine","emailAlerts"],["decisionEngine","webhookManager"],["digitalWorker","teamsChat"],["digitalWorker","voiceAgent"],
+  ["commandCenter","holdingsManager"],["concentrationRisk","holdingsManager"],["rvShiftDashboard","relativeValue"],["challengeHoldings","challengeMonitor"],["client360","dynamicsCRM"],
+  ["docGenerator","decisionEngine"],["tradeSimulation","holdingsManager"],["fxAnalysis","finnhubAPI"],
+  ["oboAuth","mcpServer"],["securityModule","digitalWorker"],["keyVault","oboAuth"]
+];
+
+// Build node map
+const nodeMap = {};
+for (const [comm, {color, nodes: ids}] of Object.entries(communities)) {
+  for (const id of ids) nodeMap[id] = {id, community: comm, color, label: labels[id]||id};
+}
+
+// Count connections per node
+const connCount = {};
+edgeList.forEach(([s,t])=>{connCount[s]=(connCount[s]||0)+1;connCount[t]=(connCount[t]||0)+1;});
+
+const nodes = Object.values(nodeMap).map(n=>({...n, r: Math.min(28, Math.max(8, 6 + (connCount[n.id]||0)*2.2))}));
+const links = edgeList.map(([s,t])=>({source:s,target:t}));
+
+// ---- Starfield ----
+const canvas = document.getElementById("starfield");
+const ctx = canvas.getContext("2d");
+let stars = [];
+function resizeCanvas(){canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;initStars();}
+function initStars(){stars=[];for(let i=0;i<180;i++)stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.2+.3,a:Math.random(),dx:(Math.random()-.5)*.12,dy:(Math.random()-.5)*.08});}
+function drawStars(){ctx.clearRect(0,0,canvas.width,canvas.height);for(const s of stars){ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(200,220,255,${s.a*0.6})`;ctx.fill();s.x+=s.dx;s.y+=s.dy;if(s.x<0)s.x=canvas.width;if(s.x>canvas.width)s.x=0;if(s.y<0)s.y=canvas.height;if(s.y>canvas.height)s.y=0;}}
+resizeCanvas();
+window.addEventListener("resize",resizeCanvas);
+
+// ---- D3 Force Graph ----
+const svg = d3.select("#graph");
+const gMain = svg.append("g");
+
+// Zoom
+const zoom = d3.zoom().scaleExtent([.3,4]).on("zoom",e=>gMain.attr("transform",e.transform));
+svg.call(zoom);
+
+// Defs for glow
+const defs = svg.append("defs");
+for(const [,{color}] of Object.entries(communities)){
+  const f = defs.append("filter").attr("id","glow-"+color.slice(1)).attr("x","-50%").attr("y","-50%").attr("width","200%").attr("height","200%");
+  f.append("feGaussianBlur").attr("stdDeviation","4").attr("result","blur");
+  f.append("feFlood").attr("flood-color",color).attr("flood-opacity","0.6").attr("result","color");
+  f.append("feComposite").attr("in","color").attr("in2","blur").attr("operator","in").attr("result","glow");
+  const m = f.append("feMerge");
+  m.append("feMergeNode").attr("in","glow");
+  m.append("feMergeNode").attr("in","SourceGraphic");
+}
+
+// Arrow marker
+defs.append("marker").attr("id","arrow").attr("viewBox","0 0 10 6").attr("refX",10).attr("refY",3)
+  .attr("markerWidth",8).attr("markerHeight",6).attr("orient","auto")
+  .append("path").attr("d","M0,0 L10,3 L0,6 Z").attr("fill","#30363d");
+
+const simulation = d3.forceSimulation(nodes)
+  .force("link", d3.forceLink(links).id(d=>d.id).distance(85))
+  .force("charge", d3.forceManyBody().strength(-220))
+  .force("center", d3.forceCenter())
+  .force("collide", d3.forceCollide().radius(d=>d.r+12))
+  .alphaDecay(.015);
+
+// Links
+const linkG = gMain.append("g");
+const linkEls = linkG.selectAll("line").data(links).join("line")
+  .attr("stroke","#1c2128").attr("stroke-width",1);
+
+// Particle layer
+const particleG = gMain.append("g").attr("class","particles");
+
+// Nodes
+const nodeG = gMain.append("g");
+const nodeEls = nodeG.selectAll("g").data(nodes).join("g").attr("cursor","pointer");
+
+nodeEls.append("circle")
+  .attr("r",d=>d.r)
+  .attr("fill",d=>d.color)
+  .attr("fill-opacity",.18)
+  .attr("stroke",d=>d.color)
+  .attr("stroke-width",1.5)
+  .attr("filter",d=>`url(#glow-${d.color.slice(1)})`)
+  .on("mouseenter",function(e,d){d3.select(this).transition().duration(150).attr("r",d.r*1.3).attr("fill-opacity",.35).attr("stroke-width",2.5);})
+  .on("mouseleave",function(e,d){if(d!==selectedNode)d3.select(this).transition().duration(200).attr("r",d.r).attr("fill-opacity",.18).attr("stroke-width",1.5);});
+
+// Inner solid core
+nodeEls.append("circle")
+  .attr("r",d=>d.r*.45)
+  .attr("fill",d=>d.color)
+  .attr("fill-opacity",.7)
+  .attr("pointer-events","none");
+
+nodeEls.append("text")
+  .attr("class","node-label")
+  .attr("dy",d=>d.r+12)
+  .text(d=>d.label);
+
+// Drag
+nodeEls.call(d3.drag()
+  .on("start",(e,d)=>{if(!e.active)simulation.alphaTarget(.1).restart();d.fx=d.x;d.fy=d.y;})
+  .on("drag",(e,d)=>{d.fx=e.x;d.fy=e.y;})
+  .on("end",(e,d)=>{if(!e.active)simulation.alphaTarget(0);d.fx=null;d.fy=null;}));
+
+// Click
+let selectedNode = null;
+nodeEls.on("click",(e,d)=>{
+  e.stopPropagation();
+  selectedNode=d;
+  showNodeInfo(d);
+  // highlight
+  nodeEls.select("circle:first-child").attr("stroke-width",n=>n===d?3:1.5).attr("fill-opacity",n=>n===d?.4:.18);
+});
+svg.on("click",()=>{selectedNode=null;clearNodeInfo();nodeEls.select("circle:first-child").attr("stroke-width",1.5).attr("fill-opacity",.18);});
+
+simulation.on("tick",()=>{
+  linkEls.attr("x1",d=>d.source.x).attr("y1",d=>d.source.y).attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);
+  nodeEls.attr("transform",d=>`translate(${d.x},${d.y})`);
+});
+
+// Center after layout settles
+setTimeout(()=>{
+  const w=svg.node().clientWidth, h=svg.node().clientHeight;
+  svg.call(zoom.transform,d3.zoomIdentity.translate(w/2,h/2).scale(.85));
+},200);
+
+// ---- Particles ----
+let particles = [];
+let frameId;
+function spawnParticle(link){
+  const src = link.source, tgt = link.target;
+  const col = nodeMap[src.id]?nodeMap[src.id].color:"#58a6ff";
+  particles.push({sx:src.x,sy:src.y,tx:tgt.x,ty:tgt.y,t:0,speed:.006+Math.random()*.008,color:col,link});
+}
+
+// Staggered spawning
+function scheduleParticles(){
+  links.forEach((l,i)=>{
+    setTimeout(()=>{
+      setInterval(()=>spawnParticle(l), 2800+Math.random()*2200);
+    }, i*120+Math.random()*600);
+  });
+}
+scheduleParticles();
+
+// Particle render loop
+const pCanvas = document.createElement("canvas");
+pCanvas.style.cssText="position:absolute;top:0;left:0;width:100%;height:100%;z-index:2;pointer-events:none";
+document.getElementById("graph-area").appendChild(pCanvas);
+const pCtx = pCanvas.getContext("2d");
+function resizePCanvas(){pCanvas.width=pCanvas.offsetWidth;pCanvas.height=pCanvas.offsetHeight;}
+resizePCanvas();
+window.addEventListener("resize",resizePCanvas);
+
+function getScreenCoords(x,y){
+  const t = d3.zoomTransform(svg.node());
+  return [x*t.k+t.x, y*t.k+t.y];
+}
+
+function animateFrame(){
+  drawStars();
+  pCtx.clearRect(0,0,pCanvas.width,pCanvas.height);
+
+  // Update particle positions from live link data
+  for(let i=particles.length-1;i>=0;i--){
+    const p=particles[i];
+    p.sx=p.link.source.x;p.sy=p.link.source.y;
+    p.tx=p.link.target.x;p.ty=p.link.target.y;
+    p.t+=p.speed;
+    if(p.t>=1){particles.splice(i,1);continue;}
+    const x=p.sx+(p.tx-p.sx)*p.t;
+    const y=p.sy+(p.ty-p.sy)*p.t;
+    const [sx,sy]=getScreenCoords(x,y);
+    const alpha=p.t<.15?p.t/.15:p.t>.8?(1-p.t)/.2:1;
+
+    // Glow
+    pCtx.beginPath();
+    pCtx.arc(sx,sy,5,0,Math.PI*2);
+    const grad=pCtx.createRadialGradient(sx,sy,0,sx,sy,5);
+    grad.addColorStop(0,p.color+"cc");
+    grad.addColorStop(1,p.color+"00");
+    pCtx.fillStyle=grad;
+    pCtx.globalAlpha=alpha*.8;
+    pCtx.fill();
+
+    // Core
+    pCtx.beginPath();
+    pCtx.arc(sx,sy,1.8,0,Math.PI*2);
+    pCtx.fillStyle="#fff";
+    pCtx.globalAlpha=alpha;
+    pCtx.fill();
+  }
+  pCtx.globalAlpha=1;
+  frameId=requestAnimationFrame(animateFrame);
+}
+animateFrame();
+
+// ---- Node pulse (ambient glow throb) ----
+function pulseNodes(){
+  const t=Date.now()*.001;
+  nodeEls.select("circle:nth-child(2)").attr("fill-opacity",d=>{
+    const phase=(t+d.id.charCodeAt(0)*.3)%2;
+    return .5+.25*Math.sin(phase*Math.PI);
+  });
+}
+setInterval(pulseNodes,60);
+
+// ---- Right Panel ----
+function showNodeInfo(d){
+  const conns=[];
+  links.forEach(l=>{
+    const s=typeof l.source==="object"?l.source.id:l.source;
+    const t=typeof l.target==="object"?l.target.id:l.target;
+    if(s===d.id)conns.push("→ "+(labels[t]||t));
+    if(t===d.id)conns.push("← "+(labels[s]||s));
+  });
+  document.getElementById("node-info").innerHTML=`
+    <div class="panel-title">Node Info</div>
+    <div class="ni-name">${d.label}</div>
+    <div class="ni-community" style="background:${d.color}22;color:${d.color}">${d.community}</div>
+    <div style="font-size:11px;color:#8b949e;margin-top:6px">${connCount[d.id]||0} connections</div>
+    <ul class="ni-conns">${conns.map(c=>`<li>${c}</li>`).join("")}</ul>`;
+}
+function clearNodeInfo(){
+  document.getElementById("node-info").innerHTML=`<div class="panel-title">Node Info</div><div class="ni-empty">Click a node to inspect</div>`;
+}
+
+// Legend
+const legendEl = document.getElementById("legend");
+let highlightedComm = null;
+for(const [name,{color,nodes:ids}] of Object.entries(communities)){
+  const div=document.createElement("div");
+  div.className="legend-item";
+  div.innerHTML=`<span class="legend-dot" style="background:${color}"></span><span>${name}</span><span class="legend-count">${ids.length}</span>`;
+  div.addEventListener("click",()=>{
+    if(highlightedComm===name){highlightedComm=null;nodeEls.attr("opacity",1);linkEls.attr("opacity",1);}
+    else{highlightedComm=name;nodeEls.attr("opacity",d=>d.community===name?1:.12);linkEls.attr("opacity",.1);}
+  });
+  legendEl.appendChild(div);
+}
+
+// ---- Search ----
+document.getElementById("search").addEventListener("input",function(){
+  const q=this.value.toLowerCase().trim();
+  if(!q){nodeEls.attr("opacity",1);linkEls.attr("opacity",1);return;}
+  nodeEls.attr("opacity",d=>(d.label.toLowerCase().includes(q)||d.id.toLowerCase().includes(q)||d.community.toLowerCase().includes(q))?1:.1);
+  linkEls.attr("opacity",.08);
+});
+
+// ---- Live Agent Feed ----
+const feedMsgs=[
+  "Market monitor scanning 21 holdings…",
+  "Decision engine evaluating AAPL signal",
+  "Morning briefing compiled — 3 alerts",
+  "RV shift detected: MSFT PE +8.2%",
+  "Compliance check passed — no breaches",
+  "Stress test: +200bp rate shock modeled",
+  "Challenge monitor flagged NVDA position",
+  "Earnings watch: META reports tomorrow",
+  "FX analysis: GBP/USD down 0.4%",
+  "Client 360 updated for Acme Corp",
+  "Webhook delivered to #portfolio-alerts",
+  "OBO token refreshed — 14 min TTL",
+  "Benchmark drift: +1.2% vs MSCI World",
+  "Holdings synced from Dataverse (40 rows)",
+  "Trade simulation: sell 200 TSLA @ $247",
+  "Voice agent processed 2 queries",
+  "News feed: 7 new articles ingested",
+  "Concentration risk: Tech sector at 38%",
+  "Email alert sent: daily P&L summary",
+  "Doc generator: Q2 report ready"
+];
+const feedList=document.getElementById("feed-list");
+let feedIdx=0;
+function addFeedMsg(){
+  const msg=feedMsgs[feedIdx%feedMsgs.length];
+  feedIdx++;
+  const now=new Date();
+  const ts=now.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+  const div=document.createElement("div");
+  div.className="feed-msg";
+  div.innerHTML=`<span class="ts">${ts}</span>${msg}`;
+  feedList.prepend(div);
+  // Keep max 12
+  while(feedList.children.length>12)feedList.removeChild(feedList.lastChild);
+}
+addFeedMsg();
+setInterval(addFeedMsg,3200+Math.random()*800);
+})();
+</script>
+</body>
+</html>

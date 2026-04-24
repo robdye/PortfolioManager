@@ -16,7 +16,7 @@ import { sendEmail } from './email-service';
 import { buildBriefingPrompt } from './briefing-prompt';
 import { trimFinancials } from './trim-financials';
 import { postToChannel } from './teams-channel';
-import { runDecisionEngine, getDecisionState } from './decision-engine';
+import { runDecisionEngine, getDecisionState, getRvDeltaSummary } from './decision-engine';
 
 const MANAGER_EMAIL = process.env.MANAGER_EMAIL || '';
 const MANAGER_NAME = process.env.MANAGER_NAME || 'Manager';
@@ -127,6 +127,19 @@ async function sendBriefing(): Promise<void> {
       console.warn('[Briefing] Decision engine failed, continuing with standard briefing:', err);
     }
 
+    // Fetch RV delta summary from decision engine
+    let rvShiftsData = '';
+    try {
+      const rvDeltas = getRvDeltaSummary();
+      if (rvDeltas.length > 0) {
+        rvShiftsData = rvDeltas.map(d =>
+          `${d.symbol} (${d.company}): PE ${d.previousPE.toFixed(1)} → ${d.currentPE.toFixed(1)} (${d.peChange > 0 ? '+' : ''}${d.peChange.toFixed(1)}%) — ${d.direction.toUpperCase()} — Analyst: ${d.consensusRating}`
+        ).join('\n');
+      }
+    } catch (err) {
+      console.warn('[Briefing] RV delta fetch failed:', err);
+    }
+
     // Fetch all data
     const [holdings, pipeline] = await Promise.allSettled([
       mcpClient.getPortfolioHoldings(),
@@ -162,7 +175,8 @@ async function sendBriefing(): Promise<void> {
       holdings: holdings.status === 'fulfilled' ? holdings.value : 'unavailable',
       pipeline: pipeline.status === 'fulfilled' ? pipeline.value : 'unavailable',
       quotes,
-    }) + '\n\nIMPORTANT: Format the output as clean HTML for an email body. If change signals were provided, start with a "⚡ What Has Changed" section highlighting the most critical shifts before the standard briefing sections.';
+      rvShifts: rvShiftsData,
+    }) + '\n\nIMPORTANT:Format the output as clean HTML for an email body. If change signals were provided, start with a "⚡ What Has Changed" section highlighting the most critical shifts before the standard briefing sections.';
 
     const client = await getStandaloneClient();
     const briefingContent = await client.invokeAgentWithScope(prompt);

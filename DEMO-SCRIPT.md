@@ -312,5 +312,5 @@ Add Tesla as a prospect to my portfolio
 │ Financials  │ Holdings     │ Opportunities  │
 └─────────────┴──────────────┴────────────────┘
          Azure Container Apps (Express.js)
-         portfolioagentacr.azurecr.io
+         <YOUR_ACR_NAME>.azurecr.io
 ```

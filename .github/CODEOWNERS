@@ -1,0 +1,8 @@
+# Default owner for all files
+* @robdye
+
+# Service-specific ownership
+/mcp-server/          @robdye
+/digital-worker/      @robdye
+/appPackage/          @robdye
+/.github/workflows/   @robdye

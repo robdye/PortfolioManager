@@ -114,7 +114,7 @@ test.describe.serial('Portfolio Manager Agent', () => {
     await cooldown(page, 5000);
     const response = await sendMessageAndWait(
       page,
-      'Email admin@ABSx68251802.onmicrosoft.com with subject "Portfolio Test" and body "This is an automated test from the Portfolio Manager agent."'
+      'Email the manager with subject "Portfolio Test" and body "This is an automated test from the Portfolio Manager agent."'
     );
     expect(response).toMatch(/sent|email|delivered/i);
   });

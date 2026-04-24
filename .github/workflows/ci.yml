@@ -1,10 +1,14 @@
-name: CI — Lint, Test & Audit
+name: CI — Lint, Test, Audit & Scan
 
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+
+permissions:
+  contents: read
+  security-events: write
 
 jobs:
   mcp-server:
@@ -14,9 +18,9 @@ jobs:
       run:
         working-directory: mcp-server
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 20
           cache: npm
@@ -28,7 +32,7 @@ jobs:
         run: npx tsc --noEmit
 
       - name: Run tests
-        run: npm test --if-present
+        run: npm test
 
       - name: Security audit
         run: npm audit --audit-level=high
@@ -40,9 +44,9 @@ jobs:
       run:
         working-directory: digital-worker
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 20
           cache: npm
@@ -54,20 +58,80 @@ jobs:
         run: npx tsc --noEmit
 
       - name: Run tests
-        run: npm test --if-present
+        run: npm test
 
       - name: Security audit
         run: npm audit --audit-level=high
 
+  secrets-scan:
+    name: Secrets Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - uses: gitleaks/gitleaks-action@ff98106d4c7b40b1b0e50a3776d8bca07be9f037 # v2.3.8
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  codeql:
+    name: CodeQL SAST
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+
+      - uses: github/codeql-action/analyze@v3
+
   docker:
-    name: Docker Build Verify
+    name: Docker Build & Scan
     runs-on: ubuntu-latest
     needs: [mcp-server, digital-worker]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Build MCP Server image
         run: docker build -t portfolio-mcp-server:ci ./mcp-server
 
       - name: Build Digital Worker image
         run: docker build -t portfolio-digital-worker:ci ./digital-worker
+
+      - name: Scan MCP Server image
+        uses: aquasecurity/trivy-action@18f2510ee396bbf400402947e795f797d7b2b427 # v0.29.0
+        with:
+          image-ref: portfolio-mcp-server:ci
+          format: table
+          exit-code: 1
+          severity: CRITICAL,HIGH
+
+      - name: Scan Digital Worker image
+        uses: aquasecurity/trivy-action@18f2510ee396bbf400402947e795f797d7b2b427 # v0.29.0
+        with:
+          image-ref: portfolio-digital-worker:ci
+          format: table
+          exit-code: 1
+          severity: CRITICAL,HIGH
+
+      - name: Generate SBOM — MCP Server
+        uses: aquasecurity/trivy-action@18f2510ee396bbf400402947e795f797d7b2b427 # v0.29.0
+        with:
+          image-ref: portfolio-mcp-server:ci
+          format: cyclonedx
+          output: sbom-mcp-server.json
+
+      - name: Generate SBOM — Digital Worker
+        uses: aquasecurity/trivy-action@18f2510ee396bbf400402947e795f797d7b2b427 # v0.29.0
+        with:
+          image-ref: portfolio-digital-worker:ci
+          format: cyclonedx
+          output: sbom-digital-worker.json
+
+      - name: Upload SBOMs
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom-*.json

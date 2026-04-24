@@ -57,7 +57,7 @@ function esc(s){var d=document.createElement('div');d.textContent=s||'';return d
 function rh(){if(window.openai&&window.openai.notifyIntrinsicHeight)window.openai.notifyIntrinsicHeight(document.body.scrollHeight);}
 function nav(p){if(window.openai&&window.openai.sendFollowUpMessage)window.openai.sendFollowUpMessage({prompt:p});}
 function f$(v){if(!v&&v!==0)return '--';var a=Math.abs(v);if(a>=1e9)return '$'+(v/1e9).toFixed(1)+'B';if(a>=1e6)return '$'+(v/1e6).toFixed(2)+'M';if(a>=1e3)return '$'+(v/1e3).toFixed(0)+'K';return '$'+v.toFixed(0);}
-var CRM_BASE='https://orge2a9a349.crm.dynamics.com';
+var CRM_BASE=window.CRM_BASE_URL||'';
 var ACT_ENTITY={'phonecall':'phonecalls','email':'emails','appointment':'appointments','task':'tasks'};
 function actUrl(ac){var e=ACT_ENTITY[ac.type]||'activitypointers';return CRM_BASE+'/main.aspx?etn='+e.replace(/s$/,'')+'&id='+ac.id+'&pagetype=entityrecord';}
 var ACT_ICONS={'phonecall':'tel','email':'@','appointment':'cal','task':'chk'};

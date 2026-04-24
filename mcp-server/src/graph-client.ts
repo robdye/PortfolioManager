@@ -84,7 +84,7 @@ let siteId: string | null = null;
 let driveId: string | null = null;
 let fileId: string | null = null;
 
-const SHAREPOINT_HOST = process.env.SHAREPOINT_HOST || "absx68251802.sharepoint.com";
+const SHAREPOINT_HOST = process.env.SHAREPOINT_HOST || "";
 const SHAREPOINT_SITE_PATH = process.env.SHAREPOINT_SITE_PATH || "";
 const PORTFOLIO_FILENAME = process.env.PORTFOLIO_FILENAME || "AlphaAnalyzer-Portfolio.xlsx";
 

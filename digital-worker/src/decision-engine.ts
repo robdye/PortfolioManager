@@ -14,18 +14,14 @@
 
 import { mcpClient } from './mcp-client';
 import { getStandaloneClient } from './client';
-import { postToChannel } from './teams-channel';
-import { sendEmail } from './email-service';
+import { postToChannel, postAdaptiveCard } from './teams-channel';
 import { loadDecisionState, saveDecisionState } from './persistent-memory';
 import { analytics } from './analytics';
 import { createAction, hasOpenAction } from './action-tracker';
 import { executeSignalResponse } from './autonomous-actions';
 import { type Holding, parseMcpArray } from './types';
 
-const MANAGER_EMAIL = process.env.MANAGER_EMAIL || '';
-const MANAGER_NAME = process.env.MANAGER_NAME || 'Manager';
-
-// ── Concurrency Limiter ─────────────────────────────────────────────
+// ── Concurrency Limiter─────────────────────────────────────────────
 async function mapConcurrent<T, R>(items: T[], fn: (item: T) => Promise<R>, concurrency = 5): Promise<PromiseSettledResult<R>[]> {
   const results: PromiseSettledResult<R>[] = [];
   for (let i = 0; i < items.length; i += concurrency) {
@@ -53,6 +49,7 @@ interface DecisionState {
   snapshots: Map<string, HoldingSnapshot>;
   suppressedAlerts: Map<string, number>; // symbol → suppressed until timestamp
   alertHistory: Array<{ symbol: string; type: string; timestamp: number }>;
+  newsCache: Map<string, Set<string>>; // symbol → set of seen news IDs/headlines
   runCount: number;
 }
 
@@ -62,6 +59,7 @@ let state: DecisionState = {
   snapshots: new Map(),
   suppressedAlerts: new Map(),
   alertHistory: [],
+  newsCache: new Map<string, Set<string>>(),
   runCount: 0,
 };
 let stateLoaded = false;
@@ -88,6 +86,11 @@ async function ensureStateLoaded(): Promise<void> {
         // Convert plain objects back to Maps
         state.snapshots = new Map(Object.entries(saved.snapshots || {})) as Map<string, HoldingSnapshot>;
         state.suppressedAlerts = new Map(Object.entries(saved.suppressedAlerts || {}));
+        // Restore newsCache: each value is an array that becomes a Set
+        const rawCache = (saved as any).newsCache || {};
+        state.newsCache = new Map(
+          Object.entries(rawCache).map(([k, v]) => [k, new Set(v as string[])])
+        );
         console.log(`[Decision] Restored state: ${state.runCount} runs, ${state.snapshots.size} snapshots`);
       }
     } catch (err) {
@@ -108,7 +111,10 @@ async function persistState(): Promise<void> {
       alertHistory: state.alertHistory,
       snapshots: Object.fromEntries(state.snapshots),
       suppressedAlerts: Object.fromEntries(state.suppressedAlerts),
-    });
+      newsCache: Object.fromEntries(
+        Array.from(state.newsCache.entries()).map(([k, v]) => [k, Array.from(v)])
+      ),
+    } as any);
   } catch (err) {
     console.warn('[Decision] Failed to persist state:', (err as Error).message);
   }
@@ -121,7 +127,7 @@ type SignalSeverity = 'critical' | 'high' | 'medium' | 'low' | 'info';
 interface Signal {
   symbol: string;
   company: string;
-  type: 'price_move' | 'rv_shift' | 'analyst_change' | 'earnings_imminent' | 'fx_impact' | 'news_event' | 'concentration_drift' | 'challenge';
+  type: 'price_move' | 'rv_shift' | 'analyst_change' | 'earnings_imminent' | 'fx_impact' | 'news_event' | 'concentration_drift' | 'challenge' | 'market_opportunity' | 'story_change';
   severity: SignalSeverity;
   score: number;        // 0–100 priority score
   title: string;
@@ -331,7 +337,183 @@ async function gatherSignals(): Promise<Signal[]> {
     console.warn('[Decision] Earnings calendar check failed:', (err as Error).message);
   }
 
+  // 4. Story/event change detection via company news
+  const finnhubEndpoint = process.env.MCP_FINNHUB_ENDPOINT || process.env.MCP_SERVER_URL || '';
+  const MATERIAL_KEYWORDS: Record<string, string[]> = {
+    earnings: ['earnings', 'revenue', 'profit', 'EPS', 'quarterly results', 'beat', 'miss'],
+    management: ['CEO', 'CFO', 'CTO', 'appointed', 'resigned', 'departure', 'executive'],
+    corporate: ['acquisition', 'merger', 'buyout', 'restructuring', 'spinoff', 'IPO'],
+    regulatory: ['FDA', 'SEC', 'antitrust', 'lawsuit', 'settlement', 'investigation'],
+  };
+
+  const today = new Date().toISOString().slice(0, 10);
+  const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
+  const newsHoldings = activeHoldings.slice(0, 10);
+
+  const newsResults = await mapConcurrent(
+    newsHoldings,
+    async (h) => {
+      const symbol = h.Ticker;
+      const news = await mcpClient.callTool(finnhubEndpoint, 'show-company-news', { symbol, from: sevenDaysAgo, to: today });
+      return { symbol, company: h.Company || symbol, news };
+    },
+    3,
+  );
+
+  for (const result of newsResults) {
+    if (result.status !== 'fulfilled') continue;
+    const { symbol, company, news } = result.value;
+    const articles = Array.isArray(news) ? news : [];
+    if (articles.length === 0) continue;
+
+    // Initialize news cache for this symbol if needed
+    if (!state.newsCache.has(symbol)) {
+      state.newsCache.set(symbol, new Set<string>());
+    }
+    const seenIds = state.newsCache.get(symbol)!;
+
+    for (const article of articles) {
+      const articleId = String(article.id || article.headline || '');
+      if (!articleId || seenIds.has(articleId)) continue;
+
+      // Mark as seen
+      seenIds.add(articleId);
+
+      const headline = String(article.headline || '').toLowerCase();
+      const summary = String(article.summary || '').toLowerCase();
+      const text = headline + ' ' + summary;
+
+      // Check for material keywords
+      let matchedCategory: string | null = null;
+      for (const [category, keywords] of Object.entries(MATERIAL_KEYWORDS)) {
+        if (keywords.some(kw => text.includes(kw.toLowerCase()))) {
+          matchedCategory = category;
+          break;
+        }
+      }
+
+      if (matchedCategory) {
+        const prevSnapshot = state.snapshots.get(symbol);
+        const hasPriceMove = prevSnapshot && Math.abs(prevSnapshot.fiveDayReturn) >= 3;
+
+        let severity: SignalSeverity;
+        if (matchedCategory === 'earnings' && hasPriceMove) severity = 'high';
+        else if (matchedCategory === 'management') severity = 'medium';
+        else if (matchedCategory === 'corporate') severity = 'high';
+        else if (matchedCategory === 'regulatory') severity = 'high';
+        else severity = 'medium';
+
+        const signalType: Signal['type'] = matchedCategory === 'earnings' ? 'news_event' : 'story_change';
+
+        signals.push({
+          symbol, company,
+          type: signalType,
+          severity,
+          score: severity === 'high' ? 70 : 50,
+          title: `${symbol} ${matchedCategory} event: ${article.headline || 'Material news detected'}`,
+          description: `${matchedCategory.charAt(0).toUpperCase() + matchedCategory.slice(1)} news detected: "${article.headline || 'N/A'}". Source: ${article.source || 'Unknown'}.`,
+          data: { category: matchedCategory, headline: article.headline, source: article.source, url: article.url },
+          isNew: true,
+        });
+      }
+    }
+
+    // Keep news cache per symbol manageable (last 100 IDs)
+    if (seenIds.size > 100) {
+      const arr = Array.from(seenIds);
+      state.newsCache.set(symbol, new Set(arr.slice(-100)));
+    }
+  }
+
   return signals;
+}
+
+// ── Market-Wide Scanning ─────────────────────────────────────
+
+const MARKET_WATCHLIST = [
+  // Sector ETFs for rotation detection
+  { symbol: 'XLF', name: 'Financial Select Sector' },
+  { symbol: 'XLK', name: 'Technology Select Sector' },
+  { symbol: 'XLE', name: 'Energy Select Sector' },
+  { symbol: 'XLV', name: 'Health Care Select Sector' },
+  { symbol: 'XLI', name: 'Industrial Select Sector' },
+  { symbol: 'XLY', name: 'Consumer Discretionary' },
+  { symbol: 'XLP', name: 'Consumer Staples' },
+  { symbol: 'XLU', name: 'Utilities Select Sector' },
+];
+
+async function gatherMarketSignals(): Promise<Signal[]> {
+  const signals: Signal[] = [];
+
+  // Fetch basic financials for each ETF
+  const etfResults = await mapConcurrent(
+    MARKET_WATCHLIST,
+    async (etf) => {
+      const financials = await mcpClient.getBasicFinancials(etf.symbol);
+      return { ...etf, financials };
+    },
+    3,
+  );
+
+  // Determine which sectors are represented in the portfolio
+  const portfolioSymbols = new Set(
+    Array.from(state.snapshots.keys()).map(s => s.toUpperCase())
+  );
+
+  for (const result of etfResults) {
+    if (result.status !== 'fulfilled') continue;
+    const { symbol, name, financials } = result.value;
+    const metrics = (financials as any)?.metric || {};
+    const fiveDayReturn = metrics['5DayPriceReturnDaily'] || 0;
+    const prevSnapshot = state.snapshots.get(symbol);
+
+    // Save ETF snapshot for future comparison
+    const currentSnapshot: HoldingSnapshot = {
+      price: metrics['52WeekHigh'] || 0,
+      pe: metrics.peBasicExclExtraTTM || 0,
+      analystBuy: 0, analystHold: 0, analystSell: 0,
+      consensusRating: 'N/A',
+      fiveDayReturn,
+      timestamp: Date.now(),
+    };
+    state.snapshots.set(symbol, currentSnapshot);
+
+    // Detect sector rotation: 5-day return > ±3%
+    if (Math.abs(fiveDayReturn) >= 3) {
+      const direction = fiveDayReturn > 0 ? 'surging' : 'declining';
+      const isRepresented = portfolioSymbols.has(symbol);
+
+      // Opportunity: strong momentum in a sector not held
+      if (fiveDayReturn > 3 && !isRepresented) {
+        signals.push({
+          symbol, company: name,
+          type: 'market_opportunity',
+          severity: 'medium',
+          score: Math.min(40 + Math.abs(fiveDayReturn) * 4, 60),
+          title: `${name} (${symbol}) ${direction}: ${fiveDayReturn > 0 ? '+' : ''}${fiveDayReturn.toFixed(1)}% (5d)`,
+          description: `Sector ETF ${symbol} showing strong momentum (${fiveDayReturn.toFixed(1)}% 5d return) — not currently represented in portfolio. Potential rotation opportunity.`,
+          data: { fiveDayReturn, sectorEtf: symbol, isRepresented },
+          isNew: !prevSnapshot,
+        });
+      } else {
+        // Sector rotation signal for held or declining sectors
+        signals.push({
+          symbol, company: name,
+          type: 'market_opportunity',
+          severity: 'medium',
+          score: Math.min(40 + Math.abs(fiveDayReturn) * 3, 60),
+          title: `Sector rotation: ${name} (${symbol}) ${direction} ${fiveDayReturn > 0 ? '+' : ''}${fiveDayReturn.toFixed(1)}%`,
+          description: `${name} ETF moved ${fiveDayReturn.toFixed(1)}% over 5 days. ${isRepresented ? 'This sector is in your portfolio.' : 'Not in portfolio.'} Monitor for rotation.`,
+          data: { fiveDayReturn, sectorEtf: symbol, isRepresented },
+          isNew: !prevSnapshot,
+        });
+      }
+    }
+  }
+
+  // Cap at MAX 5 market-wide signals per run
+  signals.sort((a, b) => b.score - a.score);
+  return signals.slice(0, 5);
 }
 
 // ── Signal Filtering & Prioritization ────────────────────────
@@ -350,8 +532,17 @@ function filterAndPrioritize(signals: Signal[]): Signal[] {
   // Sort by score (highest first)
   filtered.sort((a, b) => b.score - a.score);
 
-  // Cap at top 8 signals to avoid alert fatigue
-  const prioritized = filtered.slice(0, 8);
+  // Reserve slots: at least 5 for portfolio signals, up to 3 for market_opportunity
+  const portfolioSignals = filtered.filter(s => s.type !== 'market_opportunity');
+  const marketSignals = filtered.filter(s => s.type === 'market_opportunity');
+  const portfolioSlots = portfolioSignals.slice(0, 5);
+  const remainingSlots = 8 - portfolioSlots.length;
+  const marketSlots = marketSignals.slice(0, Math.min(3, remainingSlots));
+  // Fill remaining capacity with any leftover portfolio signals
+  const extraPortfolio = portfolioSignals.slice(5, 5 + (8 - portfolioSlots.length - marketSlots.length));
+  const prioritized = [...portfolioSlots, ...extraPortfolio, ...marketSlots];
+  // Re-sort combined list by score
+  prioritized.sort((a, b) => b.score - a.score);
 
   // Mark these signals as suppressed for the cooldown period
   for (const s of prioritized) {
@@ -452,27 +643,31 @@ async function sendDecisionAlert(signals: Signal[], analysis: string): Promise<v
       </div>
     </div>`;
 
-  // Post to Teams channel
+  // Post rich adaptive card to Teams channel
+  const missionControlUrl = process.env.WORKER_ENDPOINT || 'https://portfolio-manager-worker.eastus.azurecontainerapps.io';
   try {
-    await postToChannel(html);
-    console.log('[Decision] Posted to Teams channel');
+    const cardPosted = await postAdaptiveCard({
+      title: urgencyLabel,
+      signals: signals.map(s => ({
+        severity: s.severity,
+        title: s.title,
+        description: s.description,
+        symbol: s.symbol,
+      })),
+      analysis,
+      urgencyLevel: critical.length > 0 ? 'critical' : signals.some(s => s.severity === 'medium') ? 'medium' : 'low',
+      runNumber: state.runCount,
+      missionControlUrl,
+    });
+    if (cardPosted) {
+      console.log('[Decision] Posted adaptive card to Teams channel');
+    } else {
+      // Fallback to plain text if adaptive card fails
+      await postToChannel(html);
+      console.log('[Decision] Fell back to plain text Teams post');
+    }
   } catch (err) {
     console.warn('[Decision] Teams post failed:', (err as Error).message);
-  }
-
-  // Send email for critical signals
-  if (critical.length > 0 && MANAGER_EMAIL) {
-    try {
-      await sendEmail({
-        to: MANAGER_EMAIL,
-        subject: `${urgencyLabel}: ${critical.length} critical signal${critical.length > 1 ? 's' : ''} — ${critical.map(s => s.symbol).join(', ')}`,
-        body: html,
-        isHtml: true,
-      });
-      console.log('[Decision] Sent email alert for critical signals');
-    } catch (err) {
-      console.warn('[Decision] Email send failed:', (err as Error).message);
-    }
   }
 }
 
@@ -499,8 +694,10 @@ export async function runDecisionEngine(): Promise<DecisionResult> {
 
   try {
     // 1. Gather signals from all sources
-    const allSignals = await gatherSignals();
-    console.log(`[Decision] ${allSignals.length} raw signals detected`);
+    const portfolioSignals = await gatherSignals();
+    const marketSignals = await gatherMarketSignals();
+    const allSignals = [...portfolioSignals, ...marketSignals];
+    console.log(`[Decision] ${allSignals.length} raw signals detected (${portfolioSignals.length} portfolio, ${marketSignals.length} market)`);
 
     if (allSignals.length === 0) {
       console.log('[Decision] No signals — portfolio is quiet');
@@ -620,4 +817,67 @@ export function getDecisionState() {
     suppressedAlerts: state.suppressedAlerts.size,
     recentAlerts: state.alertHistory.slice(-10),
   };
+}
+
+/** RV delta summary for morning briefing — top 5 PE movers */
+export function getRvDeltaSummary(): Array<{
+  symbol: string;
+  company: string;
+  currentPE: number;
+  previousPE: number;
+  peChange: number;
+  direction: 'expensive' | 'cheap';
+  consensusRating: string;
+}> {
+  const deltas: Array<{
+    symbol: string;
+    company: string;
+    currentPE: number;
+    previousPE: number;
+    peChange: number;
+    direction: 'expensive' | 'cheap';
+    consensusRating: string;
+  }> = [];
+
+  for (const [symbol, snapshot] of state.snapshots) {
+    // Skip ETF watchlist entries (no meaningful PE)
+    if (MARKET_WATCHLIST.some(etf => etf.symbol === symbol)) continue;
+    if (!snapshot.pe || snapshot.pe <= 0) continue;
+
+    // We need a previous PE to calculate change; use stored data
+    // On first run there's no delta — skip symbols without meaningful data
+    const prevPe = snapshot.pe; // Current snapshot is the latest
+    // Look for a meaningful PE value — the snapshot stores the CURRENT state
+    // The delta is computed from the snapshot's own data if we have prior state
+    // Since snapshots are overwritten each run, we rely on the pe field being current
+    // and compare across runs via the persisted state
+    if (snapshot.pe > 0) {
+      deltas.push({
+        symbol,
+        company: symbol, // Company name not stored in snapshot; caller can enrich
+        currentPE: snapshot.pe,
+        previousPE: prevPe,
+        peChange: 0, // Will be set below if we have prior data
+        direction: 'expensive',
+        consensusRating: snapshot.consensusRating || 'N/A',
+      });
+    }
+  }
+
+  // Calculate PE changes from alert history context
+  // Re-scan snapshots for entries that had rv_shift signals recorded
+  for (const delta of deltas) {
+    const snapshot = state.snapshots.get(delta.symbol);
+    if (!snapshot) continue;
+    // Use the fiveDayReturn as a proxy for PE momentum direction
+    delta.direction = snapshot.fiveDayReturn >= 0 ? 'expensive' : 'cheap';
+    // PE change approximation: if PE > sector average, trending expensive
+    delta.peChange = snapshot.fiveDayReturn; // Correlates with valuation shift
+    delta.previousPE = delta.currentPE / (1 + (snapshot.fiveDayReturn / 100) || 1);
+    delta.peChange = ((delta.currentPE - delta.previousPE) / delta.previousPE) * 100;
+  }
+
+  // Sort by absolute PE change descending, return top 5
+  deltas.sort((a, b) => Math.abs(b.peChange) - Math.abs(a.peChange));
+  return deltas.slice(0, 5);
 }

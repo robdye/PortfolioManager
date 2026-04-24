@@ -1,7 +1,7 @@
 [mcps]
 
 [mcps.builtins]
-portfolio = { auth = "None", type = "remote", url = "https://portfolio-agent-app.jollysand-88b78b02.eastus.azurecontainerapps.io/mcp", headers = ["x-scheduled-secret: portfolio-scheduler-2026"] }
+portfolio = { auth = "None", type = "remote", url = "https://<YOUR_MCP_APP>.azurecontainerapps.io/mcp", headers = ["x-scheduled-secret: <YOUR_SCHEDULED_SECRET>"] }
 calendar = { type = "calendar" }
 mail = { type = "mail" }
 teams = { type = "teams" }

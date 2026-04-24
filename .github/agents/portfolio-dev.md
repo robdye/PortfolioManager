@@ -19,7 +19,7 @@ This project has three main components:
 - CRM tools backed by Microsoft Dataverse (Dynamics 365)
 - Auth: OAuth2 client credentials (`@azure/identity`) for Dataverse, API key for Finnhub
 - Deployed as Azure Container App: `portfolio-agent-mcp` (image: `portfolio-agent-mcp:v13`)
-- URL: `https://portfolio-agent-app.jollysand-88b78b02.eastus.azurecontainerapps.io`
+- URL: `https://<YOUR_MCP_APP>.azurecontainerapps.io`
 
 ### 3. Digital Worker (`digital-worker/`)
 - **TypeScript / Node.js 20 / Express 5**
@@ -30,38 +30,38 @@ This project has three main components:
 - Graph API: calendar events, email, Teams chat
 - Auth: OBO flow (interactive) + client credentials (scheduled tasks)
 - Deployed as Azure Container App: `portfolio-manager-worker`
-- URL: `https://portfolio-manager-worker.jollysand-88b78b02.eastus.azurecontainerapps.io`
+- URL: `https://<YOUR_WORKER_APP>.azurecontainerapps.io`
 
 ## Key Environment
 
 | Key | Value |
 |-----|-------|
-| ACR | `portfolioagentacr.azurecr.io` |
-| Resource Group | `rg-portfolio-agent` |
-| Tenant | `ee6a68ea-3123-4f78-b587-822d823c4f56` |
-| CRM URL | `https://orge2a9a349.crm.dynamics.com` |
-| Manager | Robert Dye (`admin@ABSx68251802.onmicrosoft.com`) |
+| ACR | `<YOUR_ACR_NAME>.azurecr.io` |
+| Resource Group | `<YOUR_RESOURCE_GROUP>` |
+| Tenant | `<YOUR_TENANT_ID>` |
+| CRM URL | `<YOUR_CRM_URL>` |
+| Manager | `<YOUR_MANAGER_EMAIL>` |
 
 ## Build & Deploy
 
 ```bash
 # Build worker (increment version each time)
-az acr build --registry portfolioagentacr --image portfolio-manager-worker:vXX \
+az acr build --registry <YOUR_ACR_NAME> --image portfolio-manager-worker:vXX \
   --file digital-worker/Dockerfile digital-worker/
 
 # Deploy worker
 az containerapp update --name portfolio-manager-worker \
-  --resource-group rg-portfolio-agent \
-  --image portfolioagentacr.azurecr.io/portfolio-manager-worker:vXX
+  --resource-group <YOUR_RESOURCE_GROUP> \
+  --image <YOUR_ACR_NAME>.azurecr.io/portfolio-manager-worker:vXX
 
 # Build MCP server
-az acr build --registry portfolioagentacr --image portfolio-agent-mcp:vXX \
+az acr build --registry <YOUR_ACR_NAME> --image portfolio-agent-mcp:vXX \
   --file mcp-server/Dockerfile mcp-server/
 
 # Trigger workday init
-curl -X POST -H "x-scheduled-secret: portfolio-scheduler-2026" \
+curl -X POST -H "x-scheduled-secret: <YOUR_SCHEDULED_SECRET>" \
   -H "Content-Type: application/json" \
-  https://portfolio-manager-worker.jollysand-88b78b02.eastus.azurecontainerapps.io/api/scheduled/workday/init
+  https://<YOUR_WORKER_APP>.azurecontainerapps.io/api/scheduled/workday/init
 ```
 
 ## MCP Server Tools (available via `portfolio` MCP)

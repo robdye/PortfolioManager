@@ -12,7 +12,7 @@
         { "name": "Calendar" },
         {
             "name": "OneDriveAndSharePoint",
-            "items_by_url": [{ "url": "https://absx68251802.sharepoint.com/Shared%20Documents" }]
+            "items_by_url": [{ "url": "https://<YOUR_TENANT>.sharepoint.com/Shared%20Documents" }]
         }
     ],
     "actions": [

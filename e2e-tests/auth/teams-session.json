@@ -1,291 +1,0 @@
-{
-  "cookies": [
-    {
-      "name": "platformId",
-      "value": "1415",
-      "domain": "teams.microsoft.com",
-      "path": "/v2",
-      "expires": 1806432971,
-      "httpOnly": false,
-      "secure": false,
-      "sameSite": "Lax"
-    },
-    {
-      "name": "MUIDB",
-      "value": "2A543D701FA867B72E3A2A5C1E3766D1",
-      "domain": "teams.microsoft.com",
-      "path": "/",
-      "expires": 1808592972.581832,
-      "httpOnly": true,
-      "secure": true,
-      "sameSite": "Lax"
-    },
-    {
-      "name": "clocale",
-      "value": "en-gb",
-      "domain": "teams.microsoft.com",
-      "path": "/",
-      "expires": 1806432973.50005,
-      "httpOnly": true,
-      "secure": true,
-      "sameSite": "Lax",
-      "partitionKey": "https://microsoft.com",
-      "_crHasCrossSiteAncestor": false
-    },
-    {
-      "name": "platformParams",
-      "value": "%7B%22platformId%22%3A%221415%22%7D",
-      "domain": "teams.microsoft.com",
-      "path": "/",
-      "expires": 1806432974,
-      "httpOnly": false,
-      "secure": true,
-      "sameSite": "None",
-      "partitionKey": "https://microsoft.com",
-      "_crHasCrossSiteAncestor": false
-    },
-    {
-      "name": "esctx-RH9AkN2POpg",
-      "value": "AQABCQEAAACvnsHKEvvRQb3Bz3Qc7wnaRXZvU3RzQXJ0aWZhY3RzDQAAAAAAiMFwnDdfQJscpwb7liD-tQFpnu5mhxATLW26_2fNdHNhdFAZsoLbaxksqXTtS9Bo1_OJdEbsSy6uKiZMS72U9pPZ7XRASlbrCXna1M-4EQl0fDHGmUjnBrA87965FBmn2opPfUydfx6wRXRDdf7W0iAA",
-      "domain": ".login.microsoftonline.com",
-      "path": "/",
-      "expires": -1,
-      "httpOnly": true,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
-      "name": "x-ms-gateway-slice",
-      "value": "estsfd",
-      "domain": "login.microsoftonline.com",
-      "path": "/",
-      "expires": -1,
-      "httpOnly": true,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
-      "name": "stsservicecookie",
-      "value": "estsfd",
-      "domain": "login.microsoftonline.com",
-      "path": "/",
-      "expires": -1,
-      "httpOnly": true,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
-      "name": "AADSSO",
-      "value": "NA|NoExtension",
-      "domain": ".login.microsoftonline.com",
-      "path": "/",
-      "expires": -1,
-      "httpOnly": false,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
-      "name": "SSOCOOKIEPULLED",
-      "value": "1",
-      "domain": "login.microsoftonline.com",
-      "path": "/",
-      "expires": 1774897036,
-      "httpOnly": false,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
-      "name": "MC1",
-      "value": "GUID=1a3a954cb71346f2bdcc4a3c2334fab7&HASH=1a3a&LV=202603&V=4&LU=1774896976149",
-      "domain": ".microsoft.com",
-      "path": "/",
-      "expires": 1806432978.222005,
-      "httpOnly": false,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
-      "name": "MS0",
-      "value": "6de4bc6c1edb4fd3a51ceaac638c5420",
-      "domain": ".microsoft.com",
-      "path": "/",
-      "expires": 1774898778.222258,
-      "httpOnly": false,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
-      "name": "buid",
-      "value": "1.AToAMe_N-B6jSkuT5F9XHpElWsDmPF4fK4VCjUt17nh4c0YAAAA6AA.AQABGgEAAACvnsHKEvvRQb3Bz3Qc7wnaRXZvU3RzQXJ0aWZhY3RzAwAAAAAA9xRiUg1dH2IFhJlyG1lYnQrZa4Xmu43Ec7tQJejwr4f5zwJx03a3YyI9i0H1tdubFhGpBzNq0mZr3zz8QRPm65e-qqQUC8HjV3YVj5T14BEgAA",
-      "domain": "login.microsoftonline.com",
-      "path": "/",
-      "expires": 1777488977.239964,
-      "httpOnly": true,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
-      "name": "esctx",
-      "value": "PAQABBwEAAACvnsHKEvvRQb3Bz3Qc7wnaRXZvU3RzQXJ0aWZhY3RzDQAAAAAAm07GsniFNO8Bsme9598p0HPHTO6axjthZjyT3DPm2JHr5gOQV4aJ4muGr2A8puaPnIL9HHRgyKFSdfYV23wyh3fXVeYfsDyrBNPvFJV5CsadjVKHwOhlXp5YCuqr76d513IT1CMbBO1-HzrX1ytVU2ZAIOKtwqw-7haj3Gwk5vsgAA",
-      "domain": ".login.microsoftonline.com",
-      "path": "/",
-      "expires": -1,
-      "httpOnly": true,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
-      "name": "esctx-CykJfcjWWUo",
-      "value": "AQABCQEAAACvnsHKEvvRQb3Bz3Qc7wnaRXZvU3RzQXJ0aWZhY3RzDQAAAAAAbN4c3M5tOlmVRCjz2w2Gb7BECY2zT_-1yXRsTVSCE9eFBlsDmKwANjuUbLpirWpkd6TRsTGbpYzya6IRvtgD88q8wzHGKZisfEkzM2JVU2IdXpUllGeecieCVyiWTDwjHsbKvv2w1TBHSIkn-m2iSCAA",
-      "domain": ".login.microsoftonline.com",
-      "path": "/",
-      "expires": -1,
-      "httpOnly": true,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
-      "name": "fpc",
-      "value": "AgOeF4l_DRVHhEt1QBCVy5fcfNkmAQAAAE--XOEOAAAABHszeAEAAABPvlzhDgAAAA",
-      "domain": "login.microsoftonline.com",
-      "path": "/",
-      "expires": 1777488977.240378,
-      "httpOnly": true,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
-      "name": "brcap",
-      "value": "0",
-      "domain": ".login.microsoftonline.com",
-      "path": "/",
-      "expires": 1808592977,
-      "httpOnly": false,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
-      "name": "uaid",
-      "value": "758aaba192da44c78a77cece31fae7ec",
-      "domain": ".login.live.com",
-      "path": "/",
-      "expires": -1,
-      "httpOnly": true,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
-      "name": "MSPRequ",
-      "value": "id=N&lt=1774896977&co=2",
-      "domain": ".login.live.com",
-      "path": "/",
-      "expires": -1,
-      "httpOnly": true,
-      "secure": true,
-      "sameSite": "None"
-    }
-  ],
-  "origins": [
-    {
-      "origin": "https://teams.microsoft.com",
-      "localStorage": [
-        {
-          "name": "tmp.react-web-client.webSettings.pendingSettingsForMigration",
-          "value": "{\"client-preferences\":{\"outOfTabNotifications\":{\"allowOutOfTabNotifications\":false,\"setDuringBrowserToastsAllowed\":false},\"theme\":{\"userTheme\":\"light\",\"followOsTheme\":true,\"isClassicTheme\":false,\"isCallingWindowDarkTheme\":false,\"customThemeAccentColor\":\"default\"},\"animation\":{\"disableAnimations\":false},\"infoPane\":{\"chatContextualSearch\":\"closed\",\"channelcontextualsearch\":\"closed\",\"channell2contextualsearch\":\"closed\",\"chatHighlightsDetails\":\"closed\",\"chatfluidthread\":\"closed\",\"chatcopilotsynthesis\":\"closed\"},\"sidePane\":{\"sidePaneOpenState\":[]},\"flyoutCamera\":{\"cameraState\":\"notSet\"},\"promo\":{\"badgeActionComplete\":false,\"labelActionComplete\":false,\"teamsInsiderLabelActionComplete\":false,\"teamsInsiderBadgeActionComplete\":false,\"desktopLabelActionComplete\":false,\"desktopBadgeActionComplete\":false},\"density\":{\"chatDensity\":\"comfy\"},\"performance\":{\"mode\":\"normal\"},\"optimizedPerf\":{\"optimizedPerfPolicy\":\"AUTO\",\"isSetByUser\":false},\"appBar\":{\"isAppBarPinned\":false,\"isAppBarPeekEnabled\":true,\"isAppBarVisible\":true,\"showAppNamesV2\":false},\"appSwitcher\":{\"checkboxChecked\":false,\"multipleTabsCheckboxChecked\":false},\"videoEffect\":{},\"backgroundEffect\":{},\"avatar\":{\"hasUsedInMeeting\":false},\"teamLayout\":{},\"diagnosticsLogs\":{\"shouldPersistLogsIntoIDB\":false},\"windowing\":{\"shouldOpenContentInNewWindow\":false},\"statusBarItem\":{\"shouldShowStatusBarItem\":true},\"lockScreenInCall\":{},\"messagePreviews\":{\"messagePreviewsSetting\":\"default\"},\"simpleCollabStickyFilter\":{},\"composeSpellcheck\":{\"disableDefaultSpellcheck\":false},\"peopleAppColumns\":{\"persistentPeopleAppColumns\":[]},\"peopleAppNavigation\":{\"activeNavigationId\":\"ALL\"},\"simpleCollab\":{\"simpleCollabViewType\":\"none\",\"hasUserEnabledMessagePreviews\":false,\"hasUserEnabledMessagePreviewsForSplitApp\":true,\"hasUserEnabledShowTimeStamps\":false,\"hasUserEnabledShowTimeStampsForSplitApp\":true},\"staticNowCards\":{\"dismissedStaticNowCards\":[]},\"superResolution\":{\"isSuperResolutionEnabled\":true},\"editorSdk\":{\"autoCorrectEnabledLanguages\":[],\"critiqueSettings\":[]},\"byod\":{\"pushToRoomAudio\":true},\"meeting\":{\"enableLeaveConfirmationDialog\":false,\"hideControls\":false},\"shareTray\":{\"isShareTrayPreviewExpanded\":false},\"web\":{\"trackMachineActivity\":false},\"places\":{\"osConsentBannerState\":{\"showCount\":0},\"deviceHomeBannerState\":{\"showCount\":0}},\"chatAppBotSessions\":{\"lastBotSessionStates\":[]}}}"
-        },
-        {
-          "name": "tmp.isLowEndDevice",
-          "value": "0"
-        },
-        {
-          "name": "server-telemetry-5e3ce6c0-2b1f-4285-8d4b-75ee78787346",
-          "value": "{\"failedRequests\":[863,\"Core-de954fe3-1c80-465b-ab75-a5143b74506a\"],\"errors\":[\"login_required\"],\"cacheHits\":0}"
-        },
-        {
-          "name": "tmp.previousSessionErrorLogs-Core",
-          "value": "\u001f\b\u0000\u0000\u0000\u0000\u0000\u0000\u0003ÍWÛnÛ8\u0010ý\u0015B/m\u0001KÖÍ²­>\u0015N\n\u0004M¦iµ&G6[\u00148³AÐß|Ù$(PlÔÝ¬\u0001[âe.gæ3¾÷\u0010\u0010ÑgÒË½±\u0018\u0017ãxZøÙ¤Xù©±?IEâO£T\u0014«dW7ðJ³ÆwÖò;/ß{\u0015)àk ñ\u000bp·Æ~»rÜÁ¥5[%Áælá\u0019l*qá1L\u001bÇø«¯J`Æ2åUà6F\"{}ÁÚÂCEç\n\u001dh°oZÃ°ÒË£ýÛ\u0005¯Z³§Ö\u001aK«NU@\"UMsq\u0018g~øIø)ä£,FA\u001cÿ m\n/zoDmàûà!±p\u0005Î)½Æá©ÀKnÉ\u000393ø\u0014+Vs YaMÅ$l3]#:V[Se\bÕ\u001e¯.>±(\fÂWA\bqòS\b¿s±Q\u001aºàá3Ó°\u0006÷ \u0007\r\u000eu\bûÞØG+³\r×ký³3¤?vÂ\u001d\n´kó4;9ÿB~½\u0002Ûæ g»![\u0019ãÐY^3Þ¸\ríVhEyÖ\u0017æ3ÁuÿÑê^K@Ø¯±X£%\u0014\u0014I9`¦nwàßS=áfA4À-xÿ.^BÆÖ¥Yñ5ðñ?M÷\u000fðwÊ\\'\u001f¡6ÖÑéÛ+è\u00024·Ê{ÄFY¼±ð\u0015DëóM·-gówÀ.ç'\n¡ãù9^æ×\u000792S)\u0007éÞ0ãpú<¸1·\u001fLM×N'0ØÁ¥á¼¤øk\u001fSñVòáxùrNÃÄBAÉ9Ý\u0005Ý/<M¶\u0017^¾Ø\t,¼Áâ ¤ßìùv&Ûì\u0014\nìrÇNJ\u0004Ò5\u001c°Bç´§Qòm;\u000et\\|#\ró½b\nÌ35qÇfìõÆ9\nöpHz#\u00188à\u0015\u0006BêÀ\u0014E{,4¸a7éWF6%·~M\u001e\u0010\f\u001cn8n@ú\u001c\u0011\u001c\u000e9Þiá\u000böÎ@MWRÄã$\u001e\u0015Qð\u0015ó(\u000eSú³èÍÁ¾ÿÒ,O¢É(Næ;\u0001vý[@âçdJ#£ÚÿÄ­ è[ßú\u001c\u000eD¸\u001e\\Ð>/I\u0003/Åý_CÞ\t\u0011q2úö\u0016=hU(jÐ4¶­¶¿°ú=ÿí0²õçÿ\\Ó¾Àj×¹\\×\u0010\u001c[ý\u000b»Ýµ.Û}GÝ¶¤R\u0015\u0005X\u0012Ù5Ö¢±Ý`Õ¨R\u001e7ÆY\u0018Çã0£Qo Éô\bßÿ\u0002Ýý®\u0016\r\u0000\u0000"
-        },
-        {
-          "name": "timezone",
-          "value": "Europe/London"
-        },
-        {
-          "name": "tmp.formattingLocaleInfo",
-          "value": "{\"regionalFormat\":\"en-US\",\"date\":{\"shortDate\":\"M/d/yyyy\",\"longDate\":\"dddd, MMMM d, yyyy\",\"shortTime\":\"h:mm tt\",\"longTime\":\"h:mm:ss tt\",\"calendar\":\"gregorian\",\"firstDayOfWeek\":\"0\"},\"platform\":\"windows\",\"timezone\":\"Europe/London\"}"
-        },
-        {
-          "name": "msal.request.mats-telemetry-profile-id",
-          "value": "019d401a-90a8-799e-8bae-65895250a296"
-        },
-        {
-          "name": "tmp.previousSessionLogs-Core",
-          "value": "\u001f\b\u0000\u0000\u0000\u0000\u0000\u0000\u0003í}SÛHòè¿2÷«°[e\u0019}ÙuEÝ#$¥\u000e\u0012.ì«GxÔH\u001aÙZdÉ'É°\\vÿ÷×=3e0 £Á8löê-äîþo¯rçQì\u0007¯ÜW\u0003\u0010\u000eÌa¨õÐÓì\r4Çö-mhØ~èY={àõ_u^Åé(ßÍ2zýÊ=ýöj\u0002/ #\u0006bIÀ²(\u0019í¥IÁþ(\u000ei\u000272ø\u0019£\u0005ÛK3vÌ²ËÈg¹Kòf\u0005¾]²økÉO\u001fè\u0004_µ)Ü,¢\t;.èd\nLÝìkº¥Yúá¸½¾kØÝÞpðaX\u001fEÑ/\u0019'C\u001açì¯N\u001d¬\u0013_HPäÏ»$I(¼v]\u000e\u0005@L4\u0012G!Û»öcöî%ÅÎ~\u0012\u0015\u0011£ÿÒ\u0002ÈÓ!\u0005¼e/Á\u001d§ß\u001eìáÃ`\u001fÅ´\bÓlRÁ¼_^\u0001òÑhqÈHzÉ²,\n¦ßþj\u000bYß0\u001e\u0001ÙQZ\u0000ÉZ¤¼µÿäé,ã3Íþ\u0002W°Äg\u001fKPw¶fÀ*a°`«CÆi^\u001c³\u0002çáÆÿäÓ­oÁ§«(\tÒ«_a$þg+Åñzllö\u0010²sä\u001a¢41\u0012féüûøhû·\nÒí7Yz³ìYÀ|Ë\nMuXxl\u0019¶Ñ{\u0002ê5â\u0017|ÉÍHÕ«¨\u0018\u0013?\u0006f)¾°\fõK\u0010Öm³¯æ@·M£·\u0016°÷8\fG\u0019\u000bYWà;d:¿E®à\u0003j\u0014\u0012~\bH8õA\u0018ò\"Íàuÿ \u0019+fY\b\u0002kÓY\\äÝÖXý\u0006Xp+\u0004k[*åF?\u0003\u0012\\!\u0007­¡\u0018è½Õ¡Ù>ÊÒKÐ\u0003ÙÛëN\"ß%¿D1°kNfÓ\u0000\u0001C>%ß¾¾òfQ\u001c\\OÙ×Wî×WÓ,\rf>*½¯¯:__±ä2ÊÒd\u0002ÓQÝæ7<!vü¢?\u0006¹dü2@yE¿J\u0010ù÷~\u0010Õ.¤9D¨?3Ü\n7\u000f[ë×ÞÀ`-\u0010\f\u0015II.|H¹¶$¹¼-X®ý<6±£ïü\\0ÿù\t£¼úª-À\u000b\u0017Àõ©?\ti¥\u0002X\u0014i\u0017\u0018Ð/´+æiBÜ»BÞY 1?×Jü4þx[ô\u001cÃ|nô\u0002©5\u0000õQàOÓ8ò¯U\u0001¾ª\f4\u0007|ýpÞm(PÇ¢ÎÏgÞïÌGë­ ¢£\u0004$8òó\u0003p£·\u0000ÒìºSÉ´/\u001f§³88B¡È\u000b\u001c¹\u0014éþÛ7¥ºj­\u001cÃy\u0018;Ò^\u001fÑ\f¤b/M/\"\u001eµKäô­éÂ\u0010@\u000fj­M D7ýËÛý\u001b^\u0005\u0002øÅt\tÜ!é\u0014~Hºñ$¿¦Sà\u001bbÌHÍ \u0005SV<M§iVàÃíQhàè\u000bV÷Á\u0003*®çÜsû\"©B\u0012\u0016´\u0006Ìl`¸Ñôì¥I^:\f¤ºÂ\u0019ôÃZà\u0010?~Àè\u0005:µ>xU\u0001YB½}äÒ5¿Óþñ³\u0016×®Ó\u0017%\u0010mbT¬iþ>\u001e\u001fFI4M¤/½7fþïs\"¹\u001cd!Í4¾ÄÇ\u0011<Ôå\u0013ì\u001f{\">\u0017²Ó\u000eô^W·¬\u0007£Uµªq\n3¼S§.:â;|»O>J\u000f\u0011tÚëÏÂyT¡g¡»d¦\"ÃH'à rÝí\u0011KX²1\u0019Io³DåÛ`£KÐ\n­\u0001ë5pV\u0002lV[\u0003ÕoàÔ¬\bTÏF#·L6!l\rü`»\u0004ï¥evà\tÀÐ%\nÀ\u001aØï\u0015\u0001aLk¸\u0006\r\u0012\u0000+Á5¦IÂâ¼=`U\u0005\u0000Vhq¤õ\u0007\rÌÍJ\u00131Cw) zØ¦iÞÒx\u0012¸\u0002¿\u0002)V\u0018,ËÒl\u0003Áú£`I\u001eyQ¬ÂZª.b\u0015¼¯\u001a*àØU]l\u001cd#Pþ,Û¼y£Ñ¸ðÒ?Ú\u0003¦ØZ©¼hÏ`®\u001aªK¦M!ÜH\u0013ªù4k\u001fN¨pÂ\u0018Ñð¯F§Ó\r\u0004\u0010Rá\b)¬Pm\u0012å9\u000b4¾Â\u001aù<í²yl¤´=PýÈ)K§q{¿ÃQ\u001c×\t°´iä_´]Ë|\nèbê+0¤ÊÁÊØ$M4\u000fF\u0002§í\t\u0000Ì1µÒ\u001e0[-`\u0019f=³\u0004­Ì&µ\u0007L±\u0013RàF@S\u0016:ÝÅlÂ\n\u0005\u001eÜP±-(R\u0017íj\u0018gY¬Ä^Fìjã`+\u001d&?cê¥¢,i-PnJe\u0001/÷\u0010oâ$Ùr\u0003¤bRIÁÏBÿ±\u0019sÉ© \u0017É\u0018Í±\n§Z\u0006ôEÏ8¾.\u001f­\n»Îdõ\u000e÷ÁÓS9Z¬«±¢W|¬8\u0004&\u0013\u0016àjHÜZ'\u0018MÒÆ\u000bÜ\"\u0017\u0014x5Lyé%#¨AG,èÅ\u0010\u0004\u0014\u0018(¬ê}¢\u0004\u0017\u000fsV®3DXåæÃÛ;¤¶¼\u000b¸Ju\b(>KÕ¢Ö­C\n&þ*\u0011~+¨e\u001diô\u000eÉ'^§V9wÒ\u0000oÊ\u0014(Þª%7`xpÑ\u0011UGÑ©ü*\u0017>Û\u0013xÕ5û:?ðjK¹jûYä¡D¦¡;_;Þ¯Õ\u0010U³Ðr\u0011¹×5õ\u0006Nú~\u0010³¢ëª[eÅ\u001fo²üË\u0005æ\u0018åe^áP\u0001Dóç#D\u001c\u0017®]\\\bjí$=\u001eÆ½º¤G9\u0011ð(±Ç\u0002ô+8@1×,0\t\\:?¡Ï\rÞº\u0019\u000b\u0017ëop\fìãDÛQÁ&\u0014/\u0002\f ½\u000eÅ¥d´¹IÝå\u0007V`öñ\u0006ØòêÕ¢9)±ãc\u0002ÓÞ^\u0012\u0006á\u0004å\bÈ6/ÌV8±FEåDBbVD1x\u0012H\"´¸ôF1ÖH\u0010°`\u0010¢\u001d\u001a§AN~ú@Q\u0018ê/:ò\u0002]¼ç(\u0018(¼Ã4#\u001cnÚ%\u000bü7kê°t\b+s,°fÙ~@ørGÀdÇ1\u001bÑ\u0018\u00198Q©ÄçÐÐþF³¤\t°f¸ú>h¿.ã\u00060id& \u000fò\u000bæK\u0015x«Ñò%4)ÖHÍ\u0006þæ*Ô,JøÑ³AñÉ=ð¥¹¬¥!Så }xÙÀP\u0011 W.8oàÔLÀ7&[\u001fN¡wõ­n{ñz\u0004\nÂ\u001eáÕ;\\\fVß\u0007¯ÌgX\báÞøD\u0004-à!ç¼\u0018ó-8³òbk×¤ý\u0011Å¹ïeyâ»½ãjà+>gã¢æîö¶¸Õå\u0019.DY§aÑõÓ¼µ}il\u001f×ù¯oclvntuüß?kÁâ\u000e\u0006¯ç^ûÎÍ:Ú×UØ¹3\u000f9_ÃóÅ¬rÕw^Ë(sGDåWÉx;Ý\u0013¿ü:ÍË¨lG\u0006¯E¹Ã)øG òó\u001c¨7\bÂNmCÅkû\u0001awxüúºÚ\u0014¶ÓdKØk\u001c\u000ez¡n0§§9ÕÓìÞP×\u001cßr4Y=jéÕó­×0£IïpR~H³b°:ü+-ï\u001c³\u0011ã5Ìß\u001eívÛ;nf\u0010æWF³Âc´¸íÞVÆ\u0014X\u0006â_g¦*b,ÓnàÔÕ\u00133 ~ÖQÇcöVÌV>\u0000ª\u00026s ^*ê×ÌU\u0017ª\u001eIUù¹êrÕC )©^3W]×xé\u0015å¿MG±0ª*Å2WMß>\u0004ºJ,s¸bÅÓÃ ©(Ä2lnZ\t,5uXæpÅ%\u0007àRS¥\u001c*UX®ù\u0014aYMö\t­\u0002ª\u001a,«Il»\u0002`ªJÔÃ¥ ÒI=P\u000bT\u0003¨ºÎI=|Ê¬&{eV\u0001ì©ªT\u0003ª¢ÈI5Ljj¬&±ÜÊP)*qR\u000e\n'åP)ª\u001fR\rª\u001a\u001dËT\u001b\u0000(«Q\u000eúò\u0017Õ *¬~Q\r¢²tËR\u001b+Ú*eÙ+nÇ{\u0000,uµ}âdêzM«§vB¤ÈÊRÙS_hõ\u001f½hü.\t¦i\u0014¹¼].p<\u001a%ð\u0012*Y5îßZ¿½\u001c³\u001cÀª\\!YXÞ5\u000bu\u000bòbx×w\"Öß©¿Ò¿¨0V³Nþxï:æE\u0016F,Ãé²¬\fW\u0002\u0017#Eu ò§%\u000bN¬ðÇ\u0004ÓY1+Xã0Ëwg>ÖÂu°v,c1\u001f»\u001fìø\u001ez ÙïiöÐt4gà\u001bE{Ã\u001eúúpàwHË\u0005¼_ðå;í;\u001eôº&¹ØG\u0012ä\u0018\u001bÄF ¢L\u0013\u0017T\u0007Y`9\u001doSð=x\u0004s¼ò=þíñRU\u0005ùîæ2é\u0019aÉ`,±\u001cÕ0ÀÕóZÇÖ\u0018ÜJa>°æû7+o\u0011c0Oþ¬È\u0005\f{tJùÃ\nÒÚ&\u0019ÑÇÔ>\"MªîÑ±ºBì7æÉ\"1E\u0005bÝ¤ä{ÅÎ WÌ»³\u001f\bGFâ°+\u0017%õýpì\u0006Ë\tàúG O±¡j ­#V-ìÔJÍ`\u000ev>'\u0017Iz´ç\u0016{Õº,^S\u0018OÆéO\u0005{©Õ\u000eð\u0006õ\u0001¼R¼O\u0007yrû{ GÕýt@7îÅµ\u001aÐ`Ë¾;Ñ\nw@/8\u0005ß\u001dôues¿£8°ò\u0019å¶)\u0005õWNÈ^æ`î¼§¨­vú7ý%NôÍß?\u0014·Èw]\u0015\u0001K\n¬àãÝÀO¨£\u0003ÌGAðöM\u001fÚÖpH\u0003m\u0018X¡f;ÌÐ\u001cËr´aT×\u0003Û±¿n|ßÂ\u0017:º¥kY\u0003Í\u000e{ºæ¦¥õ\u001cOïCÔ7 f¿½KÒoPL|\u0000Q¾\\\u0003_\"¼\u0018.¨4\u001f\u0005É=SQÂÇ5Ã\u001e\u0017¦IñL:\bú6ÀaròÚ!w ù\u001e\u001a\u0003Ó\u001c\u0018¶{Rª²h\u0005oP³{\u0013_±À¥\u001c \u0003^sÛ§<\u001e\u0005R\u0019lòû¼§b=Ú+ÕQ­½'è(ìGÈU­l°È\u0019¹ëO2^\u0007u±\f+\u0013ñªÖ\b4i\u001e&0xÑéøß\u0007Ç\u0005ê[páóOçP³\u0005,\u001e\u001aUßëÒ\u001eø\u0006®²\fxX?r{É\u0015µ\fà\f4dÆFìË~I³;BXö»N[ý$ó\u000e]¥ë<Ñ@\u0000Ê£\u0014vóëÄoÖªÒy¹Ø÷ñ_]lÚ:×\u001f.iÈë\u0012g}bÿ±¼ÀÇ*µ|¼äjk.h²µÿVtïbÀÛÁª.«Gx¾\u0000¯\u0013\u0017Sé£O\u001f\u000fNZÃw+ßr{&ï\u000bË\\\u00056/­ÇÎ¥>U\u0018679Çã\u0011\tS¾ÅBä/\u001a6\u0013ß\"4\tv\u001eï-ñc\u0006îg{\u001a\u001a\r\u0014Ë£\t±\b÷5ßªüÖö5¨Ùh\nóÛbµ¦²§xý\f\u001cÃ]ü§ÒêBFI}\u001f£hh\\\u001f¾\u001cÒ\u0011},à³üà¨/\u0011Eùà\u0007\u0016\u0010â°Ãut\u000e2,{PÚ\u0013§ÉÖ\u0007sYP\rãQÍ£9;;ÅÉgvmmóTÀø\u000eO\u0004â6ÃÃå´ÒÁ¤qÕ\u001fz\u000e\u001d³oà¦¾î\u0019¸O¦¯\r©Í4ß±Yè\u000f-k\u0010´ö=MJe\u0010ä÷{à=Â_òf\u001e²Í^\u001aÇ¼\u00175ò]\u0010åÈ@\u0001¹h\u0015®\r¶ûXá0§±uv\nF9\u0007/\u0018_[tñ\u00140E\"ú =)Ólg§¶Ùï;¡>Ðú¬\u000f³Ï ´ðð+µ=ØxÃòûg§Èäç ÁÎ£³¥Î¸WÏq/Tqv*Ã\u001bøà¸gQÊY\u0010eýìôÛ×W¾8ËEv\u001c¹tq3ÙböÌ]²íÏ?/M×øóÏQz4v\rÞj\u0004²T´ü=Ç»\u0007\u0016¿Ï¼½Ú\u000f\b/¥Æ>oiî.(¬\u0004?õÿDi;\u0017ol+».¢Ù\t\u0013·Ák;.#ÿ\\¨¼ÀÕ\\WÍ]ä¥¯ëÔqukxr·C+éýõÕ_gíx«ßÕä£\u001fà-y¤\u0014Èë\u0005»&§hÿ\u0010î¥Ñ}ðñÍîA\u00177IóÎ\u0016O\u001e°I]£²§\u000fµG§½\u0001¼¥ãÁó\u0016°ã¿\bpûM¨Ï#Þ\u0005Ç·C\nÐ´Kö*?\u001fb\u001b5O\r¼úGÏÓ{]]Åw¸=´b®ÔNJ{,P!\u001a\u001dÜ}Íï£§\u0003Z(\u000e:Òð\u001dç)¨8\u001dEÉ\u0017P\u001a\u0001\u001fµWú\u001bp\u000b\u0011?Q^û!~#Kcæj-0¦Jµõ©\u0006¥êg×|/ë9ðóFØ¢i\u0014æ\b¦òïb¦ð))\u0011kGÖk\u0010±¶Vzï*>ú\u0017»^üöäj°·\u001d­?D\u0001å\u000fÉÚ@É*>«-\u0005¬×@¶$\u001fÝ±eWÈµtº¹¢&*\u000bùµ\u000f))\u0001'sKÐ}yR¹!ò¶\u001e7j\u0019ðEqU#]ÿRYOäX1\u0017é\u0005Kê|(èÿ=ø\u001e5ø^l4á\u000b¸\u0010g¢EDËÃ(Ë\u000bÓôÝéÆ¿=ûýÐÏ¥\r°^=\"\u000f±\u001e.øñÏ§\u000fÆû\u0016Fôó(Æ\u0018ºéÊÃ*©^âZ¯ÜÇÀ\n\u001aµÝv¦\u0006Ë]ùtÎÄ2výóÓ»íí\u0013Ô+Ma¹ÑoáMg¹È òù.©!¾´\u0011å3âøD\u000b<¬ÿjÖKÙy§çü\u0018X¦¼ësæç/^O*ÑjÙ¯§;¾çXLóôÀÑì~`k9`ZÐc3`}khë÷±ðù6ß5oÍ/T¹¦*½d\"g¼ç,\u0010ð=DIÙ¡\u001f_.êà%\u0003J\níWØz/kå¦÷\u0004U\u0014\u001b±Â¦\u0000±¿Í<­mM\u0005\u0016JU\u0013ØC²Ä\u000e~»ee$­î±$«««y`l´kÞ]\u001dÐúµô·èSvö#újåU´gö\u000btOË «®¬pê4 úÿ¸òg:O¾ßç&Üú±ëwDyËC8û;\u001f§1Òª>(\bI\u0015ÃhÆ¢öxù\f¡V?6Àöt\u0011Ý³Ó·Qîc¯/& {,7ÞÉ}\u001f²o¬\u0003\u0007oàø\u0002Øð\u0014U{?ÿÖv¶à\u001eßÜõ­\u001câ\u0006W1ÿ6Õ\u0003Ëó5Ó\u001fØí\u000fàX½\u0016ô\r6°ýé\rÂ\u001a;Í¸¯óøx$¤ÓÆ,\u0006õàf?@xÃo0)é»P¤ÿ²B\u0011\u0005èlf(Ò\u0004±û\u0005U\u0014¦/Ù¥@&0ÑæÅI*°P (\u0015FG+)Ïu\u0007FMÈ-ø[1û|oÜñ²\u0004üë!Mà[­§{o\u000fDÛ¡úM·0-|Y1*ØD2P\u0010+>Vò\u0012W5qUã&k6Õr¹¡qÞ¼\b\u0011uÉÍýIí\tÒäÄEN\nÍ\tnÕ\u0015ÈWíphÜ«ix.]ò2ê\fd;!Mp_¡\b©\rvY\u0018\u0018Ý·´~¿\u001fjvàëÚÐ\n\u0016Z\u001fz½\u0000¼Ç\bñy\fV÷88³\u0004ÈðùÜñÀõµø\u0013j½ý6$[rµañÀmÍT£é=\n\n,õN}\u0012B~¯ûíëW~ªn\u0016MhvÍu\u001d\\\u0010Cr?)yØ:×°Ú\u000f\u0016¿=½½Þ\u001c[ÍÞ=5Wuî\u0014*U1?çêOi\u001e4vy{à\"öó.Â,HÃ÷½\u001bÄÊ\u001a\u0003;´=ÏÓ¨3¤M­æøCS\u000b\u0003+ðÌa?ÔÂÈû²¹\u0000H¤Á,fÜ\u0001ãVw\reÐ>îß¤\u0018C\u0001:\u0019¨6AlQÈ+¡®0\\8ÚQ+æP\tð±\u0014i\u0013ñ\fï¹\u0011³Q\u0013Mß´¦cë50\fÍ\u001e0C£V\u0018h¾= Ìð ç/I4_Vø¯\u0000\r\u0015Í&!ê]á\u0000Ý8\u0016\u000eH9à'¸~\u0018ñ\u000eÁ$a\f³¾ Ì¥dÎÛï\nLËÇ÷d;Óò5\u001d2/©wì-YìT>ÔZÃÕ\f¾á9fGU\u001f_:?m°CÊ\u0016îüS­ºÅ§rå\u0007KóòÙeï³t6Åa9­î©ãY\u0006¿\u0001\u0017øI[ð'EÁÉ\u0018\u0004\tfg¥WØ\fx4£Y\u0010Ñ\u0004îó#¦\u000eE¯{ÞW\u0015e#/Þ\u0017xá\u001b_ß%0\u0006Oçä¹Oh6â¯ëòÈ\u000eÁÍ\bNÎhæ÷ÒÉ÷\u0010p\u0005iwØo1`c\nvÂ_ý°¯1äq¨\bT\u0000\u0005dÇ&\u0015ÅC&ÿÆð\u0019x0[£Û½Ë^Ð¨J?§\u0005´%a4p\u001f²Çh-\u0004\u0003ñ~5 \u001a\u001dó&se\u0017DÑ1o=µÈ\u0006©z\u0015è<¦W\t\u0016\n\u0002\u000bÞû<5'vµ¤OÖÈò\n%\u001bÀòjS>uØÿÆ,ÿ}¶ÈKÓ\u0002<\u0010:åQÊ|:\b?í\u0015\u001d\u001f\u0010ìÅ¸l²º\u0012Ù\u00058å\u0015,ù²4ÿ£Z/\u0002¾33Õi\u0011¸\u0012ï¿)D;d3.-ê\u0002Àf?¸PP\u0005%7IYª`6¡ â\bðÅM]\nÏoËT`¡DûÜmÍ\n\u001e\u0007nl»>lã¶nk×þ­\u001d ED½±`­çµ~Mñxhiæ\u0017.å±<\u0007IüEë5e\u0019ÆÑäyR[Ð24üÁÀ÷B-è;CÍ\u001e2P\u0003\u0003G×B'ìõ}Ûò\u00076}9IZcð¢ö²¨@g#´/n\u0014´UÝ\u0000\u0013­\u0000\u000b\u0005ªçòÅ\u000f\u0019 oØq9Mà¦[gy³#_ã.YW$\u00131F°N¥ëY©ù!²dË\u0010ªü\"õÓØ%ã¢æ.Á¶Gà®ã\u0013ä;@KØÅÐîk½~`i¶9\b5Ï`¦\u0016ÖÐ3\u0019í{>U@¾&Çûý ßÓïë«EàAFßÁÝcððÈMÒÏ« ké}NÜ)Ísp5fYL¶/Ím1\u001bÛ¼4r2b\u0016ðÊ\u0015YêbSfô(\u001dôu'\u001cö\u0003£û{þ¿\u0000âÅ\u0017.Õ7^Ä¦z\u0000@ª\u0015Ü1\u0014\u000bµ\\FYL\u0004à__á&;¡#\u0018?Sàë«?\b\u0007æ0ÔúNèa_ñæØ¾¥\r\rÛ\u000f=«g\u000f¼>¬<?gØF\u000f®y³(\u000e¾>ùümf_7ÍnF?ÄÏ¤b{iÀäf?m&*©\u0004â\u0012ÅQñk3/ü#Zù\bÁÛÛ¨ß\"?ï\n¦õ¤!ºâ\t+äéÐ\\WÒLRÿ\u0002¦(ß\u001eÓ|\fä¦¹¥3c ¢Lj,WB¼W?6\u0015(B-¹+¼xqDR§ßêsWxõK.a¤\"~FÞ|\u001eA~rÚ}Îe\u001b\u0005¢ñ@x3<\u00007\u0010]{ùK%Ã8u\u001c\t¹\"\u001aÌ\u0014y1hÝØ|[d»¸&7·ád£Æ\u0004ù\u0017]bøéàó,À\u0014ÂBc~ÌOE\u0007ÌÜ ýò£\rkÒ&Y­gÒ\u0005}Îù²üß\u0018Ü,<\u0013ï?\u0001\u0019nè¿#¡§¶`Ìh\fÞhå¤WÜªJ×xÑíè\u0012Yj-\"ÕZþàðÓç×^(á\u0016¨å±Q<t\u001a¬<¾\u001aý^VµèEZ¯9ç©\t­î¯Hodr¿ï\u001eÉ&'9÷HªHü@ò;AÇ\u0013Ç\u0003ÊC5\u0003¹ÄIÊ< 1M\u0002\bùÏ3ö»8Úð\u000fÉÇ»v.D9ûT>ÝzIÉÔ+¸\u0004Í|^}L1#$úÈ@\n\u0010Á&\u0018I:OéþÃOãú÷³ç\u0003ý\u0001¾¾Íë\u0005Ñ1\u0019\t\u0015~§\u001cäKøÕÓó[[Ï\u000f +T»Dä`gQðÙÂÞ,ÿ\u0002Þp*_\fyähAöÈOJò\u001e9+òmµÅ\u001a]k\u000e³ûC/ðÍeöB§×ý=w\rS·á\u001f³oü\\þ¾ÏÖ\t@ßµÀ\"võóü\u0001òù_]xü\u0000~*ÉñhPì¾º\nX\u000bIµ\u000b²\u00030\\\u000b^H\bü÷ÌP\u0002ð\\ÜPþ¾\u001avhM\u0019\u001d8\u0002\\Ýa¯íÂ-Ø\n÷:TëÖ\n+\r\u001e¯a¹ÑóÓ\u0000áÙdvO?\u0003ÿ®[Üßê]à\u0000¢¨¶þÙä\\ÛÈp\u0012~¬4;×ý\u0002--\nÊ¼d\u0010¥±¤Þ,¯>ðõ2aÏ\rÚU\u0004éU.{ðà4\u0016o*\u0013ó\u0005\u001b\u001f¿%ºêm\u0007Û×ðLæ'£êN\u0000ÿAh\fÿ\u0011ø[á#\"mïNÀ+ª§\u0017n¸yÎïµ\u0016Msãx?ý6r\\Ö£Iü ùÒwq\u000bË1ndªmÏî,|n_Xd\r\u0002å¡ä»öo}_\u0013´+Ô\"Ø}oh°\u001eÕ|344Ûîù\u001aµú=Í\fL9Ã\u0001µ\fû©àW~<;ø&%.ZÈß@>â°J)³IJaM\u0004^\u000bÕ§äÁÖ\u0014Õv>ñÛëèyb6³×&$wíÈ2ÜÊI ßQW»qs÷pg§«\u00172\u001d\u0005ûÝfÓ\u0000û¹\nú\u001fgyF\nÐ!Ç@º¸¼¼yîñfYÙ¯8\u0005\u0002j}hÊáºIQ~q-@¢[½;\u001e¡\u0000ÆÌR°Ë×¼èAøáËïæe±],÷Á[\u0017uXMð{Á\u0012»¢ç#Þ!F5L\fu1|øÀ®N0\u0002\u0015©Ñ*°\t=¿ß\u0018(\u0015üD¦ü¡\u001deÕÑÀ`â´\bÐv¹\u001eØ\r&QrkrÞ¤`ÝEê\u001aº'»{å\u0016îc\fÒ!Â{pÐ\u0017ÐiÄü\"Ny\u0019Õ= ,ç\u0001\u0005Óßkqv8h¹\fUó¾E(o1/¯¸\u0014PDÈ\u0019ÉÏ\u0007.¹/oBlötÇtÁÐ0[ÃÞÄÙ¼\u000bö\u000f¼²8óî\u0019ãÆ\u0001û¶øB}UØDp\t[_G\u0014.r÷Î/Cºdoñ\u0019Ô\nÁ:s\"Ío¯\u0004ï*7ÿ \nÙÞµ\u001fÁÁ\u0017Ó­G~í¡iàØ\u001ce)¦pæ»S~Å®\u0006éd#±g\\rp\u0011\u0004WéÑaçQª¶±q\u0000yòÀ³&¢*¸K~c\\²YàTÂÁc8×7Äèê]òF1¿9+Ú\u000bÙ ÓúB¸BS4Cp]Þ/_0\u0015\u00039ÑH\\N\nw¾vö\u0017\u0004¼Cp<·¬;N¿5ðV¥e±Þ\rôn^µ|%D¼7\u0006G*W\u0007²¬\u0006&h%¨NÑyE\u0013ôHZÈ;\"¹\u001e\u0017eT¶pyïOàÜ¡\u0014W¦Pß\u000bÃ¦ÓO,¦I\u000eoO\u0000º\u001b7y$~óÚ¦³\u001cb#ð²±\u0019HíúCSõ÷Xroá©Kp¼³\u001b¨x'ÇH²ñ«~­Ç«¸\u0010Ä»KP¨6ÆI(i¶ôîÂÅy}®øx±e¨òÚUþSâ;(\u0000*º¾XOÇ\tõ\u0011ØLoD\u000b¹l%/þÊÓªóK\n]o3¥\b-\u0016öÝ16=¹#t.ò»³Øu±ú\u001fàn\u0019ú%ÕæX\u001e½Õ\u001eÖ\u0006zWJ\u0003c7rw\u0005¶3C\tÊËs@å0~ú'èKòiëðßÏ$e¼9\r8\u0011Ma\"0}1Ç\u0013÷\u001d¡\u0014j\u0001\u001böìYá;ºf÷{F½AO£=Ã¶¼ÝÓût-\u0018ï\tTªH¹&^\u0006'\u0004ÀÕÑ\u000bBI\u0002^Äýkòµ(\u0003bÑm±4Þ},Úø,mqÍOÝ'Ôç7vùÀ[â÷ñ§,Óðý¾\u0017h\u0006¥\u0006þ£9¾\u0015h¾\u0017Rfé½\u000eôöÄmà\u0013¼ïºÄ%%¯\u001f²E]\u0017³Ç´\u0018W+ÍÈç¢¶]î®¨U¶+º-ûæ­·¥\u0015gÉ\u0015=ÐÛpÝñ\"}\u000ePf7÷»c¤ß,»\"îÙy\u0000ô>\u0007/æâ\u001c\u00048/ùÞ¾x\f}$\f\u0018à\u0011pr?ò¾Qµ$4_LÅÆSüSÞ!\".\u0002ãÝdÔ~Ü]É\u001fûù3<òc\u0016¢\u0004|ã\u000fpÉ7¹a®Cª\u000f tI@3@\u0017ë/ÚsJ\u001d5wÁ+®ó¬1Ã}BÁo\nÔwê»ºú\"4\bJÿçf\u0017\b*º\u0002³ù\u001e¯ØåëÈÍ÷U9A¾°4¡Qò®ÒbIHPN\u0014£T·6\\\u001c \r\\øå,W3`XWÊÐÂfÛgâç&+¿-8ã\r\u0003vg\u001f\u0013ñW¥kSÁ,\r~¢Æ?êRCá\u0003!öü¬­_Óôâ§ôn¨¾KÞ`mqM´ÆÃip`y\u001b< H=¤\u0010Âð\u0003\u000f¦S±#ÛEw©æÌ\nç\u0016\u0019ÄÏíâ{¢Û£Ö¤ì»µÞC\np§Pê[xåMí'h\t±<¡ïA:ªÐzMH¹ÂªScºÖçaÙ{Xr¾Jûî\u000f¡%\u0013Ü»\u0004>aëÕ;ËQÛùñt¬V¹@&ÏÓäÜãÔ:\u0017¶çßm¶\u001c\u000b®azµpC+rÒ·ùî{ÖünL\u000e.èÝ7©1½\u0013WgÜÊJÖÂ¥ÒR\u0011\"_£üÃ§=îïw\u0004êU\u0014rJ\u0001'<]\u0012ñû?'z]wk;\\x\f¢,ÿò£\u000fw¹úÙ\u0013.\u0003[M¶@Ü¾®*\u000eÄn2])Ô \nyª¥\r'dvoW®\u0006ÖRÔ­Ï¬áÍ\u0010`Iðµ­]b\u000fÏ9¿òL;l}½;ÊLò3!«b¯¹¯-dl.-\u001ejÕÉ\u0001¬ÖwÉçj%$ãiWVmÝÛZÜ»·cxf1ÎÒÙh\\ËÊtmUÄ¹\u001f­JóµN;ÞFx©Ü\u000b\fq§\\\u0002Ý\u001d2Äåëp·{D§áò\u0016Ñbû\u0002@\u0015ó§Q\u0016{cÊUþÇcp¨dS\u0005Û¢}6\b=Í\u000b\f°§¾N5O7Ö§Cßé{Ô\u001cT6@*ïÍß´'û®\u000bç¬´bØ»\u0018Â;Þ|ûZ\fãíÎNR\u0018û\u0016i\u001añîg·\u001eÞhX±||ÿ ÏÓÅñ×är\u0006ü®À¼üÆ3üX\u001dy\u001e@\r7>O×êµGöJá:HG n¿Ñ¨¬´4Ä8´,8\u0016Ë\u000bxH\u001dóÀÁÇÑ\u000fìjW¼\u0005Óöîé\\®Ø\u0015ÀXy;\u0012÷¿¾2©c\u000fa¨õx`¹m\u001b\u001a\u001d#\u0003×}³Ï}\u0019qï0T¤·õ\u0006+Gvmç\u0019\u001e1Y\tÚ')TÈy\\xÀêçs?TÓ¤À`Ë²_{c×l§\u001a\u000faB¹\f?W\u0016·Çosú\u0006$¬@¬ùîÁóm¡¶\u0006Ñîªí\u0003Dý,Fe¬±ÿÌX^p³tE-þLÄpô¸¢ä2å]KgÊÕ-èÝ$ç\nAu\týPq/\\ÞO~çÚÿÅ\u0010ö±Ì«¦RRÿ.¬6G¹%£Ý¢\u001d²YíâwÁdÒ-\u0012KÑ\t×°»1Ënvª\u001c\u0005¹ð\u0012xERöcyÊ}Qæ¿Á¯[KÐe¸ûm¾ÏáF\u000e>þõÐ<Ø\u0004ÿÏÉE^%/\u0000Õað_\u0012H\u001eØ\u000fâF| R\u000eÔ\u0007É-ø\\òþcü¬et\föæôÔyÙTiÉZ^¼xFäj°®ïÅ¦?³Dæ2Òfy0#u/&­\u0018ë»¸\u0015\u0016,ZÎ9ãØfÓ¾¡9\u001e\r´\u0002¼ß£½§Ú\u000f¹XsÊoþ{Æà-O¿ëÑ¶Õ®¹µ!ãúw=ÞEø÷Ç-,Ó­ck£Ú \u0006ñJøn\u0013\u001bù¿¸yzÊFþÏ:Oí\u0011Û¨yz\tGZªÀâÇ¤là¤¨ó´V9\u000bãy÷Èw¢üþ÷ï5\u0006®¾ôôÎ\"\u0000ÿóô»ìUÏvË\",Àÿ<ÍÎ\u0017ÍOD9OÒó²ÎO\\à\u0002\fÄq+â9¯1úQõøÂ¬\\¹ß;t\rùùãÉQy¸9\\Ø&MÅJ³½v\u000fÒ\u0011ÐG³õÏOo\u0001ÖÜQÆ.£t\u001fG£d?9ÊÒQû'9²÷Üû\u001eß\u0005QºÆæ{.á\u0002,vwMiÂbz£ÁÛ#ìµÏ#Ô\u0014ðáu^¢¼aÐ\u001dÑkÜüín\u0018XûùÏ®¬~Ù\bø\u0014W\u0012c\u001fEí0×¶?*×i¨¢8\u001f\u00130pß¾ûe÷óÁ\t^RaÄ\u00140\\ÆYÆÓõÜoÜÇÕ[ËÔ=~=fò´¥Åog[µ( KöK­î\u001aåÖS£}*jó¤«­D\u0015ÿxc2ã\u000eº÷ÇQÌø!Wå \u0005JbH³ßwB} õ\u0019D163\u0007_©íùÃ¾\u001dÚß_ÖÚëï(±J¤Líí-\u0019oÓØÚxÖC(ëg©Y]Kï.m8÷¹R\tó­#aø\\q\u0002äN\u000fQ\u001eÎäºª\\\u0000\u000bÊ³\u001eïìÑñOa¹'>Í0iìà4o\u0002B\u0001ÃÌL ,*?rPæ,+?2bÙ\u001c¾Ké\u0001j\u0005h\\øvÖá}}°7\u0011¾\u000fçU'\u0019tÊÉ«§©ÎD¶³>S`³ÕvÆT¢:ó<\u0015îâÜTÅIÔxÇ\u001bSüÁ|?oUÓýâ,\u001cÒàòõäýáÉ\u0019Á\u0003\u001aó$ÆÙíþw½,½\u0002«ð¿ÅìÂß¨\u00005òAî<\u001bc5RiL»ä\u0004WG\u0001¨4+{æü\u0000B2¡×$a`­&x4g¼<\u000eÀcÊxÅðð\u001aeÍEÊ\"\u0014(Û>¿\u0007RHr.7$\u0004V(OUÕÈ©ð«\u0011Ö(\u0003ë\bOì¾=>9îézÏqÉnùT\u001e\u0012\r\\\"\u0014¹¢9ïÊ-Ài',ä|\u001cCçIÐÐOÓåx;\u0010;\u0001§\u0019ãÏa«.|h\u000bßÃe\\1 ):`|\u0000ü\u0018)\u0010\u001eÞýï\f\u0006ì¾ÅWc[K1\u0002(¬ÞÇ{0òf`¢Õ\t+pKbâ¹Ùñ»`Ä:¼Å)>m?±\u001f\u0004ü`Pö\u000f»\u0003a¾y¡¶5yÿ\u001d<åÏ2Mò_ô51\u0015\u0010`\u0012x©¨rû\u0013yî¥\t·ÙÏKF}FößºÄèÑo\u001aºfôõ!h­ÀÔ¾\u0013hcûá9}K×±CÙÜ?DCÝ ¾ÝZ\u0007]}cú+,\tûÒé÷f?ê\u0007RMï^\u001dàzû\u0005\u0018\u001c%\fØd/6\u0010êU¬wB=2FãBv\u0013óãT\u001cÆt,\u001a\u0006ìÁ5ÔÙâ-í\u0001\u001dÞlÉ¼dßðM8\u000fÅ-2å{\u001d\u0004+»\u0004÷4ìT\u0010vJ\u0010÷oº\u001f\fuÏÖ5g0\u001chv\u0000Rã\rP\u000b\u0007e8º×7mû¯\u001bÝ^v¾Uv½å\u0012õXýõÿ\u00019\u001ce\u0016D\u0001\u0000"
-        },
-        {
-          "name": "tmp.react-web-client.previousLoaderDiagnostics",
-          "value": "{\"sessionId\":\"7c7f729f-68fb-4de7-84c3-914cfb3547b6\",\"logsArray\":[{\"message\":\"[ExpLoader] ExperienceLoader: App boot type: Cold\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:11.969Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] ExperienceLoader: undefined locale and undefined theme parsed from URL hash\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:11.971Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] ExperienceLoader: Index with QSP: \",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:11.974Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] ExperienceLoader: Setting platformId cookie 1415.\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:11.975Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] ExperienceLoader: Created\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:11.978Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] ExperienceLoader: OCDI redirect: Not redirecting - not enabled\",\"level\":2,\"levelName\":\"Warn\",\"timeStamp\":\"2026-03-30T18:56:11.980Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] ExperienceLoader: HostNotified\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:11.981Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] LoaderTelemetryService: SessionId set as 7c7f729f-68fb-4de7-84c3-914cfb3547b6\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:11.981Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] LoaderTelemetryService: DeviceId set as d5f01e85-8135-4590-8c38-8e35a30d35c3\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:11.981Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] WindowManager: Determining window type based on: {\\\"purpose\\\":0,\\\"isMaglev\\\":false,\\\"deeplinkTarget\\\":null}\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:11.982Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] PreCoreUiAdapter: enable2025BrandIcons: false, isTeams2025IconPackEnabled: false, experienceLoaderSettings.enableSplashScreen2025: undefined\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.022Z\",\"isPiiFree\":false},{\"message\":\"[ExpLoader] ExperienceLoader: Loading build version: 26022704215\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.023Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] ExperienceLoader: {\\\"hostRendererId\\\":cdlWorker,\\\"component\\\":ExperienceLoader Creating CDL Worker with determined url /v2/worker/precompiled-web-worker-4ae15aa7608f96d1.js#{\\\"experienceName\\\":\\\"react-web-client\\\",\\\"ring\\\":\\\"general\\\",\\\"environment\\\":\\\"prod\\\",\\\"sessionId\\\":\\\"7c7f729f-68fb-4de7-84c3-914cfb3547b6\\\",\\\"platformId\\\":1415,\\\"buildVersion\\\":\\\"26022704215\\\",\\\"localeCode\\\":\\\"en-us\\\",\\\"workerId\\\":\\\"precore-worker\\\",\\\"publicPath\\\":\\\"https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/\\\",\\\"deviceId\\\":\\\"d5f01e8...\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.024Z\",\"isPiiFree\":false},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/927366-ddf37de97728f45a.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.027Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/812357-e1686339cd2c81e3.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.027Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/203552-72030c48d99ac66d.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.027Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/946240-385e25c726acf0e2.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.027Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/118951-ec6415c4909d558d.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.027Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/277673-5705030cde563e44.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.028Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/332968-5399216a773c94ad.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.028Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/117162-deba4e27d83fe2b7.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.028Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/334453-8f4b7d8d4b499c70.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.028Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/514196-9a0ce52c050e8e3f.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.028Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/227040-12c22af3603cbb76.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.028Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/132136-5902848ef2ba1ab0.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.028Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/540676-d6e7de63d2744770.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.028Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/210110-094acde6b8b4df7d.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.029Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/646947-c334a213c1a79621.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.029Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/985331-a33875006de65cc5.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.029Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/251003-b38c5288e60a3dae.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.029Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/720339-54a62950e0ad4c62.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.029Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/282085-889f5133a5af5fdd.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.029Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/369440-f428a6278a184b0f.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.029Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/856504-f4c7473fbfde37dc.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.029Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/async-entry-8e469bdc27325f85.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.029Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/batched-remoteEntry-351e0af833503c457cf5.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.029Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/integrities-216fa7196bb48e2d6900.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.530Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/runtime-8418778eb2f108a1.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.531Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] BuildLoader: Trying to load: https://statics.teams.cdn.office.net/teams-modular-packages/hashed-assets/main-f21639cf03d95dbd.js\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.531Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] ExperienceLoader: Waiting for core init start.\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:12.619Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] ExperienceLoader: Received signal indicating core init started.\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:14.579Z\",\"isPiiFree\":true},{\"message\":\"[ExpLoader] ExperienceLoader: Stop the timer waiting for sending client_start events via PIE api.\",\"level\":3,\"levelName\":\"Info\",\"timeStamp\":\"2026-03-30T18:56:14.983Z\",\"isPiiFree\":true}]}"
-        },
-        {
-          "name": "tmp.auth.v1.GLOBAL.authSessionId.authSessionId",
-          "value": "{\"item\":\"42668f07-6e61-4e27-bf07-a4bc964f43c6\",\"shouldRefresh\":false,\"hitCount\":0}"
-        },
-        {
-          "name": "tmp.react-web-client.prod.general.sidecars-settings-cache",
-          "value": "{\"sidecars\":{}}"
-        },
-        {
-          "name": "tmp.wasAutoOptedIntoT2Web",
-          "value": "true"
-        },
-        {
-          "name": "tmp.deviceId",
-          "value": "d5f01e85-8135-4590-8c38-8e35a30d35c3"
-        },
-        {
-          "name": "tmp.teams-layout-slot-size-persistence",
-          "value": "{\"search_app\":{\"end\":{\"width\":\"calc((100vw - 68px) * .4)\",\"height\":\"auto\"}}}"
-        },
-        {
-          "name": "tmp.auth.v1.GLOBAL.ExportedEncryptionKey.ExportedEncryptionKey",
-          "value": "{\"item\":{\"exportedKey\":\"kj9wxhg6Vx5UwyiewPYbdRvz94sLoa42mSXwRPyafHM=\",\"comment\":\"This is a temporary location for the encryption key in the preview app and will get moved to a secure OS location in a coming release.\"},\"shouldRefresh\":false,\"hitCount\":0}"
-        },
-        {
-          "name": "tmp.default.default.react-web-client.incomplete-boot-attempts",
-          "value": "0"
-        },
-        {
-          "name": "tmp.isOptedIntoT2Web",
-          "value": "true"
-        },
-        {
-          "name": "tmp.react-web-client.local-user-preferences",
-          "value": "{\"outOfTabNotifications\":{\"allowOutOfTabNotifications\":false,\"setDuringBrowserToastsAllowed\":false},\"theme\":{\"userTheme\":\"light\",\"followOsTheme\":true,\"isClassicTheme\":false,\"isCallingWindowDarkTheme\":false,\"customThemeAccentColor\":\"default\"},\"animation\":{\"disableAnimations\":false},\"infoPane\":{\"chatContextualSearch\":\"closed\",\"channelcontextualsearch\":\"closed\",\"channell2contextualsearch\":\"closed\",\"chatHighlightsDetails\":\"closed\",\"chatfluidthread\":\"closed\",\"chatcopilotsynthesis\":\"closed\"},\"sidePane\":{\"sidePaneOpenState\":[]},\"flyoutCamera\":{\"cameraState\":\"notSet\"},\"promo\":{\"badgeActionComplete\":false,\"labelActionComplete\":false,\"teamsInsiderLabelActionComplete\":false,\"teamsInsiderBadgeActionComplete\":false,\"desktopLabelActionComplete\":false,\"desktopBadgeActionComplete\":false},\"density\":{\"chatDensity\":\"comfy\"},\"performance\":{\"mode\":\"normal\"},\"optimizedPerf\":{\"optimizedPerfPolicy\":\"AUTO\",\"isSetByUser\":false},\"appBar\":{\"isAppBarPinned\":false,\"isAppBarPeekEnabled\":true,\"isAppBarVisible\":true,\"showAppNamesV2\":false},\"appSwitcher\":{\"checkboxChecked\":false,\"multipleTabsCheckboxChecked\":false},\"videoEffect\":{},\"backgroundEffect\":{},\"avatar\":{\"hasUsedInMeeting\":false},\"teamLayout\":{},\"diagnosticsLogs\":{\"shouldPersistLogsIntoIDB\":false},\"windowing\":{\"shouldOpenContentInNewWindow\":false},\"statusBarItem\":{\"shouldShowStatusBarItem\":true},\"lockScreenInCall\":{},\"messagePreviews\":{\"messagePreviewsSetting\":\"default\"},\"simpleCollabStickyFilter\":{},\"composeSpellcheck\":{\"disableDefaultSpellcheck\":false},\"peopleAppColumns\":{\"persistentPeopleAppColumns\":[]},\"peopleAppNavigation\":{\"activeNavigationId\":\"ALL\"},\"simpleCollab\":{\"simpleCollabViewType\":\"none\",\"hasUserEnabledMessagePreviews\":false,\"hasUserEnabledMessagePreviewsForSplitApp\":true,\"hasUserEnabledShowTimeStamps\":false,\"hasUserEnabledShowTimeStampsForSplitApp\":true},\"staticNowCards\":{\"dismissedStaticNowCards\":[]},\"superResolution\":{\"isSuperResolutionEnabled\":true},\"editorSdk\":{\"autoCorrectEnabledLanguages\":[],\"critiqueSettings\":[]},\"byod\":{\"pushToRoomAudio\":true},\"meeting\":{\"enableLeaveConfirmationDialog\":false,\"hideControls\":false},\"shareTray\":{\"isShareTrayPreviewExpanded\":false},\"web\":{\"trackMachineActivity\":false},\"places\":{\"osConsentBannerState\":{\"showCount\":0},\"deviceHomeBannerState\":{\"showCount\":0}},\"chatAppBotSessions\":{\"lastBotSessionStates\":[]}}"
-        },
-        {
-          "name": "tmp.auth.v1.GLOBAL.EncryptionKey.EncryptionKey",
-          "value": "{\"shouldRefresh\":false,\"hitCount\":0}"
-        },
-        {
-          "name": "tmp.forceT2Only",
-          "value": "true"
-        },
-        {
-          "name": "msal.version",
-          "value": "3.30.0"
-        },
-        {
-          "name": "tmp.react-web-client.buildNumber",
-          "value": "26022704215"
-        },
-        {
-          "name": "tmp.default.default.react-web-client.previousSuccessfulInstalledBuild",
-          "value": "main-chunks-cached"
-        },
-        {
-          "name": "tmp.auth.v1.GLOBAL.PreviousSignInProgressState.PreviousSignInProgressState",
-          "value": "{\"item\":\"Started\",\"shouldRefresh\":false,\"hitCount\":0}"
-        }
-      ]
-    }
-  ]
-}

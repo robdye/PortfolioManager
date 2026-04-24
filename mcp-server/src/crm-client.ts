@@ -6,7 +6,7 @@
 import { AsyncLocalStorage } from "async_hooks";
 import { getDataverseToken } from "./obo-auth.js";
 
-const CRM_URL = process.env.CRM_URL || "https://orge2a9a349.crm.dynamics.com";
+const CRM_URL = process.env.CRM_URL || "";
 const API_BASE = `${CRM_URL}/api/data/v9.2`;
 
 function escapeOData(value: string): string {

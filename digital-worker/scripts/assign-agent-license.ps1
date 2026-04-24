@@ -3,7 +3,7 @@
 # Run this AFTER creating the agent instance in Teams (which creates the agentic user)
 
 param(
-    [string]$AgentUpn = "portfoliomanager@ABSx68251802.onmicrosoft.com"
+    [string]$AgentUpn = "<YOUR_AGENT_UPN>"
 )
 
 Write-Host "Portfolio Manager Digital Worker — License Assignment" -ForegroundColor Cyan

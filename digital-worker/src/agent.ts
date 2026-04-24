@@ -424,7 +424,7 @@ Summarize these news items in a clear, structured format:
     }
 
     // "email me" → always use manager email
-    return MANAGER_EMAIL || 'admin@ABSx68251802.onmicrosoft.com';
+    return MANAGER_EMAIL || process.env.MANAGER_EMAIL || '';
   }
 
   /** Resolve @lookup: and @aadlookup: markers to actual email addresses */
@@ -434,7 +434,7 @@ Summarize these news items in a clear, structured format:
       console.log(`[Email] Resolving name "${name}" via Graph user search...`);
       const resolved = await resolveUserEmail(name);
       console.log(`[Email] Resolved: ${resolved || 'NOT FOUND'}`);
-      return resolved || MANAGER_EMAIL || 'admin@ABSx68251802.onmicrosoft.com';
+      return resolved || MANAGER_EMAIL || process.env.MANAGER_EMAIL || '';
     }
     if (target.startsWith('@aadlookup:')) {
       const aadId = target.replace('@aadlookup:', '');
@@ -442,10 +442,10 @@ Summarize these news items in a clear, structured format:
       try {
         const resolved = await this.resolveAadIdToEmail(aadId);
         console.log(`[Email] AAD resolved: ${resolved || 'NOT FOUND'}`);
-        return resolved || MANAGER_EMAIL || 'admin@ABSx68251802.onmicrosoft.com';
+        return resolved || MANAGER_EMAIL || process.env.MANAGER_EMAIL || '';
       } catch (err) {
         console.error(`[Email] AAD lookup failed:`, (err as Error).message);
-        return MANAGER_EMAIL || 'admin@ABSx68251802.onmicrosoft.com';
+        return MANAGER_EMAIL || process.env.MANAGER_EMAIL || '';
       }
     }
     return target;
