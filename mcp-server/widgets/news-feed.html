@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+:root{color-scheme:light dark;--bg:#0d1117;--surface:#161b22;--card:#1c2333;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--r:10px}
+:root[data-theme="light"]{--bg:#f6f8fa;--surface:#fff;--card:#fff;--border:#d0d7de;--text:#1f2328;--muted:#656d76;--accent:#0969da}
+*{box-sizing:border-box;margin:0}body{background:var(--bg);font-family:"Segoe UI",system-ui,sans-serif;color:var(--text);padding:0}
+.hub-header{display:flex;align-items:center;gap:10px;padding:12px 16px 8px;background:var(--surface);border-bottom:1px solid var(--border)}
+.hub-header h1{font-size:15px;font-weight:700}.hub-header .badge{background:var(--accent);color:#fff;border-radius:12px;padding:2px 8px;font-size:11px;font-weight:600}
+.news-list{padding:8px 12px;max-height:420px;overflow-y:auto}
+.news-item{display:flex;gap:10px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;text-decoration:none;color:var(--text);cursor:pointer;transition:border-color .15s}
+.news-item:hover{border-color:var(--accent)}
+.news-thumb{width:56px;height:56px;border-radius:6px;object-fit:cover;flex-shrink:0;background:var(--border)}
+.news-body{flex:1;min-width:0}
+.news-body h3{font-size:12.5px;font-weight:600;line-height:1.3;margin-bottom:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.news-meta{font-size:10px;color:var(--muted);display:flex;gap:6px;align-items:center}
+.news-meta .src{font-weight:600}
+.news-summary{font-size:11px;color:var(--muted);margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.state-msg{text-align:center;padding:32px;color:var(--muted)}
+.ft{padding:8px 16px;font-size:10px;color:var(--muted);text-align:center;border-top:1px solid var(--border)}
+</style>
+<script>(function(){var d=document.documentElement,m=matchMedia('(prefers-color-scheme:dark)');function t(){if(!d.dataset.theme)d.dataset.theme=m.matches?'dark':'light';}t();m.addEventListener('change',function(){if(!d.getAttribute('data-theme'))t();});})()</script>
+</head>
+<body>
+<div class="hub-header"><h1 id="title">Intelligence Feed</h1><span class="badge" id="count">—</span></div>
+<div class="news-list" id="list"><div class="state-msg">Loading intelligence feed…</div></div>
+<div class="ft">Portfolio Agent • Data via Finnhub • Not financial advice</div>
+<script>
+function esc(s){var d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
+function reportHeight(){if(window.openai&&window.openai.notifyIntrinsicHeight)window.openai.notifyIntrinsicHeight(document.body.scrollHeight);}
+function openLink(url){if(window.openai&&window.openai.openExternal){window.openai.openExternal({href:url});}else{window.open(url,'_blank');}}
+function render(data){
+  var articles=data.articles||[], sym=data.symbol;
+  document.getElementById('title').textContent=sym?sym+' Intelligence':'Market Intelligence';
+  document.getElementById('count').textContent=articles.length+' articles';
+  var list=document.getElementById('list');
+  if(!articles.length){list.innerHTML='<div class="state-msg">No news available.</div>';reportHeight();return;}
+  list.innerHTML=articles.map(function(a){
+    var dt=new Date((a.datetime||0)*1000);
+    var ts=dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    var thumb=a.image?'<img class="news-thumb" src="'+esc(a.image)+'" alt="" />':'';
+    return '<div class="news-item" onclick="openLink(\''+esc(a.url||'')+'\')" role="link">'+thumb+
+      '<div class="news-body"><h3>'+esc(a.headline||'Untitled')+'</h3>'+
+      '<div class="news-meta"><span class="src">'+esc(a.source||'')+'</span><span>'+esc(ts)+'</span></div>'+
+      '<div class="news-summary">'+esc(a.summary||'')+'</div></div></div>';
+  }).join('');
+  reportHeight();
+}
+var to=window.__TOOL_DATA__||(window.openai&&window.openai.toolOutput)||{};
+if(typeof to==='string'){try{to=JSON.parse(to);}catch(e){to={};}}
+if(to&&to.articles)render(to);
+</script>
+</body></html>

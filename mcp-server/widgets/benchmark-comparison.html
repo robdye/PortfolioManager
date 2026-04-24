@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+:root{color-scheme:light dark;--bg:#0d1117;--surface:#161b22;--card:#1c2333;--card-hover:#222d3f;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--dim:#484f58;--accent:#58a6ff;--green:#3fb950;--red:#f85149;--gold:#d29922;--r:10px;--r2:8px}
+:root[data-theme="light"]{--bg:#f6f8fa;--surface:#fff;--card:#fff;--card-hover:#f3f4f6;--border:#d0d7de;--text:#1f2328;--muted:#656d76;--dim:#afb8c1;--accent:#0969da;--green:#1a7f37;--red:#cf222e;--gold:#9a6700}
+*,*::before,*::after{box-sizing:border-box}body,html{margin:0;height:100%;background:var(--bg);font-family:"Segoe UI",system-ui,sans-serif;color:var(--text);font-size:13px;-webkit-font-smoothing:antialiased}
+.hub{display:flex;flex-direction:column;min-height:100%}
+.hub-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
+.hub-brand{display:flex;align-items:center;gap:10px}.hub-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,rgba(88,166,255,.18),rgba(63,185,80,.12));border:1px solid rgba(88,166,255,.35);display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:800;font-size:14px}
+.hub-title{font-size:15px;font-weight:700;letter-spacing:-.3px}.hub-subtitle{font-size:11px;color:var(--muted);margin-top:1px}
+.hub-meta{display:flex;align-items:center;gap:6px}
+.expand-btn{width:28px;height:28px;border-radius:7px;background:transparent;color:var(--muted);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer}.expand-btn:hover{color:var(--accent);border-color:var(--accent)}
+
+.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border)}
+.summary-card{padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:var(--r)}.summary-label{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:2px}.summary-value{font-size:18px;font-weight:800}
+
+.section{padding:16px}
+.section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:0 0 12px;display:flex;align-items:center;gap:6px}
+
+.drift-bar-container{display:flex;flex-direction:column;gap:4px;margin-bottom:20px}
+.drift-row{display:grid;grid-template-columns:100px 1fr 60px;gap:8px;align-items:center;height:26px}
+.drift-label{font-size:11px;font-weight:600;text-align:right}
+.drift-track{height:18px;position:relative;background:var(--card);border-radius:4px;overflow:visible}
+.drift-fund{position:absolute;height:100%;border-radius:4px;background:var(--accent);opacity:.7}
+.drift-bench{position:absolute;height:100%;border-radius:4px;background:var(--green);opacity:.5}
+.drift-delta{font-size:11px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+
+.legend{display:flex;gap:16px;margin-bottom:12px;font-size:11px;color:var(--muted)}
+.legend-item{display:flex;align-items:center;gap:6px}
+.legend-dot{width:12px;height:12px;border-radius:3px}
+
+.holdings-table{width:100%;border-collapse:separate;border-spacing:0;font-size:11px}
+.holdings-table thead{position:sticky;top:0}
+.holdings-table th{padding:6px 10px;text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);border-bottom:2px solid var(--accent);font-weight:700}
+.holdings-table th:not(:first-child):not(:nth-child(2)){text-align:right}
+.holdings-table td{padding:7px 10px;border-bottom:1px solid var(--border)}
+.holdings-table td:not(:first-child):not(:nth-child(2)){text-align:right;font-variant-numeric:tabular-nums}
+.holdings-table tr:hover{background:var(--card-hover)}
+.overweight{color:var(--red)}.underweight{color:var(--green)}
+
+.impact-section{padding:0 16px 16px}
+.impact-card{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;border-left:3px solid var(--gold)}
+.impact-icon{font-size:18px;flex-shrink:0}.impact-body{flex:1}.impact-title{font-weight:700;font-size:12px;margin-bottom:2px}.impact-desc{font-size:11px;color:var(--muted);line-height:1.4}
+</style>
+</head>
+<body>
+<div class="hub" id="app">
+  <div class="hub-header">
+    <div class="hub-brand">
+      <div class="hub-icon">⚖</div>
+      <div><div class="hub-title">Benchmark Comparison</div><div class="hub-subtitle" id="subtitle">Fund vs Benchmark Weight Analysis</div></div>
+    </div>
+    <div class="hub-meta">
+      <button class="expand-btn" onclick="window.openai?.expandWidget?.()" title="Expand">⛶</button>
+    </div>
+  </div>
+
+  <div class="summary-grid" id="summary"></div>
+
+  <div class="section">
+    <div class="section-title">Sector Allocation — Fund vs Benchmark</div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>Fund</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Benchmark</div>
+    </div>
+    <div class="drift-bar-container" id="sector-drift"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Holdings — Over/Underweight Analysis</div>
+    <table class="holdings-table"><thead><tr><th>Ticker</th><th>Company</th><th>Fund Wt</th><th>Bench Wt</th><th>Active Wt</th><th>Contribution</th></tr></thead><tbody id="holdings-body"></tbody></table>
+  </div>
+
+  <div class="impact-section" id="impacts"></div>
+</div>
+
+<script>
+function getData(){return window.__TOOL_DATA__||window.openai?.toolOutput||{}}
+function fmt(n,d=1){if(n==null||isNaN(n))return'—';return Number(n).toFixed(d)}
+
+function render(){
+  const d=getData();
+  const summary=d.summary||{};
+  const sectorDrift=d.sectorDrift||[];
+  const holdings=d.holdings||[];
+  const impacts=d.impacts||[];
+
+  document.getElementById('subtitle').textContent=d.benchmarkName||'Fund vs Benchmark';
+
+  const sumEl=document.getElementById('summary');
+  sumEl.innerHTML=`
+    <div class="summary-card"><div class="summary-label">Tracking Error</div><div class="summary-value">${fmt(summary.trackingError,2)}%</div></div>
+    <div class="summary-card"><div class="summary-label">Active Share</div><div class="summary-value">${fmt(summary.activeShare)}%</div></div>
+    <div class="summary-card"><div class="summary-label">Overweight Positions</div><div class="summary-value" style="color:var(--red)">${summary.overweightCount||0}</div></div>
+    <div class="summary-card"><div class="summary-label">Underweight Positions</div><div class="summary-value" style="color:var(--green)">${summary.underweightCount||0}</div></div>`;
+
+  // Sector drift bars
+  const sectorEl=document.getElementById('sector-drift');
+  const maxWt=Math.max(...sectorDrift.map(s=>Math.max(s.fundWeight||0,s.benchWeight||0)),1);
+  sectorEl.innerHTML=sectorDrift.sort((a,b)=>Math.abs(b.delta||0)-Math.abs(a.delta||0)).map(s=>{
+    const fundPct=(s.fundWeight||0)/maxWt*100;
+    const benchPct=(s.benchWeight||0)/maxWt*100;
+    const deltaClass=(s.delta||0)>0?'overweight':'underweight';
+    return`<div class="drift-row">
+      <div class="drift-label">${s.sector}</div>
+      <div class="drift-track"><div class="drift-fund" style="width:${fundPct}%"></div><div class="drift-bench" style="width:${benchPct}%"></div></div>
+      <div class="drift-delta ${deltaClass}">${(s.delta||0)>0?'+':''}${fmt(s.delta)}%</div>
+    </div>`}).join('');
+
+  // Holdings table
+  const tbody=document.getElementById('holdings-body');
+  tbody.innerHTML=holdings.sort((a,b)=>Math.abs(b.activeWeight||0)-Math.abs(a.activeWeight||0)).map(h=>{
+    const awClass=(h.activeWeight||0)>0?'overweight':'underweight';
+    return`<tr>
+      <td><strong>${h.symbol}</strong></td>
+      <td>${(h.company||h.symbol).substring(0,25)}</td>
+      <td>${fmt(h.fundWeight)}%</td>
+      <td>${fmt(h.benchWeight)}%</td>
+      <td class="${awClass}">${(h.activeWeight||0)>0?'+':''}${fmt(h.activeWeight)}%</td>
+      <td>${fmt(h.contribution,2)}%</td>
+    </tr>`}).join('');
+
+  // Impacts
+  const impEl=document.getElementById('impacts');
+  if(impacts.length>0){
+    impEl.innerHTML='<div class="section-title" style="padding:16px 0 0">Benchmark Change Impact</div>'+
+      impacts.map(imp=>`<div class="impact-card"><div class="impact-icon">📊</div><div class="impact-body"><div class="impact-title">${imp.title||''}</div><div class="impact-desc">${imp.description||''}</div></div></div>`).join('');
+  }
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',render);else render();
+</script>
+</body>
+</html>

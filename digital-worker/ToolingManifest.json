@@ -1,0 +1,71 @@
+{
+  "version": "1.0",
+  "mcpServers": [
+    {
+      "mcpServerName": "mcp_MailTools",
+      "mcpServerUniqueName": "mcp_MailTools",
+      "scope": "McpServers.Mail.All",
+      "audience": "api://05879165-0320-489e-b644-f72b33f3edf0"
+    },
+    {
+      "mcpServerName": "mcp_TeamsServer",
+      "mcpServerUniqueName": "mcp_TeamsServer",
+      "scope": "McpServers.Teams.All",
+      "audience": "api://05879165-0320-489e-b644-f72b33f3edf0"
+    },
+    {
+      "mcpServerName": "mcp_CalendarTools",
+      "mcpServerUniqueName": "mcp_CalendarTools",
+      "scope": "McpServers.Calendar.All",
+      "audience": "api://05879165-0320-489e-b644-f72b33f3edf0"
+    },
+    {
+      "mcpServerName": "mcp_SharePointRemoteServer",
+      "mcpServerUniqueName": "mcp_SharePointRemoteServer",
+      "scope": "McpServers.SharePoint.All",
+      "audience": "api://05879165-0320-489e-b644-f72b33f3edf0"
+    },
+    {
+      "mcpServerName": "mcp_SharePointListsTools",
+      "mcpServerUniqueName": "mcp_SharePointListsTools",
+      "scope": "McpServers.SharepointLists.All",
+      "audience": "api://05879165-0320-489e-b644-f72b33f3edf0"
+    },
+    {
+      "mcpServerName": "mcp_ODSPRemoteServer",
+      "mcpServerUniqueName": "mcp_ODSPRemoteServer",
+      "scope": "McpServers.OneDriveSharepoint.All",
+      "audience": "api://05879165-0320-489e-b644-f72b33f3edf0"
+    },
+    {
+      "mcpServerName": "mcp_OneDriveRemoteServer",
+      "mcpServerUniqueName": "mcp_OneDriveRemoteServer",
+      "scope": "McpServers.OneDrive.All",
+      "audience": "api://05879165-0320-489e-b644-f72b33f3edf0"
+    },
+    {
+      "mcpServerName": "mcp_WordServer",
+      "mcpServerUniqueName": "mcp_WordServer",
+      "scope": "McpServers.Word.All",
+      "audience": "api://05879165-0320-489e-b644-f72b33f3edf0"
+    },
+    {
+      "mcpServerName": "mcp_ExcelServer",
+      "mcpServerUniqueName": "mcp_ExcelServer",
+      "scope": "McpServers.Excel.All",
+      "audience": "api://05879165-0320-489e-b644-f72b33f3edf0"
+    },
+    {
+      "mcpServerName": "mcp_PlannerTools",
+      "mcpServerUniqueName": "mcp_PlannerTools",
+      "scope": "McpServers.Planner.All",
+      "audience": "api://05879165-0320-489e-b644-f72b33f3edf0"
+    },
+    {
+      "mcpServerName": "mcp_KnowledgeTools",
+      "mcpServerUniqueName": "mcp_KnowledgeTools",
+      "scope": "McpServers.Knowledge.All",
+      "audience": "api://05879165-0320-489e-b644-f72b33f3edf0"
+    }
+  ]
+}

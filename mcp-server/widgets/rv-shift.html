@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+:root{color-scheme:light dark;--bg:#0d1117;--surface:#161b22;--card:#1c2333;--card-hover:#222d3f;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--dim:#484f58;--accent:#58a6ff;--green:#3fb950;--red:#f85149;--gold:#d29922;--orange:#db6d28;--r:10px;--r2:8px}
+:root[data-theme="light"]{--bg:#f6f8fa;--surface:#fff;--card:#fff;--card-hover:#f3f4f6;--border:#d0d7de;--text:#1f2328;--muted:#656d76;--dim:#afb8c1;--accent:#0969da;--green:#1a7f37;--red:#cf222e;--gold:#9a6700;--orange:#bc4c00}
+*,*::before,*::after{box-sizing:border-box}body,html{margin:0;height:100%;background:var(--bg);font-family:"Segoe UI",system-ui,sans-serif;color:var(--text);font-size:13px;-webkit-font-smoothing:antialiased}
+.hub{display:flex;flex-direction:column;min-height:100%}
+.hub-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
+.hub-brand{display:flex;align-items:center;gap:10px}.hub-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,rgba(210,153,34,.18),rgba(88,166,255,.12));border:1px solid rgba(210,153,34,.35);display:flex;align-items:center;justify-content:center;color:var(--gold);font-weight:800;font-size:14px}
+.hub-title{font-size:15px;font-weight:700;letter-spacing:-.3px}.hub-subtitle{font-size:11px;color:var(--muted);margin-top:1px}
+.hub-meta{display:flex;align-items:center;gap:6px}
+.expand-btn{width:28px;height:28px;border-radius:7px;background:transparent;color:var(--muted);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer}.expand-btn:hover{color:var(--accent);border-color:var(--accent)}
+.tag{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600;border:1px solid}
+.tag-expensive{color:var(--red);border-color:var(--red);background:rgba(248,81,73,.1)}
+.tag-cheap{color:var(--green);border-color:var(--green);background:rgba(63,185,80,.1)}
+.tag-neutral{color:var(--muted);border-color:var(--border);background:transparent}
+
+.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border)}
+.summary-card{padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:var(--r)}.summary-label{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:2px}.summary-value{font-size:20px;font-weight:800}
+
+.section{padding:16px}
+.section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:0 0 12px;display:flex;align-items:center;gap:6px}
+.section-title svg{width:14px;height:14px;color:var(--accent)}
+
+.shift-table{width:100%;border-collapse:separate;border-spacing:0;font-size:11px}
+.shift-table thead{position:sticky;top:0}
+.shift-table th{padding:6px 10px;text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);border-bottom:2px solid var(--accent);font-weight:700;white-space:nowrap}
+.shift-table th:not(:first-child):not(:nth-child(2)){text-align:right}
+.shift-table td{padding:7px 10px;border-bottom:1px solid var(--border);white-space:nowrap}
+.shift-table td:not(:first-child):not(:nth-child(2)){text-align:right;font-variant-numeric:tabular-nums}
+.shift-table tr:hover{background:var(--card-hover)}
+.shift-table .pos{color:var(--green)}.shift-table .neg{color:var(--red)}
+
+.bar-chart{display:flex;flex-direction:column;gap:6px;padding:0 16px 16px}
+.bar-row{display:flex;align-items:center;gap:8px;height:28px}
+.bar-label{width:60px;font-size:11px;font-weight:600;text-align:right;flex-shrink:0}
+.bar-track{flex:1;height:20px;background:var(--card);border-radius:4px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:4px;transition:width .4s ease}
+.bar-value{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:10px;font-weight:700;color:var(--text)}
+
+.alert-section{padding:0 16px 16px}
+.alert-card{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;border-left:3px solid}
+.alert-card.expensive{border-left-color:var(--red)}.alert-card.cheap{border-left-color:var(--green)}.alert-card.neutral{border-left-color:var(--gold)}
+.alert-icon{font-size:18px;flex-shrink:0}.alert-body{flex:1}.alert-title{font-weight:700;font-size:12px;margin-bottom:2px}.alert-desc{font-size:11px;color:var(--muted);line-height:1.4}
+
+.empty-state{padding:40px;text-align:center;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<div class="hub" id="app">
+  <div class="hub-header">
+    <div class="hub-brand">
+      <div class="hub-icon">Δ</div>
+      <div><div class="hub-title">RV Shift Detection</div><div class="hub-subtitle" id="subtitle">What has changed in your portfolio</div></div>
+    </div>
+    <div class="hub-meta">
+      <button class="expand-btn" onclick="window.openai?.expandWidget?.()" title="Expand">⛶</button>
+    </div>
+  </div>
+
+  <div class="summary-grid" id="summary"></div>
+
+  <div class="alert-section" id="alerts"></div>
+
+  <div class="section">
+    <div class="section-title"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm9-3a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM8 6.5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 6.5z"/></svg>Relative Value Shifts</div>
+    <table class="shift-table" id="shift-table"><thead><tr><th>Ticker</th><th>Company</th><th>PE Now</th><th>PE 7d Avg</th><th>PE Shift</th><th>Price Chg</th><th>Analyst</th><th>Signal</th></tr></thead><tbody id="shift-body"></tbody></table>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z"/></svg>Sector RV Movement</div>
+    <div class="bar-chart" id="sector-bars"></div>
+  </div>
+</div>
+
+<script>
+function getData(){return window.__TOOL_DATA__||window.openai?.toolOutput||{}}
+function fmt(n,d=1){if(n==null||isNaN(n))return'—';return Number(n).toFixed(d)}
+function pctClass(v){return v>0?'pos':v<0?'neg':''}
+function signalTag(s){
+  if(!s)return'<span class="tag tag-neutral">—</span>';
+  if(s==='Expensive'||s==='Getting Expensive')return'<span class="tag tag-expensive">'+s+'</span>';
+  if(s==='Cheap'||s==='Getting Cheap')return'<span class="tag tag-cheap">'+s+'</span>';
+  return'<span class="tag tag-neutral">'+s+'</span>';
+}
+
+function render(){
+  const d=getData();
+  const holdings=d.holdings||[];
+  const summary=d.summary||{};
+  const alerts=d.alerts||[];
+  const sectorShifts=d.sectorShifts||{};
+
+  document.getElementById('subtitle').textContent=d.period||'7-day RV shift analysis';
+
+  // Summary cards
+  const sumEl=document.getElementById('summary');
+  sumEl.innerHTML=`
+    <div class="summary-card"><div class="summary-label">Became Expensive</div><div class="summary-value" style="color:var(--red)">${summary.becameExpensive||0}</div></div>
+    <div class="summary-card"><div class="summary-label">Became Cheap</div><div class="summary-value" style="color:var(--green)">${summary.becameCheap||0}</div></div>
+    <div class="summary-card"><div class="summary-label">Rating Changes</div><div class="summary-value" style="color:var(--gold)">${summary.ratingChanges||0}</div></div>
+    <div class="summary-card"><div class="summary-label">Holdings Analyzed</div><div class="summary-value">${holdings.length}</div></div>`;
+
+  // Alerts
+  const alertEl=document.getElementById('alerts');
+  if(alerts.length>0){
+    alertEl.innerHTML='<div class="section-title"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-1 0V2a.5.5 0 0 1 .5-.5zM8 10a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0z"/></svg>Key Shifts Requiring Attention</div>'+
+      alerts.map(a=>`<div class="alert-card ${a.type||'neutral'}"><div class="alert-icon">${a.type==='expensive'?'🔴':a.type==='cheap'?'🟢':'🟡'}</div><div class="alert-body"><div class="alert-title">${a.symbol} — ${a.title||''}</div><div class="alert-desc">${a.description||''}</div></div></div>`).join('');
+  }
+
+  // Shift table
+  const tbody=document.getElementById('shift-body');
+  tbody.innerHTML=holdings.sort((a,b)=>Math.abs(b.peShift||0)-Math.abs(a.peShift||0)).map(h=>{
+    const name=(h.profile?.name||h.symbol).substring(0,25);
+    return`<tr>
+      <td><strong>${h.symbol}</strong></td>
+      <td>${name}</td>
+      <td>${fmt(h.peNow)}</td>
+      <td>${fmt(h.peAvg7d)}</td>
+      <td class="${pctClass(h.peShift)}">${h.peShift>0?'+':''}${fmt(h.peShift)}%</td>
+      <td class="${pctClass(h.priceChange)}">${h.priceChange>0?'+':''}${fmt(h.priceChange)}%</td>
+      <td>${h.analystRating||'—'}</td>
+      <td>${signalTag(h.signal)}</td>
+    </tr>`}).join('');
+
+  // Sector bars
+  const barEl=document.getElementById('sector-bars');
+  const sectors=Object.entries(sectorShifts);
+  if(sectors.length>0){
+    const maxAbs=Math.max(...sectors.map(([,v])=>Math.abs(v)),1);
+    barEl.innerHTML=sectors.sort((a,b)=>b[1]-a[1]).map(([sector,shift])=>{
+      const pct=Math.abs(shift)/maxAbs*100;
+      const color=shift>0?'var(--red)':'var(--green)';
+      return`<div class="bar-row"><div class="bar-label">${sector}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color}"></div><div class="bar-value" style="color:${color}">${shift>0?'+':''}${fmt(shift)}%</div></div></div>`
+    }).join('');
+  }
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',render);else render();
+</script>
+</body>
+</html>

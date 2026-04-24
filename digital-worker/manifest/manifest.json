@@ -1,0 +1,32 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/vdevPreview/MicrosoftTeams.schema.json",
+  "id": "f474b197-7795-4c14-a01f-4ac8517145eb",
+  "name": {
+    "short": "Portfolio Manager Blueprint",
+    "full": "Portfolio Manager Blueprint"
+  },
+  "description": {
+    "short": "Portfolio Manager \u2014 briefings, alerts, and meeting summaries.",
+    "full": "Your personal Portfolio Manager Digital Worker. Sends daily morning briefings at 09:00 with market overview, P\u0026L, and risk alerts. Monitors portfolio positions for significant price moves and sends live alerts. Handles meeting summaries and responds to portfolio queries via Teams and email. Connected to Finnhub market data, Dynamics 365 CRM, and portfolio management systems."
+  },
+  "icons": {
+    "outline": "outline.png",
+    "color": "color.png"
+  },
+  "accentColor": "#9ec9d9",
+  "version": "1.1.4",
+  "manifestVersion": "devPreview",
+  "developer": {
+    "name": "Microsoft Corporation",
+    "mpnId": "",
+    "websiteUrl": "https://go.microsoft.com/fwlink/?LinkId=518028",
+    "privacyUrl": "https://go.microsoft.com/fwlink/?LinkId=518028",
+    "termsOfUseUrl": "https://shares.datatransfer.microsoft.com/assets/Microsoft_Terms_of_Use.html"
+  },
+  "agenticUserTemplates": [
+    {
+      "id": "7b0926a6-c4ee-445a-a913-bd054594bd09",
+      "file": "agenticUserTemplateManifest.json"
+    }
+  ]
+}

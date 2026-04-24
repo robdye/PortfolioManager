@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.env
+a365.generated.config.json
+*.js.map
+*.d.ts

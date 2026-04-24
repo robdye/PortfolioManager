@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+:root{color-scheme:light dark;--bg:#0d1117;--surface:#161b22;--card:#1c2333;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--green:#3fb950;--red:#f85149;--gold:#d29922;--r:8px;--qualify:#58a6ff;--develop:#d29922;--propose:#3fb950;--close:#15803d}
+:root[data-theme="light"]{--bg:#f6f8fa;--surface:#fff;--card:#fff;--border:#d0d7de;--text:#1f2328;--muted:#656d76;--accent:#0969da;--green:#1a7f37;--red:#cf222e;--gold:#9a6700;--qualify:#0969da;--develop:#9a6700;--propose:#1a7f37;--close:#15803d}
+*,*::before,*::after{box-sizing:border-box}body,html{margin:0;background:var(--bg);font-family:"Segoe UI",system-ui,sans-serif;color:var(--text);font-size:13px}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border)}
+.hdr-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,rgba(88,166,255,.18),rgba(63,185,80,.12));border:1px solid rgba(88,166,255,.35);display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:16px}
+.hdr-t{font-size:15px;font-weight:700}.hdr-s{font-size:11px;color:var(--muted)}
+.expand-btn{width:26px;height:26px;border-radius:6px;background:transparent;color:var(--muted);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer}.expand-btn:hover{color:var(--accent);border-color:var(--accent)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--border)}
+.kpi{padding:8px 10px;background:var(--card);border:1px solid var(--border);border-radius:var(--r)}.kpi-l{font-size:9px;text-transform:uppercase;color:var(--muted);margin-bottom:2px}.kpi-v{font-size:18px;font-weight:800}
+.section{padding:12px 16px;border-bottom:1px solid var(--border)}
+.sec-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.sec-badge{font-size:10px;font-weight:600;padding:1px 6px;border-radius:99px;background:rgba(88,166,255,.08);color:var(--accent)}
+.funnel{display:flex;flex-direction:column;gap:6px}
+.funnel-row{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--r);border:1px solid var(--border);background:var(--card)}
+.funnel-stage{width:90px;font-size:12px;font-weight:700;flex-shrink:0}.funnel-bar-wrap{flex:1;height:24px;background:var(--bg);border-radius:4px;overflow:hidden;position:relative}
+.funnel-bar{height:100%;border-radius:4px;display:flex;align-items:center;padding:0 8px;font-size:10px;font-weight:700;color:#fff;min-width:fit-content;transition:width .4s}
+.funnel-count{width:35px;font-size:13px;font-weight:800;text-align:center;flex-shrink:0}.funnel-val{width:60px;font-size:11px;font-weight:600;text-align:right;flex-shrink:0;color:var(--muted)}
+.opp-list{display:flex;flex-direction:column;gap:4px}
+.opp-card{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--r);border:1px solid var(--border);background:var(--card);cursor:pointer;transition:border-color .15s}
+.opp-card:hover{border-color:var(--accent)}
+.opp-ticker{font-size:12px;font-weight:800;color:var(--accent);width:45px;flex-shrink:0}
+.opp-info{flex:1;min-width:0}.opp-name{font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.opp-desc{font-size:9px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.opp-meta{text-align:right;flex-shrink:0}.opp-val{font-size:13px;font-weight:800}.opp-stage{font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;display:inline-block;margin-top:2px}
+.stage-qualify{background:rgba(88,166,255,.1);color:var(--qualify)}.stage-develop{background:rgba(210,153,34,.1);color:var(--develop)}.stage-propose{background:rgba(63,185,80,.1);color:var(--propose)}
+.opp-close{font-size:9px;color:var(--muted);margin-top:2px}
+.by-account{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.acct-card{padding:8px;border-radius:var(--r);border:1px solid var(--border);background:var(--card);text-align:center}
+.acct-ticker{font-size:14px;font-weight:800;color:var(--accent)}.acct-name{font-size:9px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acct-val{font-size:16px;font-weight:800;margin-top:4px}.acct-count{font-size:10px;color:var(--muted)}
+.footer{padding:6px 16px;background:var(--surface);border-top:1px solid var(--border);font-size:10px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.btn{padding:4px 10px;border-radius:5px;background:var(--card);color:var(--muted);border:1px solid var(--border);font-size:11px;cursor:pointer}.btn:hover{color:var(--text);border-color:var(--accent)}
+.nav{display:flex;gap:4px;padding:6px 16px;border-top:1px solid var(--border);background:var(--surface);flex-wrap:wrap;align-items:center}
+.nav-lbl{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-right:4px}
+.state-msg{text-align:center;padding:24px;font-size:13px;color:var(--muted)}
+</style>
+<script>(function(){var d=document.documentElement,m=matchMedia('(prefers-color-scheme:dark)');function t(){d.dataset.theme=m.matches?'dark':'light';}t();m.addEventListener('change',t);})()</script>
+</head>
+<body>
+<div class="hdr"><div style="display:flex;align-items:center;gap:10px"><div class="hdr-icon">$</div><div><div class="hdr-t">Investment Pipeline</div><div class="hdr-s">D365 CRM Opportunity Dashboard</div></div></div><button class="expand-btn" id="expBtn" title="Fullscreen"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2h4v4M6 14H2v-4M14 2L9.5 6.5M2 14l4.5-4.5"/></svg></button></div>
+<div class="kpis"><div class="kpi"><div class="kpi-l">Total Pipeline</div><div class="kpi-v" id="kTV">--</div></div><div class="kpi"><div class="kpi-l">Opportunities</div><div class="kpi-v" id="kOC">--</div></div><div class="kpi"><div class="kpi-l">Weighted Revenue</div><div class="kpi-v" style="color:var(--green)" id="kWR">--</div></div><div class="kpi"><div class="kpi-l">Avg Win Prob</div><div class="kpi-v" style="color:var(--accent)" id="kAW">--</div></div></div>
+<div class="section"><div class="sec-title">Pipeline Funnel</div><div class="funnel" id="funnel"><div class="state-msg">Loading pipeline...</div></div></div>
+<div class="section"><div class="sec-title">Opportunities by Account <span class="sec-badge" id="acBadge">--</span></div><div class="by-account" id="byAccount"></div></div>
+<div class="section"><div class="sec-title">All Opportunities <span class="sec-badge" id="oppBadge">--</span></div><div class="opp-list" id="oppList"></div></div>
+<div class="footer"><span>Portfolio Manager - D365 CRM - Not financial advice</span><button class="btn" id="refBtn">Refresh</button></div>
+<div class="nav"><span class="nav-lbl">Navigate:</span><button class="btn" onclick="nav('Read my portfolio and show the Portfolio Command Center')">Dashboard</button><button class="btn" onclick="nav('Read my portfolio and show the Macro Stress Test')">Stress Test</button><button class="btn" onclick="nav('Read my portfolio and generate my Morning Briefing')">Briefing</button></div>
+<script>
+function esc(s){var d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
+function rh(){if(window.openai&&window.openai.notifyIntrinsicHeight)window.openai.notifyIntrinsicHeight(document.body.scrollHeight);}
+function nav(p){if(window.openai&&window.openai.sendFollowUpMessage)window.openai.sendFollowUpMessage({prompt:p});}
+function f$(v){if(!v&&v!==0)return '--';var a=Math.abs(v);if(a>=1e9)return '$'+(v/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(v/1e6).toFixed(2)+'M';if(a>=1e3)return '$'+(v/1e3).toFixed(0)+'K';return '$'+v.toFixed(0);}
+var STAGE_COLORS={'1-Qualify':'var(--qualify)','2-Develop':'var(--develop)','3-Propose':'var(--propose)','4-Close':'var(--close)'};
+var STAGE_CLASS={'1-Qualify':'stage-qualify','2-Develop':'stage-develop','3-Propose':'stage-propose'};
+
+function render(data){
+  var pipeline=data.pipeline||[];var totalValue=data.totalValue||0;var byStage=data.byStage||{};
+  document.getElementById('kTV').textContent=f$(totalValue);
+  document.getElementById('kOC').textContent=pipeline.length;
+  // Weighted revenue = sum of value * winProbability/100
+  var weightedRev=0,totalWP=0,wpCount=0;pipeline.forEach(function(o){var wp=o.winProbability||o.winprob||50;weightedRev+=(o.value||0)*(wp/100);totalWP+=wp;wpCount++;});
+  document.getElementById('kWR').textContent=f$(weightedRev);
+  document.getElementById('kAW').textContent=wpCount>0?Math.round(totalWP/wpCount)+'%':'--';
+
+  // Funnel
+  var stages=Object.entries(byStage).sort(function(a,b){return a[0].localeCompare(b[0]);});
+  var maxVal=Math.max.apply(null,stages.map(function(s){return s[1].value||1;}));
+  var funnelHtml='';
+  stages.forEach(function(s){
+    var name=s[0],d=s[1],w=Math.max((d.value/maxVal)*100,8);
+    var col=STAGE_COLORS[name]||'var(--accent)';
+    funnelHtml+='<div class="funnel-row"><div class="funnel-stage" style="color:'+col+'">'+esc(name)+'</div><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:'+w+'%;background:'+col+'">'+f$(d.value)+'</div></div><div class="funnel-count">'+d.count+'</div><div class="funnel-val">'+f$(d.value)+'</div></div>';
+  });
+  document.getElementById('funnel').innerHTML=funnelHtml||'<div class="state-msg">No pipeline data</div>';
+
+  // By account
+  var accts={};pipeline.forEach(function(o){
+    var t=o.accountTicker||o.accountName||'Unknown';
+    if(!accts[t])accts[t]={name:o.accountName||t,count:0,value:0};
+    accts[t].count++;accts[t].value+=o.value||0;
+  });
+  var acctArr=Object.entries(accts).sort(function(a,b){return b[1].value-a[1].value;});
+  var acctHtml='';
+  acctArr.forEach(function(a){
+    acctHtml+='<div class="acct-card"><div class="acct-ticker">'+esc(a[0])+'</div><div class="acct-name">'+esc(a[1].name)+'</div><div class="acct-val">'+f$(a[1].value)+'</div><div class="acct-count">'+a[1].count+' opp'+(a[1].count>1?'s':'')+'</div></div>';
+  });
+  document.getElementById('byAccount').innerHTML=acctHtml;
+  document.getElementById('acBadge').textContent=acctArr.length+' accounts';
+
+  // Opportunity list
+  var oppHtml='';
+  pipeline.slice(0,15).forEach(function(o){
+    var cls=STAGE_CLASS[o.stage]||'stage-qualify';
+    var close=o.closeDate?new Date(o.closeDate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'--';
+    // Deal type badge
+    var dtBadge='';if(o.dealType){var dtCol={'M&A':'#a78bfa','Capital Raise':'#58a6ff','FX Hedging':'#d29922','Follow-on':'#3fb950','Exit':'#f85149'};var dc=dtCol[o.dealType]||'var(--muted)';dtBadge='<span style="font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px;background:rgba(0,0,0,.1);color:'+dc+';margin-left:4px">'+esc(o.dealType)+'</span>';}
+    // Win probability + risk
+    var wpBadge='';if(o.winProbability!=null){wpBadge='<span style="font-size:9px;color:var(--muted);margin-left:6px">Win: '+o.winProbability+'%</span>';}
+    var riskBadge='';if(o.riskRating){var rCol={'Low':'var(--green)','Medium':'var(--gold)','High':'var(--red)','Critical':'#991b1b'};riskBadge='<span style="font-size:8px;font-weight:700;padding:1px 4px;border-radius:3px;background:rgba(0,0,0,.06);color:'+(rCol[o.riskRating]||'var(--muted)')+'">'+esc(o.riskRating)+' Risk</span>';}
+    // Compliance badge
+    var compBadge='';if(o.complianceStatus&&o.complianceStatus!=='Approved'){var ccol=o.complianceStatus==='Flagged'||o.complianceStatus==='Escalated'?'var(--red)':'var(--gold)';compBadge='<span style="font-size:8px;font-weight:700;padding:1px 4px;border-radius:3px;background:rgba(248,81,73,.08);color:'+ccol+'">⚠ '+esc(o.complianceStatus)+'</span>';}
+    oppHtml+='<div class="opp-card"><div class="opp-ticker">'+esc(o.accountTicker||'')+'</div><div class="opp-info"><div class="opp-name">'+esc(o.name)+dtBadge+'</div><div class="opp-desc">'+esc((o.description||'').substring(0,80))+'</div><div style="display:flex;gap:4px;margin-top:3px;flex-wrap:wrap">'+riskBadge+compBadge+'</div></div><div class="opp-meta"><div class="opp-val">'+f$(o.value)+wpBadge+'</div><div class="opp-stage '+cls+'">'+esc(o.stage||'')+'</div><div class="opp-close">Close: '+close+'</div></div></div>';
+  });
+  document.getElementById('oppList').innerHTML=oppHtml||'<div class="state-msg">No opportunities</div>';
+  document.getElementById('oppBadge').textContent=pipeline.length;
+  rh();
+}
+
+var _fs=false;
+if(window.openai&&window.openai.requestDisplayMode)document.getElementById('expBtn').addEventListener('click',async function(){try{await window.openai.requestDisplayMode({mode:_fs?'inline':'fullscreen'});_fs=!_fs;}catch(e){}});else document.getElementById('expBtn').style.display='none';
+document.getElementById('refBtn').addEventListener('click',async function(){if(!window.openai||!window.openai.callTool)return;document.getElementById('funnel').innerHTML='<div class="state-msg">Refreshing...</div>';try{var out=await window.openai.callTool('show-crm-pipeline',window.openai.toolInput||{});var d=(out&&out.structuredContent)||out;if(d)render(d);}catch(e){}});
+
+var to=window.__TOOL_DATA__||(window.openai&&window.openai.toolOutput)||{};
+if(typeof to==='string'){try{to=JSON.parse(to);}catch(e){to={};}}
+if(to&&to.pipeline)render(to);
+</script>
+</body></html>

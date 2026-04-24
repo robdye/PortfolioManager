@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+:root{color-scheme:light dark;--bg:#0d1117;--surface:#161b22;--card:#1c2333;--card-hover:#222d3f;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--dim:#484f58;--accent:#58a6ff;--green:#3fb950;--red:#f85149;--gold:#d29922;--orange:#db6d28;--r:10px;--r2:8px}
+:root[data-theme="light"]{--bg:#f6f8fa;--surface:#fff;--card:#fff;--card-hover:#f3f4f6;--border:#d0d7de;--text:#1f2328;--muted:#656d76;--dim:#afb8c1;--accent:#0969da;--green:#1a7f37;--red:#cf222e;--gold:#9a6700;--orange:#bc4c00}
+*,*::before,*::after{box-sizing:border-box}body,html{margin:0;height:100%;background:var(--bg);font-family:"Segoe UI",system-ui,sans-serif;color:var(--text);font-size:13px;-webkit-font-smoothing:antialiased}
+.hub{display:flex;flex-direction:column;min-height:100%}
+.hub-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
+.hub-brand{display:flex;align-items:center;gap:10px}.hub-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,rgba(248,81,73,.18),rgba(210,153,34,.12));border:1px solid rgba(248,81,73,.35);display:flex;align-items:center;justify-content:center;color:var(--red);font-weight:800;font-size:16px}
+.hub-title{font-size:15px;font-weight:700;letter-spacing:-.3px}.hub-subtitle{font-size:11px;color:var(--muted);margin-top:1px}
+.hub-meta{display:flex;align-items:center;gap:6px}
+.expand-btn{width:28px;height:28px;border-radius:7px;background:transparent;color:var(--muted);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer}.expand-btn:hover{color:var(--accent);border-color:var(--accent)}
+
+.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border)}
+.summary-card{padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:var(--r)}.summary-label{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:2px}.summary-value{font-size:20px;font-weight:800}
+
+.section{padding:16px}
+.section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:0 0 12px;display:flex;align-items:center;gap:6px}
+
+.challenge-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;overflow:hidden}
+.challenge-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border)}
+.challenge-header:hover{background:var(--card-hover)}
+.challenge-ticker{font-weight:800;font-size:14px;color:var(--accent)}.challenge-name{font-size:12px;color:var(--muted);margin-left:8px}
+.challenge-severity{display:flex;align-items:center;gap:4px}
+.severity-dot{width:10px;height:10px;border-radius:50%}
+.severity-high{background:var(--red)}.severity-medium{background:var(--gold)}.severity-low{background:var(--green)}
+.severity-label{font-size:10px;font-weight:700;text-transform:uppercase}
+
+.challenge-body{padding:12px 16px;display:none}
+.challenge-body.open{display:block}
+.challenge-reason{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.challenge-reason:last-child{border-bottom:none}
+.reason-icon{font-size:16px;flex-shrink:0;margin-top:2px}
+.reason-text{flex:1}
+.reason-title{font-weight:700;font-size:12px;margin-bottom:2px}
+.reason-desc{font-size:11px;color:var(--muted);line-height:1.4}
+
+.metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.metric{padding:8px;background:var(--surface);border-radius:6px;text-align:center}
+.metric-label{font-size:9px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}.metric-value{font-size:16px;font-weight:800;margin-top:2px}
+
+.tag{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600;border:1px solid;display:inline-block;margin-left:6px}
+.tag-sell{color:var(--red);border-color:var(--red);background:rgba(248,81,73,.1)}
+.tag-hold{color:var(--gold);border-color:var(--gold);background:rgba(210,153,34,.1)}
+.tag-buy{color:var(--green);border-color:var(--green);background:rgba(63,185,80,.1)}
+
+.no-challenges{padding:40px;text-align:center;color:var(--green);font-size:14px;font-weight:600}
+</style>
+</head>
+<body>
+<div class="hub" id="app">
+  <div class="hub-header">
+    <div class="hub-brand">
+      <div class="hub-icon">?</div>
+      <div><div class="hub-title">Challenge Your Holdings</div><div class="hub-subtitle" id="subtitle">Why are you still holding these?</div></div>
+    </div>
+    <div class="hub-meta">
+      <button class="expand-btn" onclick="window.openai?.expandWidget?.()" title="Expand">⛶</button>
+    </div>
+  </div>
+
+  <div class="summary-grid" id="summary"></div>
+  <div class="section" id="challenges"></div>
+</div>
+
+<script>
+function getData(){return window.__TOOL_DATA__||window.openai?.toolOutput||{}}
+function fmt(n,d=1){if(n==null||isNaN(n))return'—';return Number(n).toFixed(d)}
+
+function render(){
+  const d=getData();
+  const challenges=d.challenges||[];
+  const summary=d.summary||{};
+
+  document.getElementById('subtitle').textContent=d.date||'Positions that warrant review';
+
+  const sumEl=document.getElementById('summary');
+  sumEl.innerHTML=`
+    <div class="summary-card"><div class="summary-label">Positions Challenged</div><div class="summary-value" style="color:var(--red)">${summary.challenged||0}</div></div>
+    <div class="summary-card"><div class="summary-label">Analyst Downgrades</div><div class="summary-value" style="color:var(--gold)">${summary.downgrades||0}</div></div>
+    <div class="summary-card"><div class="summary-label">Value at Risk</div><div class="summary-value">${summary.valueAtRisk||'—'}</div></div>`;
+
+  const el=document.getElementById('challenges');
+  if(challenges.length===0){
+    el.innerHTML='<div class="no-challenges">✓ All positions look justified — no challenges today</div>';
+    return;
+  }
+
+  el.innerHTML='<div class="section-title">Positions to Review (Ranked by Urgency)</div>'+
+    challenges.map((c,i)=>{
+      const sevClass=c.severity==='high'?'severity-high':c.severity==='medium'?'severity-medium':'severity-low';
+      const reasons=(c.reasons||[]).map(r=>`
+        <div class="challenge-reason">
+          <div class="reason-icon">${r.icon||'⚠️'}</div>
+          <div class="reason-text">
+            <div class="reason-title">${r.title||''}</div>
+            <div class="reason-desc">${r.description||''}</div>
+          </div>
+        </div>`).join('');
+      const analystTag=c.analystRating==='Sell'?'tag-sell':c.analystRating==='Hold'?'tag-hold':'tag-buy';
+      return`<div class="challenge-card">
+        <div class="challenge-header" onclick="this.nextElementSibling.classList.toggle('open')">
+          <div><span class="challenge-ticker">${c.symbol}</span><span class="challenge-name">${c.company||''}</span>${c.analystRating?'<span class="tag '+analystTag+'">'+c.analystRating+'</span>':''}</div>
+          <div class="challenge-severity"><div class="severity-dot ${sevClass}"></div><span class="severity-label">${c.severity||'medium'}</span></div>
+        </div>
+        <div class="challenge-body${i===0?' open':''}">
+          ${reasons}
+          <div class="metrics-row">
+            <div class="metric"><div class="metric-label">PE Ratio</div><div class="metric-value">${fmt(c.pe)}</div></div>
+            <div class="metric"><div class="metric-label">Total Return</div><div class="metric-value" style="color:${(c.totalReturn||0)>=0?'var(--green)':'var(--red)'}">${fmt(c.totalReturn)}%</div></div>
+            <div class="metric"><div class="metric-label">Weight</div><div class="metric-value">${fmt(c.weight)}%</div></div>
+            <div class="metric"><div class="metric-label">Sector Rank</div><div class="metric-value">${c.sectorRank||'—'}</div></div>
+          </div>
+        </div>
+      </div>`}).join('');
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',render);else render();
+</script>
+</body>
+</html>

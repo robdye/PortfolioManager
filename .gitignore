@@ -1,0 +1,7 @@
+node_modules/
+dist/
+appPackage/build/
+.env
+*.local.env
+.azurite/
+mcp-server/assets/

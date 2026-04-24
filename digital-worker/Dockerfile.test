@@ -1,0 +1,4 @@
+FROM node:20-slim
+WORKDIR /app
+RUN echo 'const http = require("http"); const s = http.createServer((req,res) => { res.writeHead(200, {"Content-Type":"application/json"}); res.end(JSON.stringify({status:"ok",node:process.version})); }); s.listen(3978, "0.0.0.0", () => console.log("Test server on 3978"));' > server.js
+CMD ["node", "server.js"]

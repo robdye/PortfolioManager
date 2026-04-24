@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+:root{color-scheme:light dark;--bg:#0d1117;--surface:#161b22;--card:#1c2333;--card-hover:#222d3f;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--dim:#484f58;--accent:#58a6ff;--green:#3fb950;--red:#f85149;--gold:#d29922;--r:10px;--r2:8px}
+:root[data-theme="light"]{--bg:#f6f8fa;--surface:#fff;--card:#fff;--card-hover:#f3f4f6;--border:#d0d7de;--text:#1f2328;--muted:#656d76;--dim:#afb8c1;--accent:#0969da;--green:#1a7f37;--red:#cf222e;--gold:#9a6700}
+*,*::before,*::after{box-sizing:border-box}body,html{margin:0;height:100%;background:var(--bg);font-family:"Segoe UI",system-ui,sans-serif;color:var(--text);font-size:13px;-webkit-font-smoothing:antialiased}
+.hub{display:flex;flex-direction:column;min-height:100%}
+.hub-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
+.hub-brand{display:flex;align-items:center;gap:10px}.hub-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,rgba(63,185,80,.18),rgba(88,166,255,.12));border:1px solid rgba(63,185,80,.35);display:flex;align-items:center;justify-content:center;color:var(--green);font-weight:800;font-size:14px}
+.hub-title{font-size:15px;font-weight:700;letter-spacing:-.3px}.hub-subtitle{font-size:11px;color:var(--muted);margin-top:1px}
+.hub-meta{display:flex;align-items:center;gap:6px}
+.expand-btn{width:28px;height:28px;border-radius:7px;background:transparent;color:var(--muted);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer}.expand-btn:hover{color:var(--accent);border-color:var(--accent)}
+
+/* Summary */
+.rv-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border)}
+.rv-card{padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:var(--r)}.rv-label{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:2px}.rv-value{font-size:20px;font-weight:800}
+
+/* Scatter plot */
+.scatter-section{padding:16px}
+.section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:0 0 12px;display:flex;align-items:center;gap:6px}
+.section-title svg{width:14px;height:14px;color:var(--accent)}
+.scatter-container{position:relative;width:100%;height:350px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
+.scatter-axes{position:absolute;left:50px;right:16px;top:16px;bottom:36px}
+.axis-x{position:absolute;bottom:0;left:0;right:0;border-top:1px solid var(--border);padding-top:4px;display:flex;justify-content:space-between}
+.axis-x-label{font-size:9px;color:var(--muted);text-align:center}
+.axis-y{position:absolute;top:0;bottom:0;left:0;border-right:1px solid var(--border);display:flex;flex-direction:column-reverse;justify-content:space-between;padding-right:4px}
+.axis-y-label{font-size:9px;color:var(--muted);text-align:right;width:40px}
+.scatter-x-title{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.scatter-y-title{position:absolute;left:4px;top:50%;transform:translateY(-50%) rotate(-90deg);font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+.scatter-dot{position:absolute;border-radius:50%;cursor:pointer;z-index:2;transition:transform .15s;display:flex;align-items:center;justify-content:center;border:2px solid transparent}
+.scatter-dot:hover{transform:scale(1.3);z-index:5}
+.scatter-dot.client{border-color:var(--accent)}.scatter-dot.prospect{border-color:var(--green)}
+.scatter-dot .dot-label{position:absolute;top:-16px;font-size:9px;font-weight:700;white-space:nowrap;color:var(--text);pointer-events:none}
+.scatter-quadrant{position:absolute;font-size:9px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.4px;opacity:.6}
+.scatter-legend{display:flex;align-items:center;gap:16px;margin-bottom:8px}
+.scatter-legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+.scatter-legend-dot{width:12px;height:12px;border-radius:50%;border:2px solid}
+.scatter-legend-dot.client{background:rgba(88,166,255,.3);border-color:var(--accent)}
+.scatter-legend-dot.prospect{background:rgba(63,185,80,.3);border-color:var(--green)}
+
+/* Opportunities table */
+.opp-section{padding:0 16px 16px}
+.opp-table{width:100%;border-collapse:separate;border-spacing:0;font-size:11px}
+.opp-table thead{position:sticky;top:0}
+.opp-table th{padding:6px 10px;text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);border-bottom:2px solid var(--accent);font-weight:700;white-space:nowrap}
+.opp-table th:not(:first-child){text-align:right}
+.opp-table td{padding:7px 10px;border-bottom:1px solid var(--border);white-space:nowrap}
+.opp-table td:not(:first-child){text-align:right;font-variant-numeric:tabular-nums}
+.opp-table tr:hover td{background:rgba(88,166,255,.04)}
+.opp-sym{font-weight:800;color:var(--accent)}
+.opp-signal{font-weight:700;padding:3px 10px;border-radius:4px;font-size:10px;display:inline-flex;align-items:center;gap:4px}
+.opp-signal.strong-buy{background:rgba(63,185,80,.12);color:var(--green)}
+.opp-signal.buy{background:rgba(63,185,80,.08);color:var(--green)}
+.opp-signal.hold{background:rgba(210,153,34,.12);color:var(--gold)}
+.opp-signal.watch{background:rgba(88,166,255,.1);color:var(--accent)}
+.opp-signal.switch{background:linear-gradient(90deg,rgba(63,185,80,.15),rgba(88,166,255,.1));color:var(--green)}
+
+/* Peer comparison card */
+.peer-section{padding:0 16px 16px}
+.peer-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.peer-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;transition:border-color .15s}
+.peer-card:hover{border-color:var(--accent)}
+.peer-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.peer-card-sym{font-size:14px;font-weight:800;color:var(--accent)}.peer-card-name{font-size:11px;color:var(--muted);margin-left:6px}
+.peer-card-type{font-size:9px;font-weight:700;text-transform:uppercase;padding:2px 8px;border-radius:4px}
+.peer-card-type.client{background:rgba(88,166,255,.1);color:var(--accent)}
+.peer-card-type.prospect{background:rgba(63,185,80,.1);color:var(--green)}
+.peer-card-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.pcm{text-align:center}.pcm-label{font-size:9px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}.pcm-value{font-size:14px;font-weight:700;margin-top:1px}
+
+.footer{padding:8px 16px;background:var(--surface);border-top:1px solid var(--border);font-size:10px;color:var(--dim);display:flex;align-items:center;justify-content:space-between;margin-top:auto}
+.state-msg{text-align:center;padding:32px 16px;font-size:13px;color:var(--muted)}
+</style>
+<script>(function(){var d=document.documentElement,m=matchMedia('(prefers-color-scheme:dark)');function t(){if(!d.dataset.theme)d.dataset.theme=m.matches?'dark':'light';}t();m.addEventListener('change',function(){if(!d.getAttribute('data-theme'))t();});})()</script>
+</head>
+<body>
+<div class="hub">
+  <div class="hub-header"><div class="hub-brand"><div class="hub-icon">📊</div><div><div class="hub-title">Relative Value Analysis</div><div class="hub-subtitle">Cross-Portfolio Valuation & Opportunity Signals</div></div></div><div class="hub-meta"><button class="expand-btn" id="expandBtn" title="Fullscreen"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2h4v4M6 14H2v-4M14 2L9.5 6.5M2 14l4.5-4.5"/></svg></button></div></div>
+  <div class="rv-summary" id="rvSummary"><div class="rv-card"><div class="rv-label">Holdings Analyzed</div><div class="rv-value" id="rvCount">—</div></div><div class="rv-card"><div class="rv-label">Avg P/E</div><div class="rv-value" id="rvPE">—</div></div><div class="rv-card"><div class="rv-label">Opportunities</div><div class="rv-value" id="rvOpps" style="color:var(--green)">—</div></div><div class="rv-card"><div class="rv-label">Strong Buy Signals</div><div class="rv-value" id="rvStrong" style="color:var(--green)">—</div></div></div>
+
+  <div class="scatter-section">
+    <div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33"/></svg> P/E vs Revenue Growth — Valuation Scatter</div>
+    <div class="scatter-legend"><div class="scatter-legend-item"><div class="scatter-legend-dot client"></div> Client</div><div class="scatter-legend-item"><div class="scatter-legend-dot prospect"></div> Prospect</div><div class="scatter-legend-item" style="margin-left:auto;font-size:10px;color:var(--dim)">Dot size = Market Cap</div></div>
+    <div class="scatter-container" id="scatterPlot"></div>
+  </div>
+
+  <div class="opp-section">
+    <div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Opportunity Signals</div>
+    <table class="opp-table" id="oppTable"><thead><tr><th>Ticker</th><th>Type</th><th>Sector</th><th>P/E</th><th>Rev Growth</th><th>Beta</th><th>Signal</th><th>Rationale</th></tr></thead><tbody id="oppBody"></tbody></table>
+  </div>
+
+  <div class="peer-section">
+    <div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Peer Comparison Cards</div>
+    <div class="peer-cards" id="peerCards"><div class="state-msg">Loading relative value analysis…</div></div>
+  </div>
+
+  <div class="footer"><span>Portfolio Manager · Relative Value · Not financial advice</span></div>
+</div>
+<script>
+var _data=null;
+function esc(s){var d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
+function rh(){if(window.openai&&window.openai.notifyIntrinsicHeight)window.openai.notifyIntrinsicHeight(document.body.scrollHeight);}
+function fmtN(v,d){return v!=null&&v!==''&&!isNaN(v)?Number(v).toFixed(d||2):'—';}
+function fmt$(v){if(!v&&v!==0)return '—';var a=Math.abs(v);if(a>=1e12)return '$'+(v/1e12).toFixed(2)+'T';if(a>=1e9)return '$'+(v/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(v/1e6).toFixed(2)+'M';if(a>=1e3)return '$'+(v/1e3).toFixed(1)+'K';return '$'+v.toFixed(2);}
+
+function sectorColor(sec){
+  var colors={'Technology':'#3b82f6','Semiconductors':'#6366f1','Biotechnology':'#8b5cf6',
+    'Healthcare':'#06b6d4','Oil & Gas':'#f97316','Energy':'#eab308','Utilities':'#84cc16',
+    'Financial Services':'#14b8a6','Consumer Defensive':'#22c55e','Consumer Cyclical':'#ec4899',
+    'Industrials':'#64748b','Basic Materials':'#a78bfa','Communication Services':'#f43f5e',
+    'Real Estate':'#0891b2','Other':'#6b7280'};
+  return colors[sec]||'#6b7280';
+}
+
+function render(data){
+  _data=data;var hs=data.holdings||[];
+  // Enrich with valuation metrics
+  var analyzed=hs.map(function(h){
+    var m=h.metrics||{};
+    var p=h.profile||{};
+    var pe=m.peBasicExclExtraTTM||m.peTTM||null;
+    var revGrowth=m.revenueGrowthTTMYoy||m.revenueGrowth5Y||null;
+    var beta=m.beta||1;
+    var sec=p.finnhubIndustry||'Other';
+    var mcap=p.marketCapitalization||0; // in millions
+    return {
+      symbol:h.symbol,name:p.name||h.symbol,sector:sec,type:h.type||'',
+      pe:pe,revGrowth:revGrowth,beta:beta,mcap:mcap,
+      currentValue:h.currentValue||0,metrics:m,profile:p,
+      divYield:m.dividendYieldIndicatedAnnual||0,
+      roe:m.roeTTM||0
+    };
+  }).filter(function(h){return h.pe!=null&&h.pe>0&&h.pe<200;});
+
+  // Summary
+  document.getElementById('rvCount').textContent=analyzed.length;
+  var avgPE=analyzed.reduce(function(s,h){return s+h.pe;},0)/Math.max(analyzed.length,1);
+  document.getElementById('rvPE').textContent=fmtN(avgPE,1)+'x';
+
+  // Generate signals
+  // Group by sector to find relative value
+  var sectorGroups={};
+  analyzed.forEach(function(h){
+    if(!sectorGroups[h.sector])sectorGroups[h.sector]=[];
+    sectorGroups[h.sector].push(h);
+  });
+  var signals=[];
+  analyzed.forEach(function(h){
+    var peers=sectorGroups[h.sector]||[];
+    var avgSectorPE=peers.reduce(function(s,p){return s+(p.pe||0);},0)/Math.max(peers.length,1);
+    var discount=avgSectorPE>0?((h.pe-avgSectorPE)/avgSectorPE)*100:0;
+    var signal='',rationale='',cls='';
+    if(discount<-20&&h.revGrowth!=null&&h.revGrowth>5){
+      signal='Strong Buy';cls='strong-buy';rationale='Trading at '+Math.abs(discount).toFixed(0)+'% discount to sector with '+fmtN(h.revGrowth,1)+'% growth';
+    }else if(discount<-10){
+      signal='Buy';cls='buy';rationale='Undervalued vs sector avg P/E of '+fmtN(avgSectorPE,1)+'x';
+    }else if(discount>20){
+      signal='Watch';cls='watch';rationale='Premium valuation — '+discount.toFixed(0)+'% above sector avg';
+    }else{
+      signal='Hold';cls='hold';rationale='In-line with sector valuation';
+    }
+    // Check for prospect-client switch opportunities
+    if(h.type.toLowerCase()==='prospect'&&discount<-15){
+      var clientPeers=peers.filter(function(p){return p.type.toLowerCase()==='client'&&p.pe>h.pe*1.15;});
+      if(clientPeers.length>0){
+        signal='Strong Buy/Switch';cls='switch';
+        rationale='Prospect at '+fmtN(h.pe,1)+'x vs Client '+clientPeers[0].symbol+' at '+fmtN(clientPeers[0].pe,1)+'x — switch opportunity';
+      }
+    }
+    signals.push({h:h,signal:signal,cls:cls,rationale:rationale,discount:discount,avgSectorPE:avgSectorPE});
+  });
+
+  var strongBuys=signals.filter(function(s){return s.cls==='strong-buy'||s.cls==='switch';}).length;
+  var opps=signals.filter(function(s){return s.cls==='strong-buy'||s.cls==='buy'||s.cls==='switch';}).length;
+  document.getElementById('rvOpps').textContent=opps;
+  document.getElementById('rvStrong').textContent=strongBuys;
+
+  // Scatter plot
+  var validPts=analyzed.filter(function(h){return h.pe>0;});
+  if(validPts.length>0)renderScatter(validPts);
+
+  // Opportunities table — sorted by signal strength
+  var signalOrder={'switch':0,'strong-buy':1,'buy':2,'hold':3,'watch':4};
+  signals.sort(function(a,b){return (signalOrder[a.cls]||99)-(signalOrder[b.cls]||99);});
+  var tbody=document.getElementById('oppBody');
+  tbody.innerHTML=signals.map(function(s){
+    var h=s.h;
+    var typeClass=h.type.toLowerCase()==='prospect'?'prospect':'client';
+    return '<tr><td class="opp-sym">'+esc(h.symbol)+'</td><td><span class="peer-card-type '+typeClass+'">'+esc(h.type||'—')+'</span></td><td>'+esc(h.sector)+'</td><td>'+fmtN(h.pe,1)+'x</td><td>'+(h.revGrowth!=null?fmtN(h.revGrowth,1)+'%':'—')+'</td><td>'+fmtN(h.beta,2)+'</td><td><span class="opp-signal '+s.cls+'">'+esc(s.signal)+'</span></td><td style="font-size:10px;color:var(--muted);white-space:normal;max-width:180px">'+esc(s.rationale)+'</td></tr>';
+  }).join('');
+
+  // Peer comparison cards
+  var cardsHtml=analyzed.slice(0,12).map(function(h){
+    var typeClass=h.type.toLowerCase()==='prospect'?'prospect':'client';
+    return '<div class="peer-card"><div class="peer-card-header"><div><span class="peer-card-sym">'+esc(h.symbol)+'</span><span class="peer-card-name">'+esc(h.name)+'</span></div><span class="peer-card-type '+typeClass+'">'+esc(h.type||'—')+'</span></div><div class="peer-card-metrics"><div class="pcm"><div class="pcm-label">P/E</div><div class="pcm-value">'+fmtN(h.pe,1)+'x</div></div><div class="pcm"><div class="pcm-label">Rev Growth</div><div class="pcm-value">'+(h.revGrowth!=null?fmtN(h.revGrowth,1)+'%':'—')+'</div></div><div class="pcm"><div class="pcm-label">Div Yield</div><div class="pcm-value">'+fmtN(h.divYield,2)+'%</div></div></div></div>';
+  }).join('');
+  document.getElementById('peerCards').innerHTML=cardsHtml;
+  rh();
+}
+
+function renderScatter(pts){
+  var container=document.getElementById('scatterPlot');
+  var W=container.offsetWidth||500,H=350;
+  var padL=55,padR=20,padT=20,padB=40;
+  var plotW=W-padL-padR,plotH=H-padT-padB;
+
+  // Determine ranges
+  var peVals=pts.map(function(h){return h.pe;});
+  var growthVals=pts.map(function(h){return h.revGrowth||0;});
+  var minPE=Math.max(0,Math.min.apply(null,peVals)*0.8);
+  var maxPE=Math.max.apply(null,peVals)*1.2;
+  var minG=Math.min(Math.min.apply(null,growthVals)*1.2,-5);
+  var maxG=Math.max(Math.max.apply(null,growthVals)*1.2,10);
+  if(maxPE-minPE<1){maxPE=minPE+10;}
+  if(maxG-minG<1){maxG=minG+10;}
+
+  var mcaps=pts.map(function(h){return h.mcap||1;});
+  var maxMcap=Math.max.apply(null,mcaps);
+
+  var html='';
+  // Grid lines
+  var xSteps=5,ySteps=5;
+  for(var i=0;i<=xSteps;i++){
+    var x=padL+(plotW*i/xSteps);
+    html+='<div style="position:absolute;left:'+x+'px;top:'+padT+'px;width:1px;height:'+plotH+'px;background:var(--border);opacity:.3"></div>';
+    var peLabel=minPE+((maxPE-minPE)*i/xSteps);
+    html+='<div style="position:absolute;left:'+(x-15)+'px;bottom:8px;font-size:9px;color:var(--muted);width:30px;text-align:center">'+peLabel.toFixed(0)+'x</div>';
+  }
+  for(var i=0;i<=ySteps;i++){
+    var y=padT+(plotH*(1-i/ySteps));
+    html+='<div style="position:absolute;left:'+padL+'px;top:'+y+'px;width:'+plotW+'px;height:1px;background:var(--border);opacity:.3"></div>';
+    var gLabel=minG+((maxG-minG)*i/ySteps);
+    html+='<div style="position:absolute;left:4px;top:'+(y-6)+'px;font-size:9px;color:var(--muted);width:45px;text-align:right">'+gLabel.toFixed(0)+'%</div>';
+  }
+  // Axis labels
+  html+='<div class="scatter-x-title" style="bottom:0;left:50%">P/E Ratio</div>';
+  html+='<div class="scatter-y-title">Revenue Growth</div>';
+
+  // Quadrant labels
+  var midX=padL+plotW/2,midY=padT+plotH/2;
+  html+='<div class="scatter-quadrant" style="left:'+(padL+8)+'px;top:'+(padT+4)+'px">Growth at Discount</div>';
+  html+='<div class="scatter-quadrant" style="right:'+(padR+8)+'px;top:'+(padT+4)+'px">Premium Growth</div>';
+  html+='<div class="scatter-quadrant" style="left:'+(padL+8)+'px;bottom:'+(padB+4)+'px">Value Trap?</div>';
+  html+='<div class="scatter-quadrant" style="right:'+(padR+8)+'px;bottom:'+(padB+4)+'px">Expensive & Slow</div>';
+
+  // Dots
+  pts.forEach(function(h){
+    var xPct=(h.pe-minPE)/(maxPE-minPE);
+    var yPct=((h.revGrowth||0)-minG)/(maxG-minG);
+    var px=padL+xPct*plotW;
+    var py=padT+(1-yPct)*plotH;
+    var size=Math.max(16,Math.min(36,8+Math.sqrt(h.mcap/maxMcap)*28));
+    var color=sectorColor(h.sector);
+    var typeClass=h.type.toLowerCase()==='prospect'?'prospect':'client';
+    html+='<div class="scatter-dot '+typeClass+'" style="left:'+(px-size/2)+'px;top:'+(py-size/2)+'px;width:'+size+'px;height:'+size+'px;background:'+color+'" title="'+esc(h.symbol)+' — P/E: '+fmtN(h.pe,1)+'x, Growth: '+fmtN(h.revGrowth,1)+'%, MCap: '+fmt$(h.mcap*1e6)+'"><span class="dot-label">'+esc(h.symbol)+'</span></div>';
+  });
+
+  container.innerHTML=html;
+}
+
+var _fs=false,_eb=document.getElementById('expandBtn');
+async function toggleFS(){if(!window.openai||!window.openai.requestDisplayMode)return;try{await window.openai.requestDisplayMode({mode:_fs?'inline':'fullscreen'});_fs=!_fs;rh();}catch(e){}}
+if(window.openai&&window.openai.requestDisplayMode)_eb.addEventListener('click',toggleFS);else _eb.style.display='none';
+
+var to=window.__TOOL_DATA__||(window.openai&&window.openai.toolOutput)||{};
+if(typeof to==='string'){try{to=JSON.parse(to);}catch(e){to={};}}
+if(to&&to.holdings)render(to);
+</script>
+</body></html>

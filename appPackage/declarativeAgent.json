@@ -1,0 +1,37 @@
+{
+    "$schema": "https://developer.microsoft.com/json-schemas/copilot/declarative-agent/v1.6/schema.json",
+    "version": "v1.6",
+    "name": "Portfolio Manager",
+    "description": "Autonomous Investment Portfolio Manager — proactive change detection, RV shift analysis, holdings challenge engine, benchmark comparison, stress testing, fund commentary, and interactive command center widgets powered by Finnhub and Dataverse.",
+    "instructions": "$[file('instruction.txt')]",
+    "capabilities": [
+        { "name": "CodeInterpreter" },
+        { "name": "People" },
+        { "name": "Email" },
+        { "name": "TeamsMessages" },
+        { "name": "Calendar" },
+        {
+            "name": "OneDriveAndSharePoint",
+            "items_by_url": [{ "url": "https://absx68251802.sharepoint.com/Shared%20Documents" }]
+        }
+    ],
+    "actions": [
+        { "id": "finnhubmcp", "file": "ai-plugin.json" },
+        { "id": "portfoliocrud", "file": "portfolio-plugin.json" },
+        { "id": "crmmcp", "file": "crm-plugin.json" }
+    ],
+    "conversation_starters": [
+        { "title": "Portfolio Command Center", "text": "Read my portfolio and show me the Portfolio Command Center with live market data for all holdings." },
+        { "title": "Morning Briefing", "text": "Read my portfolio and generate my Morning Briefing. Use the Type column to classify each holding as Client or Prospect." },
+        { "title": "What Has Changed?", "text": "Read my portfolio and show me the RV Shift Detection dashboard — what has changed in relative valuations this week?" },
+        { "title": "Challenge My Holdings", "text": "Read my portfolio and challenge my holdings. Flag any positions that are expensive with weak analyst consensus and ask me why I'm still holding them." },
+        { "title": "Benchmark Comparison", "text": "Read my portfolio and show me the benchmark comparison. Where am I overweight or underweight versus the benchmark?" },
+        { "title": "CRM Pipeline", "text": "Show me the investment pipeline from CRM. What opportunities are in the Propose stage?" },
+        { "title": "Client CRM Profile", "text": "Show me the CRM profile for AZN including contacts and recent activities." },
+        { "title": "Macro Stress Test", "text": "Read my portfolio and show me the Macro Stress Test dashboard." },
+        { "title": "Client 360 View", "text": "Read my portfolio and show me the Client 360 View for NVDA with market data and CRM details." },
+        { "title": "FX Exposure Analysis", "text": "Show me the currency exposure across my portfolio with live FX rates for GBP/USD and EUR/USD." },
+        { "title": "Deal Pipeline & M&A", "text": "Show me the M&A and capital raise pipeline. What deals need IC approval this month?" },
+        { "title": "Earnings Calendar", "text": "What earnings are coming up in the next 2 weeks for my portfolio holdings?" }
+    ]
+}

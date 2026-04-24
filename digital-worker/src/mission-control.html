@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Manager — Mission Control</title>
+  <style>
+    :root {
+      --bg-root: #0d1117; --bg-sidebar: #161b22; --bg-card: #161b22; --bg-card-alt: #1c2333;
+      --border: #30363d; --text: #c9d1d9; --text-dim: #8b949e; --text-muted: #484f58;
+      --blue: #58a6ff; --green: #3fb950; --orange: #f0883e; --red: #f85149;
+      --purple: #bc8cff; --cyan: #79c0ff; --pink: #f778ba;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg-root); color: var(--text); height: 100vh; overflow: hidden; }
+    .app { display: grid; grid-template-columns: 200px 1fr 280px; height: 100vh; }
+
+    /* ── Sidebar ── */
+    .sidebar { background: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding-top: 0; }
+    .sidebar-brand { padding: 16px 16px 20px; border-bottom: 1px solid var(--border); }
+    .sidebar-brand h1 { font-size: 13px; font-weight: 700; color: var(--text); letter-spacing: 0.02em; }
+    .sidebar-brand .version { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .nav-items { list-style: none; padding: 8px 0; flex: 1; }
+    .nav-items li { padding: 10px 16px; font-size: 13px; color: var(--text-dim); cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.15s; border-left: 3px solid transparent; }
+    .nav-items li:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+    .nav-items li.active { color: var(--orange); border-left-color: var(--orange); background: rgba(240,136,62,0.08); font-weight: 600; }
+    .nav-items li .icon { width: 16px; text-align: center; font-size: 14px; }
+    .sidebar-footer { padding: 12px 16px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); }
+
+    /* ── Topbar ── */
+    .topbar { height: 44px; background: var(--bg-sidebar); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
+    .topbar-left { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--text-dim); }
+    .topbar-left .label { color: var(--text); font-weight: 600; }
+    .topbar-right { display: flex; align-items: center; gap: 16px; }
+    .health-badge { padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+    .health-badge.healthy { background: rgba(63,185,80,0.15); color: var(--green); }
+    .health-badge.unhealthy { background: rgba(248,81,73,0.15); color: var(--red); }
+    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse-dot 2s infinite; }
+    @keyframes pulse-dot { 0%,100%{ opacity:1; } 50%{ opacity:0.4; } }
+
+    /* ── Main content ── */
+    .main { display: flex; flex-direction: column; overflow: hidden; }
+    .content { flex: 1; overflow-y: auto; padding: 20px; }
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ── Stats Row ── */
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+    .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
+    .stat-value { font-size: 28px; font-weight: 700; color: var(--text); line-height: 1.1; }
+    .stat-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 6px; }
+    .stat-value.blue { color: var(--blue); } .stat-value.green { color: var(--green); }
+    .stat-value.orange { color: var(--orange); } .stat-value.purple { color: var(--purple); }
+
+    /* ── Panels ── */
+    .panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+    .panel-title { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; font-weight: 600; }
+    .panel-full { grid-column: 1 / -1; }
+    .metric-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(48,54,61,0.5); }
+    .metric-row:last-child { border-bottom: none; }
+    .metric-label { font-size: 13px; color: var(--text-dim); }
+    .metric-val { font-size: 15px; font-weight: 600; }
+
+    /* ── Phase Badge ── */
+    .phase-badge { padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+    .phase-badge.init { background: rgba(88,166,255,0.15); color: var(--blue); }
+    .phase-badge.executing { background: rgba(63,185,80,0.15); color: var(--green); }
+    .phase-badge.winding_down { background: rgba(240,136,62,0.15); color: var(--orange); }
+    .phase-badge.ended { background: rgba(139,148,158,0.15); color: var(--text-dim); }
+    .phase-badge.idle { background: rgba(139,148,158,0.15); color: var(--text-dim); }
+
+    /* ── Tool Bars ── */
+    .tool-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .tool-name { font-size: 11px; color: var(--text-dim); width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .tool-bar-bg { flex: 1; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .tool-bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s; }
+    .tool-count { font-size: 11px; color: var(--text-muted); width: 30px; text-align: right; }
+
+    /* ── Circuit Breakers ── */
+    .circuit-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px solid rgba(48,54,61,0.5); }
+    .circuit-row:last-child { border: none; }
+    .cb-badge { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+    .cb-badge.closed { background: rgba(63,185,80,0.15); color: var(--green); }
+    .cb-badge.open { background: rgba(248,81,73,0.15); color: var(--red); }
+    .cb-badge.half_open { background: rgba(240,136,62,0.15); color: var(--orange); }
+    .circuit-name { font-size: 12px; color: var(--text-dim); flex: 1; }
+    .circuit-meta { font-size: 10px; color: var(--text-muted); }
+
+    /* ── Event Table (Agent Mind) ── */
+    .filter-tabs { display: flex; gap: 4px; margin-bottom: 12px; flex-wrap: wrap; }
+    .filter-tab { padding: 4px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; border: 1px solid var(--border); color: var(--text-dim); background: transparent; transition: all 0.15s; }
+    .filter-tab:hover { border-color: var(--text-dim); }
+    .filter-tab.active { background: rgba(88,166,255,0.15); border-color: var(--blue); color: var(--blue); }
+    .event-table { width: 100%; border-collapse: collapse; }
+    .event-table th { text-align: left; font-size: 11px; color: var(--text-muted); text-transform: uppercase; padding: 8px 10px; border-bottom: 1px solid var(--border); font-weight: 600; }
+    .event-table td { padding: 8px 10px; font-size: 12px; border-bottom: 1px solid rgba(48,54,61,0.4); color: var(--text-dim); vertical-align: top; }
+    .event-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .evt-badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; text-transform: uppercase; }
+    .evt-badge.action { background: rgba(188,140,255,0.15); color: var(--purple); }
+    .evt-badge.signal { background: rgba(88,166,255,0.15); color: var(--blue); }
+    .evt-badge.tool { background: rgba(63,185,80,0.15); color: var(--green); }
+    .evt-badge.workflow { background: rgba(240,136,62,0.15); color: var(--orange); }
+    .evt-badge.cycle { background: rgba(121,192,255,0.15); color: var(--cyan); }
+    .evt-badge.finding { background: rgba(247,120,186,0.15); color: var(--pink); }
+    .sev-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .sev-dot.critical { background: var(--red); } .sev-dot.high { background: var(--orange); }
+    .sev-dot.medium { background: #e3b341; } .sev-dot.low { background: var(--text-dim); }
+
+    /* ── Neural Core (Graph) ── */
+    .graph-container { position: relative; width: 100%; height: calc(100vh - 130px); }
+    .graph-container canvas { width: 100%; height: 100%; display: block; }
+    .graph-legend { display: flex; gap: 16px; position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); background: rgba(13,17,23,0.85); padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border); }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-dim); }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+    /* ── Actions View ── */
+    .action-card { background: var(--bg-card-alt); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; margin-bottom: 8px; display: flex; align-items: flex-start; gap: 12px; }
+    .action-card .sev-dot { margin-top: 4px; flex-shrink: 0; }
+    .action-body { flex: 1; }
+    .action-title { font-size: 13px; font-weight: 600; color: var(--text); }
+    .action-meta { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+    .action-status { padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+    .action-status.open { background: rgba(88,166,255,0.15); color: var(--blue); }
+    .action-status.acknowledged { background: rgba(240,136,62,0.15); color: var(--orange); }
+    .action-status.acted { background: rgba(63,185,80,0.15); color: var(--green); }
+    .action-status.dismissed { background: rgba(139,148,158,0.15); color: var(--text-dim); }
+    .action-status.escalated { background: rgba(248,81,73,0.15); color: var(--red); }
+    .wf-card { background: var(--bg-card-alt); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; margin-bottom: 8px; }
+    .wf-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .wf-title { font-size: 13px; font-weight: 600; color: var(--text); }
+    .wf-steps { display: flex; gap: 4px; }
+    .wf-step { width: 24px; height: 6px; border-radius: 3px; background: var(--border); }
+    .wf-step.completed { background: var(--green); }
+    .wf-step.running { background: var(--blue); animation: pulse-dot 1.5s infinite; }
+    .wf-step.failed { background: var(--red); }
+
+    /* ── Findings Timeline ── */
+    .finding-item { padding: 10px 0; border-bottom: 1px solid rgba(48,54,61,0.4); display: flex; gap: 12px; }
+    .finding-item:last-child { border: none; }
+    .finding-time { font-size: 11px; color: var(--text-muted); min-width: 60px; }
+    .finding-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); margin-top: 4px; flex-shrink: 0; }
+    .finding-text { font-size: 12px; color: var(--text-dim); line-height: 1.4; }
+
+    /* ── Planned Task Timeline ── */
+    .plan-phase { margin-bottom: 18px; }
+    .plan-phase-header { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid rgba(48,54,61,0.3); }
+    .plan-task { display: flex; align-items: center; gap: 12px; padding: 10px 12px; margin-bottom: 4px; border-radius: 6px; background: rgba(13,17,23,0.4); transition: background 0.2s; }
+    .plan-task:hover { background: rgba(13,17,23,0.7); }
+    .plan-task-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+    .plan-task-icon.pending { background: rgba(110,118,129,0.2); color: var(--text-muted); }
+    .plan-task-icon.running { background: rgba(88,166,255,0.2); color: var(--blue); animation: pulse-dot 1.5s infinite; }
+    .plan-task-icon.completed { background: rgba(63,185,80,0.2); color: var(--green); }
+    .plan-task-icon.failed { background: rgba(248,81,73,0.2); color: var(--red); }
+    .plan-task-body { flex: 1; min-width: 0; }
+    .plan-task-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .plan-task-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .plan-task-time { font-size: 11px; color: var(--text-muted); font-family: monospace; min-width: 70px; text-align: right; }
+    .plan-task-output { font-size: 11px; color: var(--text-dim); margin-top: 6px; padding: 6px 8px; background: rgba(13,17,23,0.6); border-radius: 4px; border-left: 2px solid var(--blue); line-height: 1.4; max-height: 80px; overflow-y: auto; }
+
+    /* ── Feed Panel ── */
+    .feed-panel { background: var(--bg-sidebar); border-left: 1px solid var(--border); display: flex; flex-direction: column; }
+    .feed-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .feed-header h3 { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+    .feed-list { flex: 1; overflow-y: auto; padding: 0; }
+    .feed-item { padding: 8px 16px; border-bottom: 1px solid rgba(48,54,61,0.3); font-size: 11px; line-height: 1.4; }
+    .feed-item .feed-time { color: var(--text-muted); font-size: 10px; font-family: 'SF Mono', Consolas, monospace; }
+    .feed-item .feed-msg { color: var(--text-dim); margin-top: 2px; }
+    .feed-item .feed-agent { color: var(--blue); font-weight: 600; }
+
+    /* ── Empty States ── */
+    .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+    .empty-state .empty-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.5; }
+    .empty-state .empty-text { font-size: 13px; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+  </style>
+</head>
+<body>
+<div class="app">
+  <!-- ── Sidebar ── -->
+  <nav class="sidebar">
+    <div class="sidebar-brand">
+      <h1>⚡ Portfolio Manager</h1>
+      <div class="version">Mission Control <span id="ver">v25</span></div>
+    </div>
+    <ul class="nav-items">
+      <li class="active" data-view="command-center"><span class="icon">◉</span> Command Center</li>
+      <li data-view="agent-mind"><span class="icon">◎</span> Agent Mind</li>
+      <li data-view="neural-core"><span class="icon">◈</span> Neural Core</li>
+      <li data-view="actions"><span class="icon">▣</span> Actions</li>
+      <li data-view="workday"><span class="icon">◧</span> Today's Plan</li>
+    </ul>
+    <div class="sidebar-footer">Digital Worker · Container Apps<br>Auto-refresh 10s</div>
+  </nav>
+
+  <!-- ── Main Area ── -->
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <span class="label" id="view-title">Command Center</span>
+        <span>— what Portfolio Manager is doing right now</span>
+      </div>
+      <div class="topbar-right">
+        <span style="font-size:12px;color:var(--text-dim)">uptime <span id="topbar-uptime" style="color:var(--text)">—</span></span>
+        <span class="health-badge healthy" id="health-badge">Healthy</span>
+        <div class="live-dot"></div>
+      </div>
+    </header>
+
+    <div class="content">
+      <!-- ═══ Command Center View ═══ -->
+      <div class="view active" id="view-command-center">
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-value blue" id="s-uptime">0h</div><div class="stat-label">Uptime</div></div>
+          <div class="stat-card"><div class="stat-value green" id="s-requests">0</div><div class="stat-label">Requests</div></div>
+          <div class="stat-card"><div class="stat-value orange" id="s-tools">0</div><div class="stat-label">Tool Calls</div></div>
+          <div class="stat-card"><div class="stat-value purple" id="s-signals">0</div><div class="stat-label">Signals</div></div>
+        </div>
+        <div class="panel-grid">
+          <div class="panel">
+            <div class="panel-title">Workday Status</div>
+            <div class="metric-row"><span class="metric-label">Phase</span><span class="phase-badge idle" id="cc-phase">idle</span></div>
+            <div class="metric-row"><span class="metric-label">Cycle</span><span class="metric-val" id="cc-cycle">0</span></div>
+            <div class="metric-row"><span class="metric-label">Alerts Sent</span><span class="metric-val" style="color:var(--orange)" id="cc-alerts">0</span></div>
+            <div class="metric-row"><span class="metric-label">Tasks Done</span><span class="metric-val" style="color:var(--green)" id="cc-tasks">0</span></div>
+          </div>
+          <div class="panel">
+            <div class="panel-title">Decision Engine</div>
+            <div class="metric-row"><span class="metric-label">Total Runs</span><span class="metric-val" id="cc-runs">0</span></div>
+            <div class="metric-row"><span class="metric-label">Signals</span><span class="metric-val" style="color:var(--blue)" id="cc-signals">0</span></div>
+            <div class="metric-row"><span class="metric-label">Alerts</span><span class="metric-val" style="color:var(--green)" id="cc-dalerts">0</span></div>
+            <div class="metric-row"><span class="metric-label">Suppressed</span><span class="metric-val" id="cc-suppressed">0</span></div>
+          </div>
+          <div class="panel">
+            <div class="panel-title">Top Tools (by usage)</div>
+            <div id="cc-tools"><div class="empty-state"><div class="empty-icon">⚙</div><div class="empty-text">No tool calls yet</div></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-title">Circuit Breakers</div>
+            <div id="cc-circuits"><div class="empty-state"><div class="empty-icon">⛓</div><div class="empty-text">No circuits registered</div></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-title">Tool Cache</div>
+            <div class="metric-row"><span class="metric-label">Entries</span><span class="metric-val" id="cc-cache-size">0</span></div>
+            <div class="metric-row"><span class="metric-label">Hit Rate</span><span class="metric-val" style="color:var(--green)" id="cc-cache-rate">0%</span></div>
+            <div class="metric-row"><span class="metric-label">Hits / Misses</span><span class="metric-val" id="cc-cache-hm">0 / 0</span></div>
+          </div>
+          <div class="panel">
+            <div class="panel-title">Task History</div>
+            <div id="cc-tasks-list"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">No tasks yet</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ Agent Mind View ═══ -->
+      <div class="view" id="view-agent-mind">
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-value blue" id="am-total">0</div><div class="stat-label">Total Events</div></div>
+          <div class="stat-card"><div class="stat-value green" id="am-actions">0</div><div class="stat-label">Active Actions</div></div>
+          <div class="stat-card"><div class="stat-value orange" id="am-tools">0</div><div class="stat-label">Tool Calls</div></div>
+          <div class="stat-card"><div class="stat-value purple" id="am-workflows">0</div><div class="stat-label">Workflows</div></div>
+        </div>
+        <div class="filter-tabs" id="am-filters"></div>
+        <table class="event-table">
+          <thead><tr><th style="width:80px">Time</th><th style="width:70px">Type</th><th>Source</th><th>Details</th><th style="width:60px">Status</th></tr></thead>
+          <tbody id="am-tbody"></tbody>
+        </table>
+        <div id="am-empty" class="empty-state"><div class="empty-icon">🧠</div><div class="empty-text">No events yet. Start the workday to generate activity.</div></div>
+      </div>
+
+      <!-- ═══ Neural Core View ═══ -->
+      <div class="view" id="view-neural-core">
+        <div class="graph-container">
+          <canvas id="graph-canvas"></canvas>
+          <div class="graph-legend" id="graph-legend"></div>
+        </div>
+      </div>
+
+      <!-- ═══ Actions View ═══ -->
+      <div class="view" id="view-actions">
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-value blue" id="act-open">0</div><div class="stat-label">Open</div></div>
+          <div class="stat-card"><div class="stat-value orange" id="act-ack">0</div><div class="stat-label">Acknowledged</div></div>
+          <div class="stat-card"><div class="stat-value green" id="act-acted">0</div><div class="stat-label">Acted</div></div>
+          <div class="stat-card"><div class="stat-value purple" id="act-wf">0</div><div class="stat-label">Workflows</div></div>
+        </div>
+        <div class="panel-grid">
+          <div class="panel panel-full">
+            <div class="panel-title">Pending Recommendations</div>
+            <div id="act-list"><div class="empty-state"><div class="empty-icon">✓</div><div class="empty-text">No pending actions. The agent will create recommendations during workday cycles.</div></div></div>
+          </div>
+          <div class="panel panel-full">
+            <div class="panel-title">Active Workflows</div>
+            <div id="wf-list"><div class="empty-state"><div class="empty-icon">⟳</div><div class="empty-text">No active workflows. Workflows start automatically for earnings, risk events, and new positions.</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ Today's Plan View ═══ -->
+      <div class="view" id="view-workday">
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-value" id="wd-phase-big">idle</div><div class="stat-label">Current Phase</div></div>
+          <div class="stat-card"><div class="stat-value blue" id="wd-cycle">0</div><div class="stat-label">Cycles</div></div>
+          <div class="stat-card"><div class="stat-value orange" id="wd-alerts">0</div><div class="stat-label">Alerts Sent</div></div>
+          <div class="stat-card"><div class="stat-value green" id="wd-tasks">0</div><div class="stat-label">Tasks Done</div></div>
+        </div>
+
+        <!-- Planned Workday Timeline -->
+        <div class="panel">
+          <div class="panel-title">Workday Plan</div>
+          <div id="wd-plan-timeline">
+            <div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">Workday not started yet. Plan will appear at day init.</div></div>
+          </div>
+        </div>
+
+        <!-- Task Outputs -->
+        <div class="panel">
+          <div class="panel-title">Task Outputs</div>
+          <div id="wd-task-outputs">
+            <div class="empty-state"><div class="empty-icon">📄</div><div class="empty-text">No task outputs yet.</div></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">Key Findings</div>
+          <div id="wd-findings"><div class="empty-state"><div class="empty-icon">📍</div><div class="empty-text">No findings yet. Start the workday to begin analysis.</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Live Feed Panel ── -->
+  <aside class="feed-panel">
+    <div class="feed-header">
+      <h3>Live Agent Feed</h3>
+      <div class="live-dot"></div>
+    </div>
+    <div class="feed-list" id="feed-list">
+      <div class="feed-item"><span class="feed-time">--:--:--</span><div class="feed-msg">Waiting for activity...</div></div>
+    </div>
+  </aside>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// Mission Control — Client-Side Logic
+// ═══════════════════════════════════════════════════════════════════
+
+const BASE = window.location.origin;
+const feedItems = [];
+let graphInitialized = false;
+let graphNodes = [], graphEdges = [];
+let prevToolCalls = 0, prevSignals = 0;
+let firstFetch = true;
+
+// ── Navigation ──
+document.querySelectorAll('.nav-items li').forEach(li => {
+  li.addEventListener('click', () => {
+    document.querySelectorAll('.nav-items li').forEach(l => l.classList.remove('active'));
+    li.classList.add('active');
+    const viewId = li.dataset.view;
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + viewId).classList.add('active');
+    const titles = { 'command-center': 'Command Center', 'agent-mind': 'Agent Mind', 'neural-core': 'Neural Core', 'actions': 'Actions', 'workday': "Today's Plan" };
+    document.getElementById('view-title').textContent = titles[viewId] || viewId;
+    if (viewId === 'neural-core' && !graphInitialized) initGraph();
+  });
+});
+
+// ── Feed helper ──
+function addFeed(msg, agent) {
+  const now = new Date().toLocaleTimeString('en-US', { hour12: false });
+  feedItems.unshift({ time: now, msg, agent: agent || 'system' });
+  if (feedItems.length > 100) feedItems.length = 100;
+  const el = document.getElementById('feed-list');
+  el.innerHTML = feedItems.map(f =>
+    `<div class="feed-item"><span class="feed-time">${f.time}</span><div class="feed-msg"><span class="feed-agent">${f.agent}</span> — ${f.msg}</div></div>`
+  ).join('');
+}
+
+// ── Data Fetching ──
+async function fetchAll() {
+  const [anR, wdR, caR, ciR, acR, asR, wfR] = await Promise.allSettled([
+    fetch(`${BASE}/api/analytics`).then(r => r.json()),
+    fetch(`${BASE}/api/workday/state`).then(r => r.json()),
+    fetch(`${BASE}/api/analytics/cache`).then(r => r.json()),
+    fetch(`${BASE}/api/analytics/circuits`).then(r => r.json()),
+    fetch(`${BASE}/api/actions/recent?count=50`).then(r => r.json()),
+    fetch(`${BASE}/api/actions/summary`).then(r => r.json()),
+    fetch(`${BASE}/api/workflows/summary`).then(r => r.json()),
+  ]);
+
+  const analytics = anR.status === 'fulfilled' ? anR.value : null;
+  const workday = wdR.status === 'fulfilled' ? wdR.value : null;
+  const cache = caR.status === 'fulfilled' ? caR.value : null;
+  const circuits = ciR.status === 'fulfilled' ? ciR.value : null;
+  const actions = acR.status === 'fulfilled' ? acR.value : [];
+  const actionSummary = asR.status === 'fulfilled' ? asR.value : {};
+  const wfSummary = wfR.status === 'fulfilled' ? wfR.value : {};
+
+  if (analytics) renderAnalytics(analytics);
+  if (workday) renderWorkday(workday);
+  if (cache) renderCache(cache);
+  if (circuits) renderCircuits(circuits);
+  renderActions(actions, actionSummary);
+  renderWorkflows(wfSummary);
+  renderAgentMind(analytics, actions, workday);
+  updateGraph(analytics);
+
+  document.getElementById('health-badge').textContent = 'Healthy';
+  document.getElementById('health-badge').className = 'health-badge healthy';
+  if (firstFetch) {
+    addFeed('All systems online — polling every 10s', 'system');
+    firstFetch = false;
+  }
+}
+
+// ── Render: Analytics (Command Center) ──
+function renderAnalytics(data) {
+  const s = data.system || {};
+  const h = Math.floor((s.uptimeMs || 0) / 3600000);
+  const m = Math.floor(((s.uptimeMs || 0) % 3600000) / 60000);
+  const uptimeStr = h > 0 ? `${h}h ${m}m` : `${m}m`;
+  document.getElementById('s-uptime').textContent = uptimeStr;
+  document.getElementById('topbar-uptime').textContent = uptimeStr;
+  document.getElementById('s-requests').textContent = (s.requestCount || 0).toLocaleString();
+  const totalTools = (data.tools || []).reduce((sum, t) => sum + t.callCount, 0);
+  document.getElementById('s-tools').textContent = totalTools.toLocaleString();
+  const d = data.decision || {};
+  document.getElementById('s-signals').textContent = (d.signalsDetected || 0).toLocaleString();
+
+  // Feed: detect new activity
+  if (totalTools > prevToolCalls) {
+    if (prevToolCalls === 0 && totalTools > 0) {
+      addFeed(`${totalTools} tool calls loaded`, 'analytics');
+    } else if (prevToolCalls > 0) {
+      addFeed(`${totalTools - prevToolCalls} new tool calls recorded`, 'analytics');
+    }
+  }
+  if ((d.signalsDetected || 0) > prevSignals) {
+    if (prevSignals === 0 && d.signalsDetected > 0) {
+      addFeed(`${d.signalsDetected} signals in memory`, 'decision-engine');
+    } else if (prevSignals > 0) {
+      addFeed(`${d.signalsDetected - prevSignals} new signals detected`, 'decision-engine');
+    }
+  }
+  if (prevToolCalls === 0 && s.requestCount > 0) {
+    addFeed(`${s.requestCount} requests served since startup`, 'system');
+  }
+  prevToolCalls = totalTools;
+  prevSignals = d.signalsDetected || 0;
+
+  // Decision engine
+  document.getElementById('cc-runs').textContent = d.totalRuns || 0;
+  document.getElementById('cc-signals').textContent = d.signalsDetected || 0;
+  document.getElementById('cc-dalerts').textContent = d.alertsSent || 0;
+  document.getElementById('cc-suppressed').textContent = d.alertsSuppressed || 0;
+
+  // Top tools
+  const tools = (data.tools || []).slice(0, 10);
+  const maxC = Math.max(...tools.map(t => t.callCount), 1);
+  const colors = ['var(--blue)', 'var(--green)', 'var(--orange)', 'var(--purple)', 'var(--cyan)', 'var(--pink)'];
+  document.getElementById('cc-tools').innerHTML = tools.length ? tools.map((t, i) => `
+    <div class="tool-row"><span class="tool-name">${t.name}</span>
+    <div class="tool-bar-bg"><div class="tool-bar-fill" style="width:${(t.callCount/maxC*100).toFixed(0)}%;background:${colors[i%colors.length]}"></div></div>
+    <span class="tool-count">${t.callCount}</span></div>`).join('') : '<div class="empty-state"><div class="empty-icon">⚙</div><div class="empty-text">No tool calls yet</div></div>';
+
+  // Tasks
+  const tasks = (data.tasks || []).slice(0, 6);
+  document.getElementById('cc-tasks-list').innerHTML = tasks.length ? tasks.map(t => `
+    <div class="metric-row"><span class="metric-label">${t.name}</span>
+    <span class="metric-val" style="font-size:13px"><span style="color:var(--green)">${t.successCount}✓</span> <span style="color:var(--red)">${t.errorCount}✗</span> <span style="color:var(--text-muted)">(${Math.round(t.avgDurationMs/1000)}s)</span></span></div>`).join('')
+    : '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">No tasks yet</div></div>';
+}
+
+// ── Render: Workday ──
+let prevPhase = 'idle';
+let prevPlannedStatuses = {};
+function renderWorkday(data) {
+  const phase = data.phase || 'idle';
+  const el = document.getElementById('cc-phase');
+  el.textContent = phase.replace('_', ' ');
+  el.className = `phase-badge ${phase}`;
+  document.getElementById('cc-cycle').textContent = data.cycleCount ?? 0;
+  document.getElementById('cc-alerts').textContent = data.alertsSent ?? 0;
+  document.getElementById('cc-tasks').textContent = data.tasksCompleted ?? 0;
+
+  // Feed: phase transitions
+  if (phase !== prevPhase) {
+    const phaseLabels = { init: 'Initializing workday...', executing: 'Market hours — monitoring portfolio', winding_down: 'Winding down for end of day', ended: 'Workday complete', idle: 'Standing by' };
+    addFeed(phaseLabels[phase] || `Phase: ${phase}`, 'workday');
+    prevPhase = phase;
+  }
+
+  // Today's Plan view
+  document.getElementById('wd-phase-big').textContent = phase.replace('_', ' ');
+  document.getElementById('wd-cycle').textContent = data.cycleCount ?? 0;
+  document.getElementById('wd-alerts').textContent = data.alertsSent ?? 0;
+  document.getElementById('wd-tasks').textContent = data.tasksCompleted ?? 0;
+
+  // ── Planned Tasks Timeline ──
+  const tasks = data.plannedTasks || [];
+  if (tasks.length > 0) {
+    const phases = ['morning', 'market-hours', 'end-of-day'];
+    const phaseNames = { morning: 'Pre-Market / Morning', 'market-hours': 'Market Hours', 'end-of-day': 'End of Day' };
+    const statusIcons = { pending: '○', running: '◉', completed: '✓', failed: '✗', skipped: '—' };
+    let html = '';
+    for (const p of phases) {
+      const phaseTasks = tasks.filter(t => t.phase === p);
+      if (phaseTasks.length === 0) continue;
+      html += `<div class="plan-phase"><div class="plan-phase-header">${phaseNames[p] || p}</div>`;
+      for (const t of phaseTasks) {
+        const icon = statusIcons[t.status] || '○';
+        html += `<div class="plan-task">
+          <div class="plan-task-icon ${t.status}">${icon}</div>
+          <div class="plan-task-body">
+            <div class="plan-task-name">${escHtml(t.name)}</div>
+            <div class="plan-task-desc">${escHtml(t.description)}</div>
+            ${t.output ? `<div class="plan-task-output">${escHtml(t.output)}</div>` : ''}
+          </div>
+          <div class="plan-task-time">${escHtml(t.scheduledTime)}</div>
+        </div>`;
+
+        // Feed: task status changes
+        const prevStatus = prevPlannedStatuses[t.id];
+        if (prevStatus && prevStatus !== t.status) {
+          if (t.status === 'running') addFeed(`Started: ${t.name}`, 'workday');
+          else if (t.status === 'completed') addFeed(`Completed: ${t.name}`, 'workday');
+          else if (t.status === 'failed') addFeed(`Failed: ${t.name}`, 'workday');
+        }
+        prevPlannedStatuses[t.id] = t.status;
+      }
+      html += '</div>';
+    }
+    document.getElementById('wd-plan-timeline').innerHTML = html;
+  }
+
+  // Task outputs panel
+  const completedTasks = tasks.filter(t => t.output);
+  document.getElementById('wd-task-outputs').innerHTML = completedTasks.length
+    ? completedTasks.map(t => `<div style="margin-bottom:12px">
+        <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:4px">${escHtml(t.name)}</div>
+        <div style="font-size:11px;color:var(--text-dim);line-height:1.5;padding:8px;background:rgba(13,17,23,0.5);border-radius:4px">${escHtml(t.output)}</div>
+      </div>`).join('')
+    : '<div class="empty-state"><div class="empty-icon">📄</div><div class="empty-text">No task outputs yet.</div></div>';
+
+  // Key findings
+  const findings = data.keyFindings || [];
+  document.getElementById('wd-findings').innerHTML = findings.length ? findings.map((f, i) => `
+    <div class="finding-item"><div class="finding-dot" style="background:${['var(--blue)','var(--green)','var(--orange)','var(--purple)','var(--cyan)'][i%5]}"></div>
+    <div class="finding-text">${escHtml(f)}</div></div>`).join('') : '<div class="empty-state"><div class="empty-icon">📍</div><div class="empty-text">No findings yet. Start the workday to begin analysis.</div></div>';
+  // Add findings to feed
+  if (findings.length > 0) {
+    const latest = findings[findings.length - 1];
+    if (!feedItems.some(f => f.msg === latest)) addFeed(latest, 'workday');
+  }
+}
+
+// ── Render: Cache ──
+function renderCache(data) {
+  document.getElementById('cc-cache-size').textContent = `${data.size || 0} / ${data.maxSize || 500}`;
+  document.getElementById('cc-cache-rate').textContent = `${((data.hitRate || 0) * 100).toFixed(1)}%`;
+  document.getElementById('cc-cache-hm').textContent = `${data.hitCount || 0} / ${data.missCount || 0}`;
+}
+
+// ── Render: Circuits ──
+let prevCircuitStates = {};
+function renderCircuits(data) {
+  const circuits = Object.entries(data || {});
+  document.getElementById('cc-circuits').innerHTML = circuits.length ? circuits.map(([name, c]) => `
+    <div class="circuit-row"><span class="cb-badge ${c.state}">${c.state}</span>
+    <span class="circuit-name">${name}</span>
+    <span class="circuit-meta">fails: ${c.failureCount} · trips: ${c.totalTrips}</span></div>`).join('')
+    : '<div class="empty-state"><div class="empty-icon">⛓</div><div class="empty-text">No circuits registered</div></div>';
+  // Feed: circuit state changes
+  for (const [name, c] of circuits) {
+    if (prevCircuitStates[name] && prevCircuitStates[name] !== c.state) {
+      addFeed(`Circuit ${name}: ${prevCircuitStates[name]} → ${c.state}`, 'circuit-breaker');
+    }
+    prevCircuitStates[name] = c.state;
+  }
+}
+
+// ── Render: Actions ──
+let prevActionCount = 0;
+function renderActions(actions, summary) {
+  document.getElementById('act-open').textContent = summary.open ?? 0;
+  document.getElementById('act-ack').textContent = summary.acknowledged ?? 0;
+  document.getElementById('act-acted').textContent = summary.acted ?? 0;
+  const pending = Array.isArray(actions) ? actions.filter(a => ['open','acknowledged','escalated'].includes(a.status)) : [];
+  document.getElementById('act-list').innerHTML = pending.length ? pending.map(a => `
+    <div class="action-card"><span class="sev-dot ${a.severity}"></span><div class="action-body">
+    <div class="action-title">${escHtml(a.recommendation)}</div>
+    <div class="action-meta">${a.symbol} · ${a.actionType} · ${timeAgo(a.createdAt)}</div>
+    </div><span class="action-status ${a.status}">${a.status}</span></div>`).join('')
+    : '<div class="empty-state"><div class="empty-icon">✓</div><div class="empty-text">No pending actions</div></div>';
+  // Feed: new actions
+  const total = Array.isArray(actions) ? actions.length : 0;
+  if (total > prevActionCount && prevActionCount > 0) {
+    const newest = actions[0];
+    addFeed(`New ${newest.severity} action: ${newest.symbol} — ${newest.actionType}`, 'action-tracker');
+  }
+  prevActionCount = total;
+}
+
+// ── Render: Workflows ──
+function renderWorkflows(summary) {
+  document.getElementById('act-wf').textContent = summary.active ?? 0;
+}
+
+// ── Render: Agent Mind (unified event table) ──
+function renderAgentMind(analytics, actions, workday) {
+  const events = [];
+  // Actions as events
+  if (Array.isArray(actions)) {
+    for (const a of actions) {
+      events.push({ time: a.createdAt, type: 'action', source: a.source || 'agent', detail: `${a.actionType} ${a.symbol} — ${a.recommendation}`, status: a.status, severity: a.severity });
+    }
+  }
+  // Tool calls as events
+  if (analytics && analytics.tools) {
+    for (const t of analytics.tools) {
+      if (t.lastCalledAt) events.push({ time: t.lastCalledAt, type: 'tool', source: t.name, detail: `${t.callCount} calls · ${Math.round(t.avgDurationMs)}ms avg · ${t.errorCount} errors`, status: t.errorCount > 0 ? 'error' : 'ok' });
+    }
+  }
+  // Workday findings as events
+  if (workday && workday.keyFindings) {
+    for (const f of workday.keyFindings) {
+      events.push({ time: workday.startedAt || Date.now(), type: 'finding', source: 'workday', detail: f });
+    }
+  }
+  // Tasks as events
+  if (analytics && analytics.tasks) {
+    for (const t of analytics.tasks) {
+      if (t.lastRunAt) events.push({ time: t.lastRunAt, type: 'cycle', source: t.name, detail: `${t.successCount}✓ ${t.errorCount}✗ · ${Math.round(t.avgDurationMs/1000)}s`, status: t.errorCount > 0 ? 'error' : 'ok' });
+    }
+  }
+  events.sort((a, b) => (b.time || 0) - (a.time || 0));
+
+  // Stats
+  document.getElementById('am-total').textContent = events.length;
+  document.getElementById('am-actions').textContent = events.filter(e => e.type === 'action').length;
+  document.getElementById('am-tools').textContent = events.filter(e => e.type === 'tool').length;
+  document.getElementById('am-workflows').textContent = events.filter(e => e.type === 'cycle').length;
+
+  // Filters
+  const types = ['all', ...new Set(events.map(e => e.type))];
+  const counts = {};
+  for (const e of events) counts[e.type] = (counts[e.type] || 0) + 1;
+  counts.all = events.length;
+  document.getElementById('am-filters').innerHTML = types.map(t =>
+    `<button class="filter-tab${t==='all'?' active':''}" data-type="${t}">${t} (${counts[t] || 0})</button>`
+  ).join('');
+  document.querySelectorAll('#am-filters .filter-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#am-filters .filter-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const ft = btn.dataset.type;
+      document.querySelectorAll('#am-tbody tr').forEach(tr => {
+        tr.style.display = (ft === 'all' || tr.dataset.type === ft) ? '' : 'none';
+      });
+    });
+  });
+
+  // Table
+  if (events.length === 0) {
+    document.getElementById('am-tbody').innerHTML = '';
+    document.getElementById('am-empty').style.display = '';
+    return;
+  }
+  document.getElementById('am-empty').style.display = 'none';
+  document.getElementById('am-tbody').innerHTML = events.slice(0, 100).map(e => {
+    const ts = e.time ? new Date(e.time).toLocaleTimeString('en-US', { hour12: false }) : '--:--:--';
+    const badge = `<span class="evt-badge ${e.type}">${e.type}</span>`;
+    const sevHtml = e.severity ? `<span class="sev-dot ${e.severity}"></span>` : '';
+    const statusHtml = e.status ? `<span style="font-size:10px;color:var(--text-muted)">${e.status}</span>` : '';
+    return `<tr data-type="${e.type}"><td style="font-family:monospace;font-size:11px;color:var(--text-muted)">${ts}</td><td>${badge}</td><td style="color:var(--text)">${escHtml(e.source)}</td><td>${escHtml(e.detail)}</td><td>${sevHtml}${statusHtml}</td></tr>`;
+  }).join('');
+}
+
+// ── Neural Core: Force-Directed Graph ──
+const TOOL_GROUPS = {
+  'Market Data': { color: '#58a6ff', match: /quote|financial|analyst|relative|earnings|morning/i },
+  'Portfolio': { color: '#3fb950', match: /portfolio|concentration|stress|position/i },
+  'CRM': { color: '#f0883e', match: /crm|client|pipeline|deal|crud/i },
+  'News': { color: '#79c0ff', match: /news|search_news/i },
+  'Actions': { color: '#bc8cff', match: /action|acknowledge|dismiss|defer|act_on|pending/i },
+  'Workflows': { color: '#f85149', match: /workflow|active_workflows/i },
+  'Memory': { color: '#d2a8ff', match: /memory|save|load|recall/i },
+  'System': { color: '#8b949e', match: /.*/i },
+};
+
+function categorize(toolName) {
+  for (const [group, cfg] of Object.entries(TOOL_GROUPS)) {
+    if (cfg.match.test(toolName) && group !== 'System') return { group, color: cfg.color };
+  }
+  return { group: 'System', color: '#8b949e' };
+}
+
+function initGraph() {
+  graphInitialized = true;
+  const canvas = document.getElementById('graph-canvas');
+  const container = canvas.parentElement;
+  canvas.width = container.clientWidth;
+  canvas.height = container.clientHeight;
+  const ctx = canvas.getContext('2d');
+  const cx = canvas.width / 2, cy = canvas.height / 2;
+
+  // Center node
+  graphNodes = [{ id: '__center__', label: 'Portfolio Manager', group: 'Core', color: '#f0883e', x: cx, y: cy, vx: 0, vy: 0, size: 22, fixed: true, calls: 0 }];
+
+  // Build legend
+  const legend = document.getElementById('graph-legend');
+  legend.innerHTML = Object.entries(TOOL_GROUPS).filter(([g]) => g !== 'System').map(([g, c]) =>
+    `<div class="legend-item"><div class="legend-dot" style="background:${c.color}"></div>${g}</div>`
+  ).join('');
+
+  // Populate with known tools from analytics if available, or default set
+  const defaultTools = [
+    'get_stock_quote','get_financials','get_analyst_consensus','get_relative_value','get_earnings_calendar',
+    'get_portfolio_dashboard','get_concentration_risk','get_stress_test','get_morning_briefing',
+    'get_crm_pipeline','get_crm_account','get_client_360','get_crud_form',
+    'search_news','get_news_feed',
+    'list_pending_actions','acknowledge_action','act_on_recommendation','dismiss_action','defer_action','get_action_summary','recent_actions',
+    'list_active_workflows','get_workflow_details','get_workflow_summary',
+    'send_email','post_to_teams_channel',
+    'save_persistent_memory','load_persistent_memory','search_memories',
+    'get_fx_rates','run_trade_simulation','get_portfolio_compliance',
+  ];
+  for (const tool of defaultTools) {
+    const cat = categorize(tool);
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 120 + Math.random() * 180;
+    graphNodes.push({
+      id: tool, label: tool.replace(/^get_/, '').replace(/_/g, ' '),
+      group: cat.group, color: cat.color,
+      x: cx + Math.cos(angle) * dist, y: cy + Math.sin(angle) * dist,
+      vx: 0, vy: 0, size: 6, fixed: false, calls: 0,
+    });
+    graphEdges.push({ source: '__center__', target: tool });
+  }
+
+  // Group-level links (connect tools in same group)
+  const grouped = {};
+  for (const n of graphNodes) { if (n.id !== '__center__') { (grouped[n.group] = grouped[n.group] || []).push(n.id); } }
+  for (const tools of Object.values(grouped)) {
+    for (let i = 1; i < tools.length; i++) graphEdges.push({ source: tools[0], target: tools[i] });
+  }
+
+  // Animation loop
+  function animate() {
+    if (!document.getElementById('view-neural-core').classList.contains('active')) { requestAnimationFrame(animate); return; }
+    // Resize check
+    if (canvas.width !== container.clientWidth || canvas.height !== container.clientHeight) {
+      canvas.width = container.clientWidth; canvas.height = container.clientHeight;
+      graphNodes[0].x = canvas.width / 2; graphNodes[0].y = canvas.height / 2;
+    }
+    const W = canvas.width, H = canvas.height;
+    // Physics
+    for (let i = 0; i < graphNodes.length; i++) {
+      if (graphNodes[i].fixed) continue;
+      for (let j = i + 1; j < graphNodes.length; j++) {
+        const a = graphNodes[i], b = graphNodes[j];
+        let dx = b.x - a.x, dy = b.y - a.y;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        const repel = 800 / (dist * dist);
+        if (!a.fixed) { a.vx -= dx / dist * repel; a.vy -= dy / dist * repel; }
+        if (!b.fixed) { b.vx += dx / dist * repel; b.vy += dy / dist * repel; }
+      }
+    }
+    for (const e of graphEdges) {
+      const s = graphNodes.find(n => n.id === e.source), t = graphNodes.find(n => n.id === e.target);
+      if (!s || !t) continue;
+      let dx = t.x - s.x, dy = t.y - s.y;
+      const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      const ideal = s.id === '__center__' ? 200 : 60;
+      const force = (dist - ideal) * 0.005;
+      if (!s.fixed) { s.vx += dx / dist * force; s.vy += dy / dist * force; }
+      if (!t.fixed) { t.vx -= dx / dist * force; t.vy -= dy / dist * force; }
+    }
+    for (const n of graphNodes) {
+      if (n.fixed) continue;
+      n.vx += (W / 2 - n.x) * 0.0005;
+      n.vy += (H / 2 - n.y) * 0.0005;
+      n.vx *= 0.92; n.vy *= 0.92;
+      n.x += n.vx; n.y += n.vy;
+      n.x = Math.max(30, Math.min(W - 30, n.x));
+      n.y = Math.max(30, Math.min(H - 30, n.y));
+    }
+    // Draw
+    ctx.clearRect(0, 0, W, H);
+    // Edges
+    for (const e of graphEdges) {
+      const s = graphNodes.find(n => n.id === e.source), t = graphNodes.find(n => n.id === e.target);
+      if (!s || !t) continue;
+      ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(t.x, t.y);
+      ctx.strokeStyle = s.id === '__center__' ? 'rgba(240,136,62,0.35)' : 'rgba(88,166,255,0.2)';
+      ctx.lineWidth = s.id === '__center__' ? 1.5 : 0.8;
+      ctx.stroke();
+    }
+    // Nodes
+    for (const n of graphNodes) {
+      const sz = n.size + (n.calls > 0 ? Math.min(n.calls * 0.5, 8) : 0);
+      // Glow
+      if (sz > 10) {
+        ctx.beginPath(); ctx.arc(n.x, n.y, sz + 6, 0, Math.PI * 2);
+        const glow = ctx.createRadialGradient(n.x, n.y, sz, n.x, n.y, sz + 6);
+        glow.addColorStop(0, n.color + '40'); glow.addColorStop(1, 'transparent');
+        ctx.fillStyle = glow; ctx.fill();
+      }
+      ctx.beginPath(); ctx.arc(n.x, n.y, sz, 0, Math.PI * 2);
+      ctx.fillStyle = n.color; ctx.fill();
+      // Label
+      ctx.fillStyle = '#8b949e';
+      ctx.font = `${sz > 10 ? 11 : 9}px -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText(n.label, n.x, n.y + sz + 14);
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+function updateGraph(analytics) {
+  if (!graphInitialized || !analytics || !analytics.tools) return;
+  for (const t of analytics.tools) {
+    const node = graphNodes.find(n => n.id === t.name);
+    if (node) node.calls = t.callCount;
+  }
+}
+
+// ── Utilities ──
+function escHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+function timeAgo(ts) {
+  if (!ts) return '';
+  const sec = Math.floor((Date.now() - ts) / 1000);
+  if (sec < 60) return `${sec}s ago`;
+  if (sec < 3600) return `${Math.floor(sec/60)}m ago`;
+  if (sec < 86400) return `${Math.floor(sec/3600)}h ago`;
+  return `${Math.floor(sec/86400)}d ago`;
+}
+
+// ── Boot ──
+addFeed('Mission Control connected', 'system');
+fetchAll().catch(() => {
+  document.getElementById('health-badge').textContent = 'Offline';
+  document.getElementById('health-badge').className = 'health-badge unhealthy';
+  addFeed('Connection failed — retrying in 10s', 'system');
+});
+setInterval(() => fetchAll().catch(() => {}), 10000);
+</script>
+</body>
+</html>

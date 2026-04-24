@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+:root{color-scheme:light dark;--bg:#0d1117;--surface:#161b22;--card:#1c2333;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--green:#3fb950;--red:#f85149;--gold:#d29922;--r:8px;--client:#58a6ff;--prospect:#a78bfa}
+:root[data-theme="light"]{--bg:#f6f8fa;--surface:#fff;--card:#fff;--border:#d0d7de;--text:#1f2328;--muted:#656d76;--accent:#0969da;--green:#1a7f37;--red:#cf222e;--gold:#9a6700;--client:#0969da;--prospect:#7c3aed}
+*,*::before,*::after{box-sizing:border-box}body,html{margin:0;background:var(--bg);font-family:"Segoe UI",system-ui,sans-serif;color:var(--text);font-size:13px}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border)}
+.hdr-t{font-size:15px;font-weight:700}.hdr-s{font-size:11px;color:var(--muted)}
+.expand-btn{width:26px;height:26px;border-radius:6px;background:transparent;color:var(--muted);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer}.expand-btn:hover{color:var(--accent);border-color:var(--accent)}
+.picker{padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.picker label{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--muted)}
+.picker select{padding:5px 10px;font-size:12px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);min-width:200px;cursor:pointer}
+.type-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;display:inline-block}.type-badge.client{background:rgba(88,166,255,.1);color:var(--client)}.type-badge.prospect{background:rgba(167,139,250,.1);color:var(--prospect)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--border)}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;overflow:hidden}
+.panel.full{grid-column:1/-1}
+.p-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.p-badge{font-size:10px;font-weight:600;padding:1px 6px;border-radius:99px;background:rgba(88,166,255,.08);color:var(--accent)}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:8px}
+.kpi{padding:6px 8px;background:var(--bg);border-radius:var(--r)}.kpi-l{font-size:8px;text-transform:uppercase;color:var(--muted);margin-bottom:1px}.kpi-v{font-size:14px;font-weight:800}
+.bar-row{display:flex;align-items:center;gap:6px;margin-bottom:3px}.bar-name{width:70px;font-size:10px;font-weight:600;text-align:right;flex-shrink:0}.bar-track{flex:1;height:12px;background:var(--bg);border-radius:3px;overflow:hidden}.bar-fill{height:100%;border-radius:3px;min-width:fit-content;padding:0 5px;font-size:8px;font-weight:700;color:#fff;display:flex;align-items:center}
+.bar-fill.sb{background:#15803d}.bar-fill.b{background:#3fb950}.bar-fill.h{background:#d29922}.bar-fill.s{background:#f85149}.bar-fill.ss{background:#991b1b}
+.bar-n{width:18px;font-size:9px;font-weight:700;text-align:center;flex-shrink:0}
+.contact{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:var(--r);border:1px solid var(--border);margin-bottom:3px;transition:border-color .15s}.contact:hover{border-color:var(--accent)}
+.c-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),rgba(88,166,255,.3));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10px;color:#fff;flex-shrink:0}
+.c-name{font-size:11px;font-weight:700;color:var(--accent);cursor:pointer}.c-name:hover{text-decoration:underline}.c-title{font-size:9px;color:var(--muted)}.c-email{font-size:9px;color:var(--muted);margin-left:auto;flex-shrink:0}
+.opp{padding:6px 8px;border-radius:var(--r);border:1px solid var(--border);margin-bottom:3px;cursor:pointer;transition:border-color .15s}.opp:hover{border-color:var(--accent)}
+.opp-top{display:flex;justify-content:space-between;align-items:center}.opp-name{font-size:11px;font-weight:600;flex:1}.opp-val{font-size:12px;font-weight:800;flex-shrink:0;margin-left:8px}
+.opp-stage{font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px;display:inline-block;margin-top:2px}
+.stage-qualify{background:rgba(88,166,255,.1);color:var(--accent)}.stage-develop{background:rgba(210,153,34,.1);color:var(--gold)}.stage-propose{background:rgba(63,185,80,.1);color:var(--green)}
+.opp-close{font-size:8px;color:var(--muted);margin-top:1px}
+.act{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:var(--r);border:1px solid var(--border);margin-bottom:3px;cursor:pointer;transition:border-color .15s}.act:hover{border-color:var(--accent)}
+.act-icon{width:22px;height:22px;border-radius:5px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
+.act-subj{font-size:10px;font-weight:600}.act-date{font-size:8px;color:var(--muted)}
+.act-open{color:var(--accent);font-size:9px;flex-shrink:0;margin-left:auto}
+.news-item{padding:5px 8px;border-radius:var(--r);border:1px solid var(--border);margin-bottom:3px;cursor:pointer;transition:border-color .15s}.news-item:hover{border-color:var(--accent)}
+.news-item h4{font-size:10px;font-weight:600;margin:0;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.news-meta{font-size:8px;color:var(--muted)}
+.range-wrap{margin:6px 0}.range-track{height:10px;background:var(--border);border-radius:5px;position:relative;overflow:hidden}.range-grad{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--red),var(--gold),var(--green));opacity:.3}.range-fill{position:absolute;top:0;left:0;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--red),var(--gold),var(--green))}
+.range-marker{position:absolute;top:-3px;width:3px;height:16px;background:var(--text);border-radius:2px;transform:translateX(-1px)}
+.range-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:2px}
+.empty{text-align:center;padding:16px;font-size:12px;color:var(--muted)}
+.footer{padding:6px 16px;background:var(--surface);border-top:1px solid var(--border);font-size:10px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.btn{padding:4px 10px;border-radius:5px;background:var(--card);color:var(--muted);border:1px solid var(--border);font-size:11px;cursor:pointer}.btn:hover{color:var(--text);border-color:var(--accent)}
+.nav{display:flex;gap:4px;padding:6px 16px;border-top:1px solid var(--border);background:var(--surface);flex-wrap:wrap;align-items:center}
+.nav-lbl{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-right:4px}
+</style>
+<script>(function(){var d=document.documentElement,m=matchMedia('(prefers-color-scheme:dark)');function t(){d.dataset.theme=m.matches?'dark':'light';}t();m.addEventListener('change',t);})()</script>
+</head>
+<body>
+<div class="hdr"><div><div class="hdr-t">Client 360 View</div><div class="hdr-s">Market Intelligence + CRM Relationship Profile</div></div><button class="expand-btn" id="expBtn" title="Fullscreen"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2h4v4M6 14H2v-4M14 2L9.5 6.5M2 14l4.5-4.5"/></svg></button></div>
+<div class="picker"><label>Company</label><select id="companyPicker"><option value="">Select a company...</option></select></div>
+<div id="content" style="display:none">
+<div class="two-col" id="mainGrid"></div>
+</div>
+<div id="emptyState" class="empty" style="padding:40px">Select a company above to view the 360-degree profile</div>
+<div class="footer"><span>Portfolio Manager - Finnhub + D365 CRM</span></div>
+<div class="nav"><span class="nav-lbl">Navigate:</span><button class="btn" onclick="nav('Read my portfolio and show the Portfolio Command Center')">Dashboard</button><button class="btn" onclick="nav('Show me the CRM pipeline dashboard')">Pipeline</button><button class="btn" onclick="nav('Read my portfolio and show the Macro Stress Test')">Stress Test</button></div>
+<script>
+var D=null,CRM_BASE='https://orge2a9a349.crm.dynamics.com';
+function esc(s){var d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
+function rh(){if(window.openai&&window.openai.notifyIntrinsicHeight)window.openai.notifyIntrinsicHeight(document.body.scrollHeight);}
+function olink(u){if(window.openai&&window.openai.openExternal)window.openai.openExternal({href:u});else window.open(u,'_blank');}
+function nav(p){if(window.openai&&window.openai.sendFollowUpMessage)window.openai.sendFollowUpMessage({prompt:p});}
+function fm(v,d){return v!=null&&v!==''?Number(v).toFixed(d||2):'--';}
+function f$(v){if(!v&&v!==0)return '--';var a=Math.abs(v);if(a>=1e12)return '$'+(v/1e12).toFixed(2)+'T';if(a>=1e9)return '$'+(v/1e9).toFixed(1)+'B';if(a>=1e6)return '$'+(v/1e6).toFixed(2)+'M';if(a>=1e3)return '$'+(v/1e3).toFixed(0)+'K';return '$'+v.toFixed(2);}
+var ACT_ICONS={'phonecall':'tel','email':'@','appointment':'cal','task':'chk'};
+var ACT_ENTITY={'phonecall':'phonecall','email':'email','appointment':'appointment','task':'task'};
+
+function renderCompany(sym){
+  var h=D.companies.find(function(c){return c.symbol===sym;});if(!h){document.getElementById('content').style.display='none';document.getElementById('emptyState').style.display='block';rh();return;}
+  document.getElementById('emptyState').style.display='none';document.getElementById('content').style.display='block';
+  var q=h.quote||{},p=h.profile||{},r=h.recommendation||{},m=h.metrics||{},nw=h.news||[],crm=h.crm||{},a=crm.account||{},contacts=crm.contacts||[],opps=crm.opportunities||[],acts=crm.activities||[];
+  var dp=q.dp||0,sn=dp>=0?'+':'',isClient=a.type==='Client',typeCls=isClient?'client':'prospect';
+
+  // Market KPIs
+  var html='<div class="panel full"><div class="p-title">'+esc(p.name||sym)+' <span class="type-badge '+typeCls+'">'+esc(a.type||'')+'</span></div><div class="kpi-row">';
+  html+='<div class="kpi"><div class="kpi-l">Price</div><div class="kpi-v">$'+(q.c||0).toFixed(2)+'</div></div>';
+  html+='<div class="kpi"><div class="kpi-l">Change</div><div class="kpi-v" style="color:var('+(dp>=0?'--green':'--red')+')">'+sn+dp.toFixed(2)+'%</div></div>';
+  html+='<div class="kpi"><div class="kpi-l">Mkt Cap</div><div class="kpi-v">'+f$(p.marketCapitalization?p.marketCapitalization*1e6:0)+'</div></div>';
+  html+='<div class="kpi"><div class="kpi-l">Revenue</div><div class="kpi-v">'+f$(a.revenue||0)+'</div></div>';
+  html+='</div>';
+  // Position KPIs (if client with shares)
+  if(h.shares&&h.shares>0){
+    html+='<div class="kpi-row">';
+    html+='<div class="kpi"><div class="kpi-l">Shares</div><div class="kpi-v">'+h.shares.toLocaleString()+'</div></div>';
+    html+='<div class="kpi"><div class="kpi-l">Position</div><div class="kpi-v">'+f$(h.currentValue)+'</div></div>';
+    html+='<div class="kpi"><div class="kpi-l">Cost Basis</div><div class="kpi-v">'+f$(h.costBasis)+'</div></div>';
+    var tr=h.totalReturn||0;html+='<div class="kpi"><div class="kpi-l">P&L</div><div class="kpi-v" style="color:var('+(tr>=0?'--green':'--red')+')">'+fm(tr,1)+'%</div></div>';
+    html+='</div>';
+  }
+  html+='</div>';
+
+  // 52-week range
+  var wh=m['52WeekHigh'],wl=m['52WeekLow'];
+  if(wh&&wl&&wh>wl){var pc=Math.max(0,Math.min(100,((q.c-wl)/(wh-wl))*100));
+  html+='<div class="panel full"><div class="p-title">52-Week Range</div><div class="range-wrap"><div class="range-track"><div class="range-grad"></div><div class="range-fill" style="width:'+pc+'%"></div><div class="range-marker" style="left:'+pc+'%"></div></div></div><div class="range-labels"><span>Low: $'+fm(wl,2)+'</span><span style="font-weight:700;color:var(--accent)">$'+fm(q.c,2)+'</span><span>High: $'+fm(wh,2)+'</span></div></div>';}
+
+  // Analyst Consensus
+  var tot=(r.strongBuy||0)+(r.buy||0)+(r.hold||0)+(r.sell||0)+(r.strongSell||0),mx=Math.max(r.strongBuy||0,r.buy||0,r.hold||0,r.sell||0,r.strongSell||0,1);
+  function cb(lb,v,c){var w=Math.max((v/mx)*100,v>0?8:0);return '<div class="bar-row"><div class="bar-name">'+lb+'</div><div class="bar-track"><div class="bar-fill '+c+'" style="width:'+w+'%"></div></div><div class="bar-n">'+v+'</div></div>';}
+  html+='<div class="panel"><div class="p-title">Analyst Consensus <span class="p-badge">'+tot+'</span></div>'+cb('Strong Buy',r.strongBuy||0,'sb')+cb('Buy',r.buy||0,'b')+cb('Hold',r.hold||0,'h')+cb('Sell',r.sell||0,'s')+cb('Strong Sell',r.strongSell||0,'ss')+'</div>';
+
+  // Key Metrics
+  html+='<div class="panel"><div class="p-title">Key Metrics</div><div class="kpi-row"><div class="kpi"><div class="kpi-l">P/E</div><div class="kpi-v">'+fm(m.peBasicExclExtraTTM,1)+'</div></div><div class="kpi"><div class="kpi-l">Beta</div><div class="kpi-v">'+fm(m.beta,2)+'</div></div><div class="kpi"><div class="kpi-l">Div Yield</div><div class="kpi-v">'+(m.dividendYieldIndicatedAnnual!=null?fm(m.dividendYieldIndicatedAnnual,2)+'%':'--')+'</div></div><div class="kpi"><div class="kpi-l">EPS</div><div class="kpi-v">'+fm(m.epsBasicExclExtraItemsTTM,2)+'</div></div></div></div>';
+
+  // Contacts
+  html+='<div class="panel"><div class="p-title">Key Contacts <span class="p-badge">'+contacts.length+'</span></div>';
+  if(contacts.length){contacts.forEach(function(c){var init=(c.name||'??').split(' ').map(function(w){return w[0];}).join('').toUpperCase().substring(0,2);var mailto=c.email?'mailto:'+encodeURIComponent(c.email):'';html+='<div class="contact"><div class="c-avatar">'+init+'</div><div><div class="c-name" onclick="olink(\''+esc(mailto)+'\')">'+esc(c.name)+'</div><div class="c-title">'+esc(c.title||'')+'</div></div><div class="c-email">'+esc(c.email||'')+'</div></div>';});}else html+='<div class="empty">No contacts</div>';
+  html+='</div>';
+
+  // Opportunities
+  html+='<div class="panel"><div class="p-title">Opportunities <span class="p-badge">'+opps.length+'</span></div>';
+  if(opps.length){opps.forEach(function(o){var cls=o.stage&&o.stage.includes('Propose')?'stage-propose':o.stage&&o.stage.includes('Develop')?'stage-develop':'stage-qualify';var close=o.closeDate?new Date(o.closeDate).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'--';var url=o.id?CRM_BASE+'/main.aspx?etn=opportunity&id='+o.id+'&pagetype=entityrecord':'';
+  var dtBadge='';if(o.dealType){dtBadge=' <span style="font-size:7px;font-weight:700;padding:1px 4px;border-radius:2px;color:var(--muted)">'+esc(o.dealType)+'</span>';}
+  var wpStr='';if(o.winProbability!=null){wpStr=' | '+o.winProbability+'%';}
+  var riskBadge='';if(o.riskRating){var rCol={'Low':'var(--green)','Medium':'var(--gold)','High':'var(--red)','Critical':'#991b1b'};riskBadge='<span style="font-size:7px;font-weight:700;padding:0 3px;border-radius:2px;color:'+(rCol[o.riskRating]||'var(--muted)')+'">'+esc(o.riskRating)+'</span>';}
+  html+='<div class="opp" '+(url?'onclick="olink(\''+esc(url)+'\')"':'')+'><div class="opp-top"><div class="opp-name">'+esc(o.name)+dtBadge+'</div><div class="opp-val">'+f$(o.value)+'</div></div><div><span class="opp-stage '+cls+'">'+esc(o.stage||'')+'</span> '+riskBadge+'</div><div class="opp-close">Close: '+close+wpStr+(url?' | Open in CRM':'')+'</div></div>';});}else html+='<div class="empty">No opportunities</div>';
+  html+='</div>';
+
+  // News
+  html+='<div class="panel"><div class="p-title">Recent News <span class="p-badge">'+nw.length+'</span></div>';
+  if(nw.length){nw.forEach(function(n){html+='<div class="news-item" onclick="olink(\''+esc(n.url||'')+'\')"><h4>'+esc(n.headline||'')+'</h4><div class="news-meta">'+esc(n.source||'')+' - '+esc(n.datetime?new Date(n.datetime*1000).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'')+'</div></div>';});}else html+='<div class="empty">No recent news</div>';
+  html+='</div>';
+
+  // Activities
+  html+='<div class="panel"><div class="p-title">Recent Activities <span class="p-badge">'+acts.length+'</span></div>';
+  if(acts.length){acts.forEach(function(ac){var icon=ACT_ICONS[ac.type]||'act';var dt=ac.date?new Date(ac.date).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'--';var url=ac.id?CRM_BASE+'/main.aspx?etn='+(ACT_ENTITY[ac.type]||'activitypointer')+'&id='+ac.id+'&pagetype=entityrecord':'';html+='<div class="act" '+(url?'onclick="olink(\''+esc(url)+'\')"':'')+'><div class="act-icon">'+icon+'</div><div><div class="act-subj">'+esc(ac.subject||'')+'</div><div class="act-date">'+esc(ac.type||'')+' - '+dt+'</div></div>'+(url?'<div class="act-open">Open</div>':'')+'</div>';});}else html+='<div class="empty">No activities</div>';
+  html+='</div>';
+
+  document.getElementById('mainGrid').innerHTML=html;rh();
+}
+
+function render(data){
+  D=data;var picker=document.getElementById('companyPicker');
+  var opts='<option value="">Select a company...</option>';
+  (data.companies||[]).forEach(function(c){var p=c.profile||{},a=(c.crm&&c.crm.account)||{};opts+='<option value="'+esc(c.symbol)+'">'+esc(c.symbol)+' - '+esc(p.name||c.symbol)+' ('+esc(a.type||'')+')</option>';});
+  picker.innerHTML=opts;
+  // Auto-select if only one or if filter specified
+  if(data.selectedSymbol){picker.value=data.selectedSymbol;renderCompany(data.selectedSymbol);}
+  else if(data.companies&&data.companies.length===1){picker.value=data.companies[0].symbol;renderCompany(data.companies[0].symbol);}
+  rh();
+}
+
+document.getElementById('companyPicker').addEventListener('change',function(){var v=this.value;if(v)renderCompany(v);else{document.getElementById('content').style.display='none';document.getElementById('emptyState').style.display='block';rh();}});
+var _fs=false;
+if(window.openai&&window.openai.requestDisplayMode)document.getElementById('expBtn').addEventListener('click',async function(){try{await window.openai.requestDisplayMode({mode:_fs?'inline':'fullscreen'});_fs=!_fs;}catch(e){}});else document.getElementById('expBtn').style.display='none';
+
+var to=window.__TOOL_DATA__||(window.openai&&window.openai.toolOutput)||{};
+if(typeof to==='string'){try{to=JSON.parse(to);}catch(e){to={};}}
+if(to&&to.companies)render(to);
+</script>
+</body></html>

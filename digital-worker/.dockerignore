@@ -1,0 +1,9 @@
+node_modules
+.env
+.env.template
+a365.config.json
+a365.generated.config.json
+scripts
+*.md
+.gitignore
+manifest

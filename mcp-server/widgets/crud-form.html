@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Portfolio Action</title>
+<style>
+:root{color-scheme:light dark;--bg:#0d1117;--surface:#161b22;--card:#1c2333;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--green:#3fb950;--red:#f85149;--gold:#d29922;--r:10px;--r2:8px;--prospect:#a78bfa}
+:root[data-theme="light"]{--bg:#f6f8fa;--surface:#fff;--card:#fff;--border:#d0d7de;--text:#1f2328;--muted:#656d76;--accent:#0969da;--green:#1a7f37;--red:#cf222e;--gold:#9a6700;--prospect:#7c3aed}
+*,*::before,*::after{box-sizing:border-box}body,html{margin:0;background:var(--bg);font-family:"Segoe UI",system-ui,sans-serif;color:var(--text);font-size:13px}
+.card{margin:8px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);overflow:hidden}
+.card-header{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border)}
+.card-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.card-icon.add{background:rgba(63,185,80,.12);color:var(--green)}
+.card-icon.update{background:rgba(88,166,255,.12);color:var(--accent)}
+.card-title{font-size:15px;font-weight:700}.card-sub{font-size:11px;color:var(--muted)}
+.form{padding:16px;display:flex;flex-direction:column;gap:12px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+.field input,.field select{padding:8px 10px;font-size:13px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);outline:none;font-family:inherit}
+.field input:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(88,166,255,.15)}
+.field .hint{font-size:10px;color:var(--muted);margin-top:1px}
+.actions{display:flex;gap:8px;padding:0 16px 16px;justify-content:flex-end}
+.btn{padding:8px 20px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--border);transition:all .15s}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}.btn-primary:hover{opacity:.9}
+.btn-cancel{background:transparent;color:var(--muted)}.btn-cancel:hover{color:var(--text);border-color:var(--text)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.result{padding:16px;text-align:center;display:none}
+.result.visible{display:block}
+.result-icon{font-size:32px;margin-bottom:8px}
+.result-msg{font-size:14px;font-weight:600}.result-detail{font-size:11px;color:var(--muted);margin-top:4px}
+.spinner{display:inline-block;width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.update-preview{padding:12px 16px;background:var(--card);border-bottom:1px solid var(--border)}
+.up-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.up-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);width:80px;flex-shrink:0}
+.up-val{font-size:13px;font-weight:600}
+/* Navigation bar */
+.nav-bar{display:flex;gap:6px;padding:12px 16px;border-top:1px solid var(--border);background:var(--surface);flex-wrap:wrap}
+.nav-btn{padding:6px 12px;border-radius:6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:4px}
+.nav-btn:hover{color:var(--accent);border-color:var(--accent);background:rgba(88,166,255,.06)}
+.nav-btn svg{width:12px;height:12px}
+</style>
+<script>(function(){var d=document.documentElement,m=matchMedia('(prefers-color-scheme:dark)');function t(){if(!d.dataset.theme)d.dataset.theme=m.matches?'dark':'light';}t();m.addEventListener('change',function(){if(!d.getAttribute('data-theme'))t();});})()</script>
+</head>
+<body>
+<div class="card" id="formCard">
+  <div class="card-header">
+    <div class="card-icon" id="cardIcon">+</div>
+    <div><div class="card-title" id="cardTitle">Add Holding</div><div class="card-sub" id="cardSub">Review and submit to update your portfolio</div></div>
+  </div>
+  <div id="updatePreview" class="update-preview" style="display:none"></div>
+  <div class="form" id="formBody"></div>
+  <div class="actions" id="actionBar">
+    <button class="btn btn-cancel" id="btnCancel" onclick="doCancel()">Cancel</button>
+    <button class="btn btn-primary" id="btnSubmit" onclick="doSubmit()">Submit</button>
+  </div>
+</div>
+<div class="result" id="resultPane">
+  <div class="result-icon" id="resIcon"></div>
+  <div class="result-msg" id="resMsg"></div>
+  <div class="result-detail" id="resDetail"></div>
+</div>
+<div class="nav-bar">
+  <span style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-right:4px;align-self:center">Navigate:</span>
+  <button class="nav-btn" onclick="nav('Read my portfolio and show me the Portfolio Command Center with live market data')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> Dashboard</button>
+  <button class="nav-btn" onclick="nav('Read my portfolio and show the Macro Stress Test')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> Stress Test</button>
+  <button class="nav-btn" onclick="nav('Read my portfolio and show Concentration Risk')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10H12V2z"/></svg> Risk</button>
+  <button class="nav-btn" onclick="nav('Read my portfolio and generate my Morning Briefing')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/></svg> Briefing</button>
+</div>
+<script>
+var _mode='add',_data={},_fields=[];
+function esc(s){var d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
+function rh(){if(window.openai&&window.openai.notifyIntrinsicHeight)window.openai.notifyIntrinsicHeight(document.body.scrollHeight);}
+function nav(prompt){if(window.openai&&window.openai.sendFollowUpMessage)window.openai.sendFollowUpMessage({prompt:prompt});}
+
+function init(data){
+  _data=data;_mode=data.mode||'add';
+  var icon=document.getElementById('cardIcon');
+  var title=document.getElementById('cardTitle');
+  var sub=document.getElementById('cardSub');
+  if(_mode==='update'){
+    icon.className='card-icon update';icon.textContent='✎';
+    title.textContent='Update Holding';
+    sub.textContent='Modify fields and submit to save changes';
+    if(data.ticker||data.range){
+      var prev=document.getElementById('updatePreview');var ph='';
+      if(data.ticker)ph+='<div class="up-row"><div class="up-label">Ticker</div><div class="up-val" style="color:var(--accent);font-weight:800">'+esc(data.ticker)+'</div></div>';
+      if(data.company)ph+='<div class="up-row"><div class="up-label">Company</div><div class="up-val">'+esc(data.company)+'</div></div>';
+      if(data.currentRow)ph+='<div class="up-row"><div class="up-label">Row</div><div class="up-val">#'+data.currentRow+'</div></div>';
+      prev.innerHTML=ph;prev.style.display='block';
+    }
+    buildUpdateForm(data);
+  } else {
+    icon.className='card-icon add';icon.textContent='+';
+    title.textContent='Add New Holding';
+    sub.textContent='Review the details and submit to add to your portfolio';
+    buildAddForm(data);
+  }
+  rh();
+}
+
+// Columns: Company(A), Ticker(B), Sector(C), Shares(D), Cost/Share(E), Total Cost(F), Website(G), Media/Press(H)
+function buildAddForm(d){
+  _fields=[
+    {id:'company',label:'Company Name',value:d.company||'',required:true},
+    {id:'ticker',label:'Ticker Symbol',value:d.ticker||'',required:true},
+    {id:'sector',label:'Sector',value:d.sector||''},
+    {id:'holdingType',label:'Holding Type',value:d.holdingType||'Prospect',type:'select',options:['Client','Prospect']},
+    {id:'shares',label:'Shares',value:d.shares||'0',type:'number'},
+    {id:'costPerShare',label:'Cost/Share (USD)',value:d.costPerShare||'0',type:'number'},
+    {id:'totalCost',label:'Total Cost (USD)',value:d.totalCost||'0',type:'number',hint:'Auto-calculated if left as 0'},
+    {id:'website',label:'Website',value:d.website||''},
+    {id:'mediaPress',label:'Media/Press Release URL',value:d.mediaPress||''},
+    {id:'currencyExposure',label:'Currency Exposure',value:d.currencyExposure||'',hint:'e.g. GBP/USD, EUR/USD'},
+  ];
+  renderFields();
+}
+
+function buildUpdateForm(d){
+  // Always show all editable fields for the holding
+  _fields=[
+    {id:'sector',label:'Sector',value:d.sector||''},
+    {id:'holdingType',label:'Holding Type',value:d.holdingType||'',type:'select',options:['Client','Prospect']},
+    {id:'shares',label:'Shares',value:d.shares||'',type:'number'},
+    {id:'costPerShare',label:'Cost/Share (USD)',value:d.costPerShare||'',type:'number'},
+    {id:'totalCost',label:'Total Cost (USD)',value:d.totalCost||'',type:'number',hint:'Auto-calculated if left as 0'},
+    {id:'website',label:'Website',value:d.website||''},
+    {id:'mediaPress',label:'Media/Press Release URL',value:d.mediaPress||''},
+    {id:'currencyExposure',label:'Currency Exposure',value:d.currencyExposure||'',hint:'e.g. GBP/USD, EUR/USD'},
+    {id:'fxHedged',label:'FX Hedged',value:d.fxHedged||'false',type:'select',options:['false','true']},
+    {id:'revenueAttributed',label:'Revenue Attributed (USD)',value:d.revenueAttributed||'',type:'number'},
+    {id:'marginPercent',label:'Margin %',value:d.marginPercent||'',type:'number'},
+  ];
+  renderFields();
+}
+
+function renderFields(){
+  var html='';
+  for(var i=0;i<_fields.length;i+=2){
+    var f1=_fields[i],f2=_fields[i+1];
+    if(f2){html+='<div class="field-row">'+renderField(f1)+renderField(f2)+'</div>';}
+    else{html+=renderField(f1);}
+  }
+  document.getElementById('formBody').innerHTML=html;
+  var sharesEl=document.getElementById('f_shares');
+  var costEl=document.getElementById('f_costPerShare');
+  var totalEl=document.getElementById('f_totalCost');
+  if(sharesEl&&costEl&&totalEl){
+    function calc(){var s=parseFloat(sharesEl.value)||0,c=parseFloat(costEl.value)||0;if(s&&c)totalEl.value=(s*c).toFixed(2);}
+    sharesEl.addEventListener('input',calc);costEl.addEventListener('input',calc);calc();
+  }
+  rh();
+}
+
+function renderField(f){
+  var inp;
+  if(f.type==='select'&&f.options){
+    inp='<select id="f_'+f.id+'">';
+    f.options.forEach(function(o){inp+='<option value="'+esc(o)+'"'+(f.value===o?' selected':'')+'>'+esc(o)+'</option>';});
+    inp+='</select>';
+  } else {
+    inp='<input id="f_'+f.id+'" type="'+(f.type||'text')+'" value="'+esc(f.value)+'"'+(f.required?' required':'')+' />';
+  }
+  return '<div class="field"><label>'+esc(f.label)+'</label>'+inp+(f.hint?'<div class="hint">'+esc(f.hint)+'</div>':'')+'</div>';
+}
+
+function getFormValues(){
+  var vals={};
+  _fields.forEach(function(f){var el=document.getElementById('f_'+f.id);if(el)vals[f.id]=el.value;});
+  return vals;
+}
+
+function doSubmit(){
+  var btn=document.getElementById('btnSubmit');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>';
+  var vals=getFormValues();
+
+  if(_mode==='add'){
+    // Build Dataverse add-portfolio-holding call
+    var args={company:vals.company||'',ticker:vals.ticker||'',sector:vals.sector||'',shares:vals.shares||'0',costPerShare:vals.costPerShare||'0'};
+    var totalCost=parseFloat(vals.totalCost)||0;
+    if(!totalCost&&vals.shares&&vals.costPerShare)totalCost=(parseFloat(vals.shares)*parseFloat(vals.costPerShare));
+    args.totalCost=totalCost.toFixed(2);
+    if(vals.holdingType)args.holdingType=vals.holdingType;
+    if(vals.website)args.website=vals.website;
+    if(vals.mediaPress)args.mediaPress=vals.mediaPress;
+    if(vals.currencyExposure)args.currencyExposure=vals.currencyExposure;
+    var prompt='Execute this portfolio write immediately: Call add-portfolio-holding with '+Object.entries(args).map(function(e){return e[0]+'="'+e[1]+'"';}).join(', ')+'. Do NOT ask for confirmation — just execute the tool call now.';
+    if(window.openai&&window.openai.sendFollowUpMessage){
+      window.openai.sendFollowUpMessage({prompt:prompt});
+      showResult('success','Submitted','Add request sent to Portfolio Manager. Check the chat for confirmation.');
+    } else {
+      showResult('error','Not Connected','Unable to send to the agent.');
+    }
+  } else {
+    // Update mode — build Dataverse update-portfolio-holding call
+    var args={ticker:_data.ticker};
+    _fields.forEach(function(f){
+      var el=document.getElementById('f_'+f.id);
+      if(el&&el.value)args[f.id]=el.value;
+    });
+    var prompt='Execute this portfolio update immediately: Call update-portfolio-holding with '+Object.entries(args).map(function(e){return e[0]+'="'+e[1]+'"';}).join(', ')+'. Do NOT ask for confirmation — execute the tool call now.';
+    if(window.openai&&window.openai.sendFollowUpMessage){
+      window.openai.sendFollowUpMessage({prompt:prompt});
+      showResult('success','Submitted','Update request sent to Portfolio Manager. Check the chat for confirmation.');
+    } else {
+      showResult('error','Not Connected','Unable to send to the agent.');
+    }
+  }
+  rh();
+}
+
+function doCancel(){
+  if(window.openai&&window.openai.sendFollowUpMessage){
+    window.openai.sendFollowUpMessage({prompt:'The user cancelled the portfolio action.'});
+  }
+}
+
+function showResult(type,msg,detail){
+  document.getElementById('formCard').style.display='none';
+  var pane=document.getElementById('resultPane');
+  document.getElementById('resIcon').textContent=type==='success'?'✓':'✕';
+  document.getElementById('resIcon').style.color=type==='success'?'var(--green)':'var(--red)';
+  document.getElementById('resMsg').textContent=msg;
+  document.getElementById('resDetail').textContent=detail;
+  pane.classList.add('visible');
+  rh();
+}
+
+// Bootstrap
+var to=window.__TOOL_DATA__||(window.openai&&window.openai.toolOutput)||{};
+if(typeof to==='string'){try{to=JSON.parse(to);}catch(e){to={};}}
+if(to&&(to.mode||to.ticker||to.company))init(to);
+else init({mode:'add'});
+</script>
+</body></html>

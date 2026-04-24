@@ -1,0 +1,45 @@
+{
+    "$schema": "https://developer.microsoft.com/json-schemas/copilot/plugin/v2.4/schema.json",
+    "schema_version": "v2.4",
+    "name_for_human": "CRM Intelligence",
+    "description_for_human": "D365 CRM account profiles, contacts, pipeline, deal tracking, compliance, revenue forecasting, and relationship intelligence",
+    "namespace": "crmmcp",
+    "functions": [
+        { "name": "show-crm-pipeline", "description": "Display the Investment Pipeline dashboard from D365 CRM with funnel visualization, deal cards, and account breakdown.", "parameters": { "type": "object", "properties": { "stage": { "type": "string", "description": "Optional pipeline stage filter (e.g. Qualify, Develop, Propose)" } } } },
+        { "name": "show-crm-account", "description": "Display a D365 CRM account profile card with company details, key contacts, opportunities, and recent activities.", "parameters": { "type": "object", "properties": { "ticker": { "type": "string", "description": "Stock ticker symbol (e.g. MSFT, AZN)" } }, "required": ["ticker"] } },
+        { "name": "get-crm-account", "description": "Get the D365 CRM account profile for a portfolio holding by ticker symbol.", "parameters": { "type": "object", "properties": { "ticker": { "type": "string", "description": "Stock ticker symbol (e.g. MSFT, AZN)" } }, "required": ["ticker"] } },
+        { "name": "get-crm-contacts", "description": "Get all CRM contacts for a portfolio company by ticker symbol.", "parameters": { "type": "object", "properties": { "ticker": { "type": "string", "description": "Stock ticker symbol (e.g. MSFT, AZN)" } }, "required": ["ticker"] } },
+        { "name": "get-crm-pipeline", "description": "Get the investment opportunity pipeline from D365 CRM as text data.", "parameters": { "type": "object", "properties": { "stage": { "type": "string", "description": "Optional pipeline stage filter (e.g. Qualify, Develop, Propose)" } } } },
+        { "name": "get-crm-opportunities", "description": "Get CRM opportunities for a specific company by ticker symbol.", "parameters": { "type": "object", "properties": { "ticker": { "type": "string", "description": "Stock ticker symbol (e.g. MSFT, AZN)" } }, "required": ["ticker"] } },
+        { "name": "get-deal-tracker", "description": "Get the M&A and deal pipeline with compliance status, risk rating, and revenue forecast. Filter by deal type or stage.", "parameters": { "type": "object", "properties": { "dealType": { "type": "string", "description": "Filter by deal type: M&A, Capital Raise, FX Hedging, Follow-on, Exit" }, "stage": { "type": "string", "description": "Filter by stage: Qualify, Develop, Propose, Close" } } } },
+        { "name": "get-revenue-forecast", "description": "Get pipeline-weighted revenue forecast broken down by stage and deal type.", "parameters": { "type": "object", "properties": {} } },
+        { "name": "get-compliance-status", "description": "Get all deals with compliance issues — Pending, Flagged, or Escalated.", "parameters": { "type": "object", "properties": { "status": { "type": "string", "description": "Filter: Pending, Approved, Flagged, Escalated" } } } },
+        { "name": "get-ic-calendar", "description": "Get upcoming Investment Committee dates with deal summaries.", "parameters": { "type": "object", "properties": {} } },
+        { "name": "update-deal-compliance", "description": "Update the compliance status of a deal. Set to Approved, Flagged, or Escalated with notes.", "parameters": { "type": "object", "properties": { "ticker": { "type": "string", "description": "Ticker symbol of the deal's company" }, "status": { "type": "string", "description": "New status: Approved, Flagged, Escalated" }, "notes": { "type": "string", "description": "Review notes" } }, "required": ["ticker", "status"] } }
+    ],
+    "runtimes": [
+        {
+            "type": "RemoteMCPServer",
+            "run_for_functions": ["show-crm-pipeline", "show-crm-account", "get-crm-account", "get-crm-contacts", "get-crm-pipeline", "get-crm-opportunities", "get-deal-tracker", "get-revenue-forecast", "get-compliance-status", "get-ic-calendar", "update-deal-compliance"],
+            "spec": {
+                "url": "${{CRM_MCP_ENDPOINT}}",
+                "x-mcp_tool_description": {
+                    "tools": [
+                        { "name": "show-crm-pipeline", "description": "Display the Investment Pipeline dashboard.", "inputSchema": { "type": "object", "properties": { "stage": { "type": "string" } }, "additionalProperties": false }, "annotations": { "readOnlyHint": true }, "_meta": { "openai/outputTemplate": "ui://widget/crm-pipeline.html", "openai/widgetAccessible": true } },
+                        { "name": "show-crm-account", "description": "Display a CRM account profile card.", "inputSchema": { "type": "object", "properties": { "ticker": { "type": "string" } }, "required": ["ticker"], "additionalProperties": false }, "annotations": { "readOnlyHint": true }, "_meta": { "openai/outputTemplate": "ui://widget/crm-account.html", "openai/widgetAccessible": true } },
+                        { "name": "get-crm-account", "description": "Get CRM account data as text.", "inputSchema": { "type": "object", "properties": { "ticker": { "type": "string" } }, "required": ["ticker"], "additionalProperties": false }, "annotations": { "readOnlyHint": true } },
+                        { "name": "get-crm-contacts", "description": "Get CRM contacts for a company.", "inputSchema": { "type": "object", "properties": { "ticker": { "type": "string" } }, "required": ["ticker"], "additionalProperties": false }, "annotations": { "readOnlyHint": true } },
+                        { "name": "get-crm-pipeline", "description": "Get pipeline data as text.", "inputSchema": { "type": "object", "properties": { "stage": { "type": "string" } }, "additionalProperties": false }, "annotations": { "readOnlyHint": true } },
+                        { "name": "get-crm-opportunities", "description": "Get opportunities for a company.", "inputSchema": { "type": "object", "properties": { "ticker": { "type": "string" } }, "required": ["ticker"], "additionalProperties": false }, "annotations": { "readOnlyHint": true } },
+                        { "name": "get-deal-tracker", "description": "Get M&A/deal pipeline with compliance, risk, and revenue data.", "inputSchema": { "type": "object", "properties": { "dealType": { "type": "string", "description": "Filter: M&A, Capital Raise, FX Hedging, Follow-on, Exit" }, "stage": { "type": "string", "description": "Filter by stage" } }, "additionalProperties": false }, "annotations": { "readOnlyHint": true } },
+                        { "name": "get-revenue-forecast", "description": "Get pipeline-weighted revenue forecast by stage and type.", "inputSchema": { "type": "object", "properties": {}, "additionalProperties": false }, "annotations": { "readOnlyHint": true } },
+                        { "name": "get-compliance-status", "description": "Get deals with compliance issues.", "inputSchema": { "type": "object", "properties": { "status": { "type": "string", "description": "Filter: Pending, Approved, Flagged, Escalated" } }, "additionalProperties": false }, "annotations": { "readOnlyHint": true } },
+                        { "name": "get-ic-calendar", "description": "Get upcoming IC dates with deal summaries.", "inputSchema": { "type": "object", "properties": {}, "additionalProperties": false }, "annotations": { "readOnlyHint": true } },
+                        { "name": "update-deal-compliance", "description": "Update deal compliance status.", "inputSchema": { "type": "object", "properties": { "ticker": { "type": "string" }, "status": { "type": "string", "description": "Approved, Flagged, or Escalated" }, "notes": { "type": "string" } }, "required": ["ticker", "status"], "additionalProperties": false } }
+                    ]
+                }
+            },
+            "auth": { "type": "None" }
+        }
+    ]
+}

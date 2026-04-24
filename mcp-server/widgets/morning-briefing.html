@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+:root{color-scheme:light dark;--bg:#0d1117;--surface:#161b22;--card:#1c2333;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--green:#3fb950;--red:#f85149;--gold:#d29922;--r:8px;--client:#58a6ff;--prospect:#a78bfa}
+:root[data-theme="light"]{--bg:#f6f8fa;--surface:#fff;--card:#fff;--border:#d0d7de;--text:#1f2328;--muted:#656d76;--accent:#0969da;--green:#1a7f37;--red:#cf222e;--gold:#9a6700;--client:#0969da;--prospect:#7c3aed}
+*,*::before,*::after{box-sizing:border-box}body,html{margin:0;background:var(--bg);font-family:"Segoe UI",system-ui,sans-serif;color:var(--text);font-size:13px}
+.hdr{padding:14px 16px;background:linear-gradient(135deg,rgba(88,166,255,.06),var(--surface));border-bottom:1px solid var(--border)}
+.hdr-top{display:flex;align-items:center;justify-content:space-between}.hdr-t{font-size:17px;font-weight:800;letter-spacing:-.3px}.hdr-date{font-size:11px;color:var(--muted);margin-top:2px}
+.expand-btn{width:26px;height:26px;border-radius:6px;background:transparent;color:var(--muted);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer}.expand-btn:hover{color:var(--accent);border-color:var(--accent)}
+/* Pulse */
+.pulse{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--border)}
+.pulse-card{padding:8px 10px;background:var(--card);border:1px solid var(--border);border-radius:var(--r)}.pulse-l{font-size:9px;text-transform:uppercase;color:var(--muted);margin-bottom:1px}.pulse-v{font-size:16px;font-weight:800}
+/* Section */
+.section{padding:12px 16px;border-bottom:1px solid var(--border)}
+.sec-hdr{display:flex;align-items:center;gap:8px;margin-bottom:10px}.sec-icon{font-size:16px}.sec-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px}.sec-badge{font-size:10px;font-weight:600;padding:1px 6px;border-radius:99px;background:rgba(88,166,255,.08);color:var(--accent);margin-left:auto}
+/* Alert cards */
+.alert-card{padding:10px 12px;border-radius:var(--r);border-left:3px solid var(--accent);background:var(--card);margin-bottom:6px;cursor:pointer;transition:border-color .15s}.alert-card:hover{border-left-color:var(--green)}
+.alert-card.high{border-left-color:var(--red)}.alert-card.medium{border-left-color:var(--gold)}.alert-card.low{border-left-color:var(--green)}
+.alert-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
+.alert-sym{font-weight:800;font-size:13px;color:var(--accent)}.alert-name{font-size:10px;color:var(--muted);margin-left:6px}
+.alert-price{font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px}
+.alert-chg{font-size:10px;font-weight:700;padding:1px 5px;border-radius:3px}.alert-chg.up{color:var(--green);background:rgba(63,185,80,.1)}.alert-chg.down{color:var(--red);background:rgba(248,81,73,.1)}
+.alert-headline{font-size:11px;font-weight:600;line-height:1.3;margin-bottom:2px}.alert-source{font-size:9px;color:var(--muted)}
+.alert-tag{font-size:8px;font-weight:700;text-transform:uppercase;padding:1px 5px;border-radius:3px;display:inline-block;margin-top:3px}
+.tag-earnings{background:rgba(88,166,255,.1);color:var(--accent)}.tag-csuite{background:rgba(210,153,34,.1);color:var(--gold)}.tag-deal{background:rgba(63,185,80,.1);color:var(--green)}.tag-risk{background:rgba(248,81,73,.1);color:var(--red)}.tag-catalyst{background:rgba(167,139,250,.1);color:var(--prospect)}
+/* Prospect */
+.prospect-card{padding:8px 10px;border-radius:var(--r);border:1px solid rgba(167,139,250,.25);background:linear-gradient(135deg,rgba(167,139,250,.04),var(--card));margin-bottom:5px;cursor:pointer;transition:border-color .15s}.prospect-card:hover{border-color:var(--prospect)}
+.prospect-sym{font-weight:800;font-size:12px;color:var(--prospect)}.prospect-name{font-size:10px;color:var(--muted);margin-left:4px}
+.prospect-signal{font-size:10px;margin-top:3px}.prospect-headline{font-size:10px;font-weight:600;margin-top:2px;line-height:1.3}
+.prospect-pipe{font-size:9px;color:var(--prospect);margin-top:2px;font-weight:600}
+/* Theme cards */
+.theme-card{padding:10px 12px;border-radius:var(--r);background:var(--card);border:1px solid var(--border);margin-bottom:5px}
+.theme-title{font-size:12px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.theme-icon{font-size:14px}
+.theme-desc{font-size:11px;color:var(--muted);line-height:1.4}
+.theme-tickers{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
+.theme-tick{font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;background:rgba(88,166,255,.08);color:var(--accent)}
+/* Movers strip */
+.movers{display:flex;gap:6px;flex-wrap:wrap}
+.mover{padding:6px 10px;border-radius:var(--r);border:1px solid var(--border);background:var(--card);display:flex;align-items:center;gap:6px;flex:1;min-width:120px}
+.mover.gainer{border-color:rgba(63,185,80,.25)}.mover.loser{border-color:rgba(248,81,73,.25)}
+.mover-sym{font-size:12px;font-weight:800;color:var(--accent)}.mover-chg{font-size:11px;font-weight:700;margin-left:auto}
+/* C-Suite */
+.csuite-item{padding:6px 10px;border-radius:var(--r);border:1px solid var(--border);background:var(--card);margin-bottom:3px;cursor:pointer;transition:border-color .15s}.csuite-item:hover{border-color:var(--accent)}
+.csuite-item h4{font-size:10px;font-weight:600;margin:0;line-height:1.3}.csuite-meta{font-size:9px;color:var(--muted)}
+/* Footer */
+.footer{padding:6px 16px;background:var(--surface);border-top:1px solid var(--border);font-size:10px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.btn{padding:4px 10px;border-radius:5px;background:var(--card);color:var(--muted);border:1px solid var(--border);font-size:11px;cursor:pointer}.btn:hover{color:var(--text);border-color:var(--accent)}
+.nav{display:flex;gap:4px;padding:6px 16px;border-top:1px solid var(--border);background:var(--surface);flex-wrap:wrap;align-items:center}
+.nav-lbl{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-right:4px}
+.empty{text-align:center;padding:16px;font-size:12px;color:var(--muted)}
+</style>
+<script>(function(){var d=document.documentElement,m=matchMedia('(prefers-color-scheme:dark)');function t(){d.dataset.theme=m.matches?'dark':'light';}t();m.addEventListener('change',t);})()</script>
+</head>
+<body>
+<div class="hdr"><div class="hdr-top"><div><div class="hdr-t">The Alpha Brief</div><div class="hdr-date" id="briefDate">Morning Briefing</div></div><button class="expand-btn" id="expBtn" title="Fullscreen"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2h4v4M6 14H2v-4M14 2L9.5 6.5M2 14l4.5-4.5"/></svg></button></div></div>
+<div class="pulse" id="pulse"></div>
+<div class="section" id="secMovers"><div class="sec-hdr"><span class="sec-icon">~</span><span class="sec-title">Market Movers</span></div><div class="movers" id="movers"></div></div>
+<div class="section" id="secAlerts"><div class="sec-hdr"><span class="sec-icon">!</span><span class="sec-title">Client Alerts</span><span class="sec-badge" id="alertBadge">--</span></div><div id="alerts"></div></div>
+<div class="section" id="secProspects"><div class="sec-hdr"><span class="sec-icon">*</span><span class="sec-title">Prospect Watch</span><span class="sec-badge" id="prospBadge" style="background:rgba(167,139,250,.1);color:var(--prospect)">--</span></div><div id="prospects"></div></div>
+<div class="section" id="secCsuite"><div class="sec-hdr"><span class="sec-icon">&amp;</span><span class="sec-title">C-Suite & Leadership</span><span class="sec-badge" id="csuiteBadge">--</span></div><div id="csuite"></div></div>
+<div class="footer"><span>The Alpha Brief - Portfolio Manager - Finnhub</span><button class="btn" id="refBtn">Refresh</button></div>
+<div class="nav"><span class="nav-lbl">Navigate:</span><button class="btn" onclick="nav('Read my portfolio and show the Portfolio Command Center')">Dashboard</button><button class="btn" onclick="nav('Read my portfolio and show the Macro Stress Test')">Stress Test</button><button class="btn" onclick="nav('Show me the CRM pipeline dashboard')">Pipeline</button></div>
+<script>
+function esc(s){var d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
+function rh(){if(window.openai&&window.openai.notifyIntrinsicHeight)window.openai.notifyIntrinsicHeight(document.body.scrollHeight);}
+function olink(u){if(window.openai&&window.openai.openExternal)window.openai.openExternal({href:u});else window.open(u,'_blank');}
+function nav(p){if(window.openai&&window.openai.sendFollowUpMessage)window.openai.sendFollowUpMessage({prompt:p});}
+function f$(v){if(!v&&v!==0)return '--';var a=Math.abs(v);if(a>=1e12)return '$'+(v/1e12).toFixed(2)+'T';if(a>=1e9)return '$'+(v/1e9).toFixed(1)+'B';if(a>=1e6)return '$'+(v/1e6).toFixed(2)+'M';if(a>=1e3)return '$'+(v/1e3).toFixed(0)+'K';return '$'+v.toFixed(2);}
+
+// Materiality keywords
+var MAT_KEYS={earnings:/earnings|revenue|profit|loss|beat|miss|guidance|eps|quarterly|annual results/i,csuite:/ceo|cfo|cto|chief|appoint|resign|depart|executive|board|director|leadership/i,deal:/acqui|merger|deal|partnership|joint venture|buyout|takeover|divest/i,risk:/lawsuit|sue|recall|investigation|fraud|sanction|downgrade|breach|warning/i,catalyst:/fda|approval|patent|launch|trial|phase|upgrade|breakthrough|innovat/i};
+
+function tagArticle(a){var h=(a.headline||'')+(a.summary||'');for(var k in MAT_KEYS)if(MAT_KEYS[k].test(h))return k;return null;}
+function priority(tag){return tag==='risk'?0:tag==='earnings'?1:tag==='csuite'?2:tag==='deal'?3:tag==='catalyst'?4:5;}
+
+function render(data){
+  document.getElementById('briefDate').textContent=data.date||'Morning Briefing';
+  var clients=data.clients||[],prospects=data.prospects||[],csuite=data.csuiteNews||[];
+  var all=[...clients,...prospects];
+
+  // Pulse KPIs
+  var totalWithNews=all.filter(function(c){return(c.news||[]).length>0;}).length;
+  var gainers=all.filter(function(c){return(c.changePercent||0)>0;}).length;
+  var losers=all.filter(function(c){return(c.changePercent||0)<0;}).length;
+  var ph='<div class="pulse-card"><div class="pulse-l">Portfolio</div><div class="pulse-v">'+all.length+' Companies</div></div>';
+  ph+='<div class="pulse-card"><div class="pulse-l">With News</div><div class="pulse-v">'+totalWithNews+'</div></div>';
+  ph+='<div class="pulse-card"><div class="pulse-l">Gainers / Losers</div><div class="pulse-v" style="color:var(--green)">'+gainers+' <span style="color:var(--muted)">/</span> <span style="color:var(--red)">'+losers+'</span></div></div>';
+  ph+='<div class="pulse-card"><div class="pulse-l">C-Suite Moves</div><div class="pulse-v" style="color:var(--gold)">'+csuite.length+'</div></div>';
+  document.getElementById('pulse').innerHTML=ph;
+
+  // Movers
+  var sorted=all.slice().sort(function(a,b){return Math.abs(b.changePercent||0)-Math.abs(a.changePercent||0);});
+  var topMovers=sorted.slice(0,6);
+  var mh='';topMovers.forEach(function(c){var dp=c.changePercent||0,sn=dp>=0?'+':'',cls=dp>=0?'gainer':'loser',col=dp>=0?'var(--green)':'var(--red)';mh+='<div class="mover '+cls+'"><div class="mover-sym">'+esc(c.symbol)+'</div><div class="mover-chg" style="color:'+col+'">'+sn+dp.toFixed(2)+'%</div></div>';});
+  document.getElementById('movers').innerHTML=mh;
+
+  // Client alerts - companies with material news
+  var clientAlerts=[];
+  clients.forEach(function(c){(c.news||[]).forEach(function(a){var tag=tagArticle(a);if(tag){clientAlerts.push({sym:c.symbol,name:c.name,price:c.price,dp:c.changePercent,article:a,tag:tag});}});});
+  clientAlerts.sort(function(a,b){return priority(a.tag)-priority(b.tag);});
+  clientAlerts=clientAlerts.slice(0,8);
+  var TAG_MAP={earnings:'tag-earnings',csuite:'tag-csuite',deal:'tag-deal',risk:'tag-risk',catalyst:'tag-catalyst'};
+  var PRIORITY_MAP={risk:'high',earnings:'medium',csuite:'medium',deal:'low',catalyst:'low'};
+  var ah='';
+  if(clientAlerts.length){clientAlerts.forEach(function(al){var dp=al.dp||0,sn=dp>=0?'+':'',cls=dp>=0?'up':'down',prio=PRIORITY_MAP[al.tag]||'low';
+  ah+='<div class="alert-card '+prio+'" onclick="olink(\''+esc(al.article.url||'')+'\')"><div class="alert-top"><div><span class="alert-sym">'+esc(al.sym)+'</span><span class="alert-name">'+esc(al.name)+'</span></div><div class="alert-price">$'+(al.price||0).toFixed(2)+' <span class="alert-chg '+cls+'">'+sn+dp.toFixed(2)+'%</span></div></div><div class="alert-headline">'+esc(al.article.headline||'')+'</div><div class="alert-source">'+esc(al.article.source||'')+'</div><span class="alert-tag '+TAG_MAP[al.tag]+'">'+esc(al.tag)+'</span></div>';});}
+  else ah='<div class="empty">No material client alerts today</div>';
+  document.getElementById('alerts').innerHTML=ah;
+  document.getElementById('alertBadge').textContent=clientAlerts.length+' alerts';
+
+  // Prospect watch
+  var ph2='';
+  if(prospects.length){prospects.forEach(function(p){var dp=p.changePercent||0,sn=dp>=0?'+':'',col=dp>=0?'var(--green)':'var(--red)';var topNews=(p.news||[])[0];var signal=dp<=-2?'Price dip - potential entry point':dp>=2?'Strong momentum - watch for breakout':'Stable - monitoring';
+  ph2+='<div class="prospect-card"><div><span class="prospect-sym">'+esc(p.symbol)+'</span><span class="prospect-name">'+esc(p.name)+'</span><span style="float:right;font-size:11px;font-weight:700;color:'+col+'">'+sn+dp.toFixed(2)+'%</span></div><div class="prospect-signal">'+signal+'</div>'+(topNews?'<div class="prospect-headline">'+esc(topNews.headline||'')+'</div>':'')+'</div>';});}
+  else ph2='<div class="empty">No prospects in pipeline</div>';
+  document.getElementById('prospects').innerHTML=ph2;
+  document.getElementById('prospBadge').textContent=prospects.length+' prospects';
+
+  // C-Suite
+  var ch='';
+  if(csuite.length){csuite.slice(0,6).forEach(function(a){ch+='<div class="csuite-item" onclick="olink(\''+esc(a.url||'')+'\')"><h4>'+esc(a.headline||'')+'</h4><div class="csuite-meta">'+esc(a.source||'')+'</div></div>';});}
+  else ch='<div class="empty">No C-Suite moves detected</div>';
+  document.getElementById('csuite').innerHTML=ch;
+  document.getElementById('csuiteBadge').textContent=csuite.length;
+  rh();
+}
+
+var _fs=false;
+if(window.openai&&window.openai.requestDisplayMode)document.getElementById('expBtn').addEventListener('click',async function(){try{await window.openai.requestDisplayMode({mode:_fs?'inline':'fullscreen'});_fs=!_fs;}catch(e){}});else document.getElementById('expBtn').style.display='none';
+document.getElementById('refBtn').addEventListener('click',async function(){if(!window.openai||!window.openai.callTool)return;try{var out=await window.openai.callTool('show-morning-briefing',window.openai.toolInput||{});var d=(out&&out.structuredContent)||out;if(d)render(d);}catch(e){}});
+
+var to=window.__TOOL_DATA__||(window.openai&&window.openai.toolOutput)||{};
+if(typeof to==='string'){try{to=JSON.parse(to);}catch(e){to={};}}
+if(to&&(to.clients||to.prospects||to.industryNews))render(to);
+</script>
+</body></html>

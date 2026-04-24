@@ -1,0 +1,91 @@
+name: Deploy to Azure Container Apps
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'mcp-server/**'
+      - 'digital-worker/**'
+
+env:
+  REGISTRY: portfolioagentacr.azurecr.io
+  RESOURCE_GROUP: rg-portfolio-agent
+
+jobs:
+  build-and-deploy-mcp:
+    name: Deploy MCP Server
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || contains(join(github.event.commits.*.modified, ','), 'mcp-server/')
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - uses: azure/docker-login@v2
+        with:
+          login-server: ${{ env.REGISTRY }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build & push image
+        run: |
+          docker build -t ${{ env.REGISTRY }}/portfolio-agent:${{ github.sha }} -t ${{ env.REGISTRY }}/portfolio-agent:latest ./mcp-server
+          docker push ${{ env.REGISTRY }}/portfolio-agent --all-tags
+
+      - name: Deploy to Container App
+        run: |
+          az containerapp update \
+            --name portfolio-agent-app \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --image ${{ env.REGISTRY }}/portfolio-agent:${{ github.sha }}
+
+  build-and-deploy-worker:
+    name: Deploy Digital Worker
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || contains(join(github.event.commits.*.modified, ','), 'digital-worker/')
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - uses: azure/docker-login@v2
+        with:
+          login-server: ${{ env.REGISTRY }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build & push image
+        run: |
+          docker build -t ${{ env.REGISTRY }}/digital-worker:${{ github.sha }} -t ${{ env.REGISTRY }}/digital-worker:latest ./digital-worker
+          docker push ${{ env.REGISTRY }}/digital-worker --all-tags
+
+      - name: Deploy to Container App
+        run: |
+          az containerapp update \
+            --name portfolio-manager-worker \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --image ${{ env.REGISTRY }}/digital-worker:${{ github.sha }}
+
+  verify:
+    name: Post-Deploy Health Check
+    runs-on: ubuntu-latest
+    needs: [build-and-deploy-mcp, build-and-deploy-worker]
+    if: always() && (needs.build-and-deploy-mcp.result == 'success' || needs.build-and-deploy-worker.result == 'success')
+    steps:
+      - name: Wait for rollout
+        run: sleep 30
+
+      - name: Check MCP Server health
+        run: |
+          STATUS=$(curl -sf https://portfolio-agent-app.jollysand-88b78b02.eastus.azurecontainerapps.io/health | jq -r '.status')
+          [ "$STATUS" = "ok" ] || [ "$STATUS" = "degraded" ] || exit 1
+
+      - name: Check Digital Worker health
+        run: |
+          STATUS=$(curl -sf https://portfolio-manager-worker.jollysand-88b78b02.eastus.azurecontainerapps.io/api/health | jq -r '.status')
+          [ "$STATUS" = "healthy" ] || exit 1

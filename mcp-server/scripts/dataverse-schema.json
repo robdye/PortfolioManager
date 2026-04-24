@@ -1,0 +1,136 @@
+{
+  "$schema": "Dataverse custom table definitions for Portfolio Manager",
+  "description": "Provision these tables in your Dataverse environment before running the migration script.",
+  "publisher_prefix": "pm",
+  "tables": [
+    {
+      "logical_name": "pm_portfolioholding",
+      "display_name": "Portfolio Holding",
+      "plural_name": "Portfolio Holdings",
+      "description": "Portfolio holdings — replaces Excel spreadsheet for scale and resilience",
+      "primary_name_column": "pm_company",
+      "columns": [
+        { "logical_name": "pm_company", "display_name": "Company", "type": "String", "max_length": 200, "required": true },
+        { "logical_name": "pm_ticker", "display_name": "Ticker", "type": "String", "max_length": 10, "required": true },
+        { "logical_name": "pm_sector", "display_name": "Sector", "type": "String", "max_length": 100 },
+        { "logical_name": "pm_shares", "display_name": "Shares", "type": "Integer", "min": 0, "max": 999999999 },
+        { "logical_name": "pm_costpershare", "display_name": "Cost/Share (USD)", "type": "Money", "precision": 2 },
+        { "logical_name": "pm_totalcost", "display_name": "Total Cost (USD)", "type": "Money", "precision": 2 },
+        { "logical_name": "pm_holdingtype", "display_name": "Holding Type", "type": "OptionSet", "options": [
+          { "value": 100000000, "label": "Client" },
+          { "value": 100000001, "label": "Prospect" }
+        ]},
+        { "logical_name": "pm_website", "display_name": "Website", "type": "String", "max_length": 500, "format": "Url" },
+        { "logical_name": "pm_mediapress", "display_name": "Media/Press Release", "type": "String", "max_length": 500, "format": "Url" },
+        { "logical_name": "pm_reviewedat", "display_name": "Reviewed At", "type": "DateTime" },
+        { "logical_name": "pm_currencyexposure", "display_name": "Currency Exposure", "type": "String", "max_length": 100, "description": "Primary currency pair e.g. GBP/USD" },
+        { "logical_name": "pm_fxhedged", "display_name": "FX Hedged", "type": "Boolean", "default": false },
+        { "logical_name": "pm_revenueattributed", "display_name": "Revenue Attributed", "type": "Money", "precision": 2 },
+        { "logical_name": "pm_marginpercent", "display_name": "Margin %", "type": "Decimal", "precision": 2, "min": 0, "max": 100 },
+        { "logical_name": "pm_lastcompliancecheck", "display_name": "Last Compliance Check", "type": "DateTime" },
+        { "logical_name": "pm_compliancestatus", "display_name": "Compliance Status", "type": "OptionSet", "options": [
+          { "value": 100000000, "label": "Compliant" },
+          { "value": 100000001, "label": "Pending" },
+          { "value": 100000002, "label": "Flagged" },
+          { "value": 100000003, "label": "Escalated" }
+        ]}
+      ]
+    },
+    {
+      "logical_name": "pm_dealtracker",
+      "display_name": "Deal Tracker",
+      "plural_name": "Deal Trackers",
+      "description": "M&A, Capital Raise, FX Hedging, and Exit deal pipeline tracking",
+      "primary_name_column": "pm_name",
+      "columns": [
+        { "logical_name": "pm_name", "display_name": "Deal Name", "type": "String", "max_length": 300, "required": true },
+        { "logical_name": "pm_ticker", "display_name": "Ticker", "type": "String", "max_length": 10, "required": true },
+        { "logical_name": "pm_dealtype", "display_name": "Deal Type", "type": "OptionSet", "options": [
+          { "value": 100000000, "label": "M&A" },
+          { "value": 100000001, "label": "Capital Raise" },
+          { "value": 100000002, "label": "FX Hedging" },
+          { "value": 100000003, "label": "Follow-on" },
+          { "value": 100000004, "label": "Exit" }
+        ]},
+        { "logical_name": "pm_dealstage", "display_name": "Deal Stage", "type": "OptionSet", "options": [
+          { "value": 100000000, "label": "Origination" },
+          { "value": 100000001, "label": "Qualify" },
+          { "value": 100000002, "label": "Due Diligence" },
+          { "value": 100000003, "label": "IC Approval" },
+          { "value": 100000004, "label": "Execution" },
+          { "value": 100000005, "label": "Closed" }
+        ]},
+        { "logical_name": "pm_estimatedvalue", "display_name": "Estimated Value", "type": "Money", "precision": 2 },
+        { "logical_name": "pm_winprobability", "display_name": "Win Probability %", "type": "Decimal", "precision": 0, "min": 0, "max": 100 },
+        { "logical_name": "pm_revenueforecast", "display_name": "Revenue Forecast", "type": "Money", "precision": 2 },
+        { "logical_name": "pm_marginpercent", "display_name": "Margin %", "type": "Decimal", "precision": 2, "min": 0, "max": 100 },
+        { "logical_name": "pm_compliancestatus", "display_name": "Compliance Status", "type": "OptionSet", "options": [
+          { "value": 100000000, "label": "Pending" },
+          { "value": 100000001, "label": "Approved" },
+          { "value": 100000002, "label": "Flagged" },
+          { "value": 100000003, "label": "Escalated" }
+        ]},
+        { "logical_name": "pm_riskrating", "display_name": "Risk Rating", "type": "OptionSet", "options": [
+          { "value": 100000000, "label": "Low" },
+          { "value": 100000001, "label": "Medium" },
+          { "value": 100000002, "label": "High" },
+          { "value": 100000003, "label": "Critical" }
+        ]},
+        { "logical_name": "pm_exitstrategy", "display_name": "Exit Strategy", "type": "String", "max_length": 500 },
+        { "logical_name": "pm_currencyexposure", "display_name": "Currency Exposure", "type": "String", "max_length": 200 },
+        { "logical_name": "pm_nextICdate", "display_name": "Next IC Date", "type": "DateTime" },
+        { "logical_name": "pm_boardobserver", "display_name": "Board Observer", "type": "String", "max_length": 200 },
+        { "logical_name": "pm_description", "display_name": "Description", "type": "String", "max_length": 2000 },
+        { "logical_name": "pm_lastcompliancereview", "display_name": "Last Compliance Review", "type": "DateTime" },
+        { "logical_name": "pm_estimatedclosedate", "display_name": "Estimated Close Date", "type": "DateTime" }
+      ]
+    },
+    {
+      "logical_name": "pm_compliancereview",
+      "display_name": "Compliance Review",
+      "plural_name": "Compliance Reviews",
+      "description": "Compliance review log for deals and portfolio positions",
+      "primary_name_column": "pm_ticker",
+      "columns": [
+        { "logical_name": "pm_ticker", "display_name": "Ticker", "type": "String", "max_length": 10, "required": true },
+        { "logical_name": "pm_reviewtype", "display_name": "Review Type", "type": "String", "max_length": 100, "description": "Deal Compliance, Portfolio Risk, Regulatory Filing" },
+        { "logical_name": "pm_status", "display_name": "Status", "type": "OptionSet", "options": [
+          { "value": 100000000, "label": "Pending" },
+          { "value": 100000001, "label": "Approved" },
+          { "value": 100000002, "label": "Flagged" },
+          { "value": 100000003, "label": "Escalated" }
+        ]},
+        { "logical_name": "pm_reviewer", "display_name": "Reviewer", "type": "String", "max_length": 200 },
+        { "logical_name": "pm_notes", "display_name": "Notes", "type": "String", "max_length": 4000 },
+        { "logical_name": "pm_riskfactors", "display_name": "Risk Factors", "type": "String", "max_length": 2000, "description": "JSON array of risk factors" },
+        { "logical_name": "pm_reviewdate", "display_name": "Review Date", "type": "DateTime" },
+        { "logical_name": "pm_nextreviewdate", "display_name": "Next Review Date", "type": "DateTime" }
+      ]
+    },
+    {
+      "logical_name": "pm_revenueforecast",
+      "display_name": "Revenue Forecast",
+      "plural_name": "Revenue Forecasts",
+      "description": "Revenue forecast snapshots per client per period",
+      "primary_name_column": "pm_ticker",
+      "columns": [
+        { "logical_name": "pm_ticker", "display_name": "Ticker", "type": "String", "max_length": 10, "required": true },
+        { "logical_name": "pm_period", "display_name": "Period", "type": "String", "max_length": 20, "description": "e.g. 2026-Q1, 2026-H1" },
+        { "logical_name": "pm_forecastrevenue", "display_name": "Forecast Revenue", "type": "Money", "precision": 2 },
+        { "logical_name": "pm_actualrevenue", "display_name": "Actual Revenue", "type": "Money", "precision": 2 },
+        { "logical_name": "pm_variance", "display_name": "Variance", "type": "Money", "precision": 2 },
+        { "logical_name": "pm_walletshare", "display_name": "Wallet Share %", "type": "Decimal", "precision": 2, "min": 0, "max": 100 },
+        { "logical_name": "pm_marginpercent", "display_name": "Margin %", "type": "Decimal", "precision": 2, "min": 0, "max": 100 },
+        { "logical_name": "pm_forecastdate", "display_name": "Forecast Date", "type": "DateTime" }
+      ]
+    }
+  ],
+  "provisioning_notes": [
+    "1. Create these tables in your Dataverse environment (Power Apps > Tables > New table)",
+    "2. Use the publisher prefix 'pm' for all custom columns",
+    "3. Grant your app registration (GRAPH_CLIENT_ID) the 'System Administrator' or 'Service Writer' security role",
+    "4. Run the migration script: npx ts-node scripts/migrate-to-dataverse.ts",
+    "5. Verify data appears in Dataverse via Power Apps or the read-portfolio MCP tool",
+    "6. The migrate-from-excel MCP tool can also trigger migration from the Copilot chat"
+  ]
+}

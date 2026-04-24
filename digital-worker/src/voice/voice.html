@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Manager — Voice</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --border: #2a2d3a;
+      --text: #e4e4e7;
+      --muted: #71717a;
+      --accent: #2563eb;
+      --accent-glow: rgba(37, 99, 235, 0.3);
+      --green: #22c55e;
+      --red: #ef4444;
+      --amber: #f59e0b;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    header {
+      width: 100%;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    header .logo {
+      width: 36px; height: 36px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 18px; color: white;
+    }
+    header h1 { font-size: 18px; font-weight: 600; }
+    header .badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .main {
+      flex: 1;
+      width: 100%;
+      max-width: 640px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 24px;
+      gap: 32px;
+    }
+    .orb-container {
+      position: relative;
+      width: 180px; height: 180px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .orb {
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #60a5fa, var(--accent), #1d4ed8);
+      transition: transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 0 40px var(--accent-glow);
+    }
+    .orb.speaking {
+      animation: pulse 1.2s ease-in-out infinite;
+      box-shadow: 0 0 60px var(--accent-glow), 0 0 120px rgba(37,99,235,0.15);
+    }
+    .orb.listening {
+      animation: listen 0.8s ease-in-out infinite;
+      box-shadow: 0 0 50px rgba(34,197,94,0.3);
+      background: radial-gradient(circle at 35% 35%, #4ade80, var(--green), #16a34a);
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+    @keyframes listen {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    .status {
+      font-size: 14px;
+      color: var(--muted);
+      text-align: center;
+      min-height: 20px;
+    }
+    .status.active { color: var(--green); }
+    .status.error { color: var(--red); }
+    .controls { display: flex; gap: 12px; }
+    button {
+      padding: 12px 28px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    button:hover { border-color: var(--accent); background: rgba(37,99,235,0.1); }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
+    button.primary { background: var(--accent); border-color: var(--accent); color: white; }
+    button.primary:hover { background: #1d4ed8; }
+    button.danger { border-color: var(--red); color: var(--red); }
+    button.danger:hover { background: rgba(239,68,68,0.1); }
+    button.mute { border-color: var(--amber); color: var(--amber); }
+    button.mute:hover { background: rgba(245,158,11,0.1); }
+    button.mute.muted { background: var(--amber); color: var(--bg); border-color: var(--amber); }
+    .transcript {
+      width: 100%;
+      flex: 1;
+      min-height: 200px;
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .transcript:empty::before {
+      content: 'Transcript will appear here...';
+      color: var(--muted);
+      font-style: italic;
+      font-size: 13px;
+    }
+    .msg {
+      font-size: 13px;
+      line-height: 1.5;
+      padding: 8px 12px;
+      border-radius: 8px;
+      max-width: 85%;
+    }
+    .msg.user { background: rgba(37,99,235,0.15); align-self: flex-end; text-align: right; }
+    .msg.assistant { background: rgba(255,255,255,0.05); align-self: flex-start; }
+    .msg .label { font-size: 11px; font-weight: 600; color: var(--muted); margin-bottom: 2px; }
+    footer {
+      padding: 16px;
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+    }
+    .offline-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      z-index: 100;
+    }
+    .offline-overlay .orb {
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #52525b, #3f3f46, #27272a);
+      box-shadow: 0 0 40px rgba(82, 82, 91, 0.3);
+    }
+    .offline-overlay h2 { font-size: 22px; font-weight: 600; color: var(--text); }
+    .offline-overlay p { font-size: 14px; color: var(--muted); text-align: center; max-width: 400px; line-height: 1.6; }
+    .offline-overlay .badge-offline {
+      font-size: 12px; padding: 4px 14px; border-radius: 999px;
+      background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--red);
+    }
+  </style>
+</head>
+<body>
+
+<div class="offline-overlay" id="offlineOverlay" style="display:none">
+  <div class="orb"></div>
+  <h2>Portfolio Manager is offline</h2>
+  <span class="badge-offline">Voice unavailable</span>
+  <p>The voice interface is currently disabled.<br>Say "enable voice" in Teams to activate it.</p>
+</div>
+
+<header>
+  <div class="logo">PM</div>
+  <h1>Portfolio Manager</h1>
+  <span class="badge">Voice Live</span>
+</header>
+
+<div class="main">
+  <div class="orb-container">
+    <div class="orb" id="orb"></div>
+  </div>
+  <div class="status" id="status">Click Connect to start a voice session</div>
+  <div class="controls">
+    <button class="primary" id="btnConnect" onclick="connect()">Connect</button>
+    <button class="mute" id="btnMute" onclick="toggleMute()" disabled>Mute</button>
+    <button class="danger" id="btnDisconnect" onclick="disconnect()" disabled>Disconnect</button>
+  </div>
+  <div class="transcript" id="transcript"></div>
+</div>
+
+<footer>Portfolio Manager &middot; Digital Worker &middot; Powered by Azure Voice Live</footer>
+
+<script>
+  const orbEl = document.getElementById('orb');
+  const statusEl = document.getElementById('status');
+  const transcriptEl = document.getElementById('transcript');
+  const btnConnect = document.getElementById('btnConnect');
+  const btnMute = document.getElementById('btnMute');
+  const btnDisconnect = document.getElementById('btnDisconnect');
+  const offlineOverlay = document.getElementById('offlineOverlay');
+  const mainUI = document.querySelector('.main');
+  const headerEl = document.querySelector('header');
+  const footerEl = document.querySelector('footer');
+
+  let ws = null;
+  let isMuted = false;
+
+  async function checkVoiceGate() {
+    try {
+      const r = await fetch('/api/health');
+      const data = await r.json();
+      if (!data.voiceEnabled) { showOffline(); return false; }
+      showOnline(); return true;
+    } catch { showOffline(); return false; }
+  }
+
+  function showOffline() {
+    offlineOverlay.style.display = 'flex';
+    mainUI.style.display = 'none';
+    headerEl.style.display = 'none';
+    footerEl.style.display = 'none';
+  }
+
+  function showOnline() {
+    offlineOverlay.style.display = 'none';
+    mainUI.style.display = '';
+    headerEl.style.display = '';
+    footerEl.style.display = '';
+  }
+
+  checkVoiceGate();
+  setInterval(checkVoiceGate, 30000);
+
+  let audioContext = null;
+  let micStream = null;
+  let micWorklet = null;
+  let micSource = null;
+  let nextPlaybackTime = 0;
+  let activeResponseText = '';
+  let activeSources = [];
+
+  function setStatus(text, cls = '') {
+    statusEl.textContent = text;
+    statusEl.className = 'status ' + cls;
+  }
+
+  function addTranscript(role, text) {
+    if (!text.trim()) return;
+    const div = document.createElement('div');
+    div.className = 'msg ' + role;
+    const label = document.createElement('div');
+    label.className = 'label';
+    label.textContent = role === 'user' ? 'You' : 'Portfolio Manager';
+    const body = document.createElement('div');
+    body.textContent = text;
+    div.appendChild(label);
+    div.appendChild(body);
+    transcriptEl.appendChild(div);
+    transcriptEl.scrollTop = transcriptEl.scrollHeight;
+  }
+
+  async function connect() {
+    const gateOpen = await checkVoiceGate();
+    if (!gateOpen) return;
+
+    try {
+      btnConnect.disabled = true;
+      setStatus('Requesting microphone access...', '');
+      micStream = await navigator.mediaDevices.getUserMedia({
+        audio: { sampleRate: 24000, channelCount: 1, echoCancellation: true, noiseSuppression: true }
+      });
+      audioContext = new AudioContext();
+      nextPlaybackTime = 0;
+      setStatus('Connecting to Portfolio Manager...', '');
+
+      const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+      ws = new WebSocket(`${proto}//${location.host}/api/voice`);
+
+      ws.onopen = () => {
+        setStatus('Connected — listening', 'active');
+        btnDisconnect.disabled = false;
+        btnMute.disabled = false;
+        startMicCapture();
+        // Trigger greeting after session is configured
+        setTimeout(() => {
+          if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+              type: 'conversation.item.create',
+              item: {
+                type: 'message',
+                role: 'system',
+                content: [{ type: 'input_text', text: 'Greet the user briefly. You are their Portfolio Manager. Keep it to one sentence.' }]
+              }
+            }));
+            ws.send(JSON.stringify({ type: 'response.create' }));
+          }
+        }, 1500);
+      };
+
+      ws.onmessage = (e) => {
+        let event;
+        try { event = JSON.parse(e.data); } catch { return; }
+        handleVoiceLiveEvent(event);
+      };
+
+      ws.onclose = () => { setStatus('Disconnected', ''); cleanup(); };
+      ws.onerror = () => { setStatus('Connection error', 'error'); cleanup(); };
+    } catch (err) {
+      setStatus('Error: ' + err.message, 'error');
+      btnConnect.disabled = false;
+    }
+  }
+
+  function disconnect() {
+    if (ws) ws.close();
+    cleanup();
+    setStatus('Disconnected', '');
+  }
+
+  function cleanup() {
+    btnConnect.disabled = false;
+    btnDisconnect.disabled = true;
+    btnMute.disabled = true;
+    isMuted = false;
+    btnMute.textContent = 'Mute';
+    btnMute.classList.remove('muted');
+    orbEl.className = 'orb';
+    stopMicCapture();
+    if (audioContext) { audioContext.close().catch(() => {}); audioContext = null; }
+    ws = null;
+  }
+
+  // --- Microphone capture: PCM16 at 24kHz via AudioWorklet ---
+  async function startMicCapture() {
+    if (!micStream || !ws) return;
+    const nativeSR = audioContext.sampleRate;
+
+    const workletCode = `
+      class MicProcessor extends AudioWorkletProcessor {
+        constructor() { super(); this.buffer = []; }
+        process(inputs) {
+          const input = inputs[0];
+          if (!input || !input[0]) return true;
+          const samples = input[0];
+          for (let i = 0; i < samples.length; i++) this.buffer.push(samples[i]);
+          if (this.buffer.length >= 4096) {
+            this.port.postMessage({ samples: new Float32Array(this.buffer) });
+            this.buffer = [];
+          }
+          return true;
+        }
+      }
+      registerProcessor('mic-processor', MicProcessor);
+    `;
+    const blob = new Blob([workletCode], { type: 'application/javascript' });
+    const workletUrl = URL.createObjectURL(blob);
+
+    try {
+      await audioContext.audioWorklet.addModule(workletUrl);
+    } catch (e) {
+      console.warn('[voice] AudioWorklet unavailable, using ScriptProcessor:', e.message);
+      startMicCaptureFallback();
+      return;
+    } finally {
+      URL.revokeObjectURL(workletUrl);
+    }
+
+    micSource = audioContext.createMediaStreamSource(micStream);
+    micWorklet = new AudioWorkletNode(audioContext, 'mic-processor');
+
+    micWorklet.port.onmessage = (e) => {
+      if (!ws || ws.readyState !== WebSocket.OPEN) return;
+      const float32 = e.data.samples;
+      const ratio = nativeSR / 24000;
+      const targetLen = Math.floor(float32.length / ratio);
+      const pcm16 = new Int16Array(targetLen);
+      for (let i = 0; i < targetLen; i++) {
+        const srcPos = i * ratio;
+        const idx = Math.floor(srcPos);
+        const frac = srcPos - idx;
+        const s0 = float32[idx] || 0;
+        const s1 = float32[Math.min(idx + 1, float32.length - 1)] || 0;
+        const val = Math.max(-1, Math.min(1, s0 + frac * (s1 - s0)));
+        pcm16[i] = val < 0 ? val * 0x8000 : val * 0x7FFF;
+      }
+      ws.send(pcm16.buffer);
+    };
+
+    micSource.connect(micWorklet);
+    const silentGain = audioContext.createGain();
+    silentGain.gain.value = 0;
+    micWorklet.connect(silentGain);
+    silentGain.connect(audioContext.destination);
+  }
+
+  function startMicCaptureFallback() {
+    if (!micStream || !ws) return;
+    const nativeSR = audioContext.sampleRate;
+    micSource = audioContext.createMediaStreamSource(micStream);
+    const silentGain = audioContext.createGain();
+    silentGain.gain.value = 0;
+    silentGain.connect(audioContext.destination);
+    const processor = audioContext.createScriptProcessor(4096, 1, 1);
+    processor.onaudioprocess = (e) => {
+      if (!ws || ws.readyState !== WebSocket.OPEN) return;
+      const float32 = e.inputBuffer.getChannelData(0);
+      const ratio = nativeSR / 24000;
+      const targetLen = Math.floor(float32.length / ratio);
+      const pcm16 = new Int16Array(targetLen);
+      for (let i = 0; i < targetLen; i++) {
+        const srcPos = i * ratio;
+        const idx = Math.floor(srcPos);
+        const frac = srcPos - idx;
+        const s0 = float32[idx] || 0;
+        const s1 = float32[Math.min(idx + 1, float32.length - 1)] || 0;
+        const val = Math.max(-1, Math.min(1, s0 + frac * (s1 - s0)));
+        pcm16[i] = val < 0 ? val * 0x8000 : val * 0x7FFF;
+      }
+      ws.send(pcm16.buffer);
+    };
+    micSource.connect(processor);
+    processor.connect(silentGain);
+    micWorklet = processor;
+  }
+
+  function stopMicCapture() {
+    if (micWorklet) { micWorklet.disconnect(); micWorklet = null; }
+    if (micSource) { micSource.disconnect(); micSource = null; }
+    if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
+  }
+
+  function toggleMute() {
+    if (!micStream) return;
+    isMuted = !isMuted;
+    micStream.getAudioTracks().forEach(t => t.enabled = !isMuted);
+    btnMute.textContent = isMuted ? 'Unmute' : 'Mute';
+    btnMute.classList.toggle('muted', isMuted);
+    setStatus(isMuted ? 'Microphone muted' : 'Connected — listening', 'active');
+  }
+
+  // --- Playback: decode base64 PCM16 at 24kHz ---
+  function queueAudio(base64) {
+    const raw = atob(base64);
+    const bytes = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
+    const int16 = new Int16Array(bytes.buffer);
+    const float24k = new Float32Array(int16.length);
+    for (let i = 0; i < int16.length; i++) {
+      float24k[i] = int16[i] / (int16[i] < 0 ? 0x8000 : 0x7FFF);
+    }
+    const nativeSR = audioContext.sampleRate;
+    const ratio = 24000 / nativeSR;
+    const outLen = Math.ceil(float24k.length / ratio);
+    const buffer = audioContext.createBuffer(1, outLen, nativeSR);
+    const outData = buffer.getChannelData(0);
+    for (let i = 0; i < outLen; i++) {
+      const srcPos = i * ratio;
+      const idx = Math.floor(srcPos);
+      const frac = srcPos - idx;
+      const s0 = float24k[idx] || 0;
+      const s1 = float24k[Math.min(idx + 1, float24k.length - 1)] || 0;
+      outData[i] = s0 + frac * (s1 - s0);
+    }
+    const source = audioContext.createBufferSource();
+    source.buffer = buffer;
+    source.connect(audioContext.destination);
+    const now = audioContext.currentTime;
+    const startTime = Math.max(now, nextPlaybackTime);
+    source.start(startTime);
+    nextPlaybackTime = startTime + buffer.duration;
+    activeSources.push(source);
+    source.onended = () => { activeSources = activeSources.filter(s => s !== source); };
+  }
+
+  function flushPlayback() {
+    for (const src of activeSources) { try { src.stop(); } catch (_) {} }
+    activeSources = [];
+    nextPlaybackTime = 0;
+  }
+
+  // --- Voice Live event handler ---
+  function handleVoiceLiveEvent(event) {
+    switch (event.type) {
+      case 'session.updated':
+        console.log('[voice] Session configured');
+        break;
+      case 'input_audio_buffer.speech_started':
+        orbEl.className = 'orb listening';
+        setStatus('Listening...', 'active');
+        flushPlayback();
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: 'response.cancel' }));
+        }
+        break;
+      case 'input_audio_buffer.speech_stopped':
+        orbEl.className = 'orb';
+        setStatus('Processing...', '');
+        break;
+      case 'conversation.item.input_audio_transcription.completed':
+        if (event.transcript) addTranscript('user', event.transcript);
+        break;
+      case 'response.created':
+        activeResponseText = '';
+        orbEl.className = 'orb speaking';
+        setStatus('Speaking...', 'active');
+        break;
+      case 'response.audio.delta':
+        if (event.delta) queueAudio(event.delta);
+        break;
+      case 'response.audio_transcript.delta':
+        if (event.delta) activeResponseText += event.delta;
+        break;
+      case 'response.audio_transcript.done':
+        if (event.transcript) addTranscript('assistant', event.transcript);
+        else if (activeResponseText) addTranscript('assistant', activeResponseText);
+        activeResponseText = '';
+        break;
+      case 'response.text.done':
+        if (event.text) addTranscript('assistant', event.text);
+        break;
+      case 'response.done':
+        orbEl.className = 'orb';
+        setStatus('Connected — listening', 'active');
+        break;
+      case 'error':
+        const msg = event.error?.message || 'Unknown error';
+        if (!msg.includes('no active response')) {
+          console.error('[voice] Error:', msg);
+          setStatus('Error: ' + msg, 'error');
+        }
+        break;
+    }
+  }
+</script>
+</body>
+</html>

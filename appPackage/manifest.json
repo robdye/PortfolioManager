@@ -1,0 +1,25 @@
+{
+    "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.24/MicrosoftTeams.schema.json",
+    "manifestVersion": "1.24",
+    "version": "1.0.0",
+    "id": "${{TEAMS_APP_ID}}",
+    "developer": {
+        "name": "ABSx68251802",
+        "websiteUrl": "https://www.microsoft.com",
+        "privacyUrl": "https://www.microsoft.com/privacy",
+        "termsOfUseUrl": "https://www.microsoft.com/termofuse"
+    },
+    "icons": { "color": "color.png", "outline": "outline.png" },
+    "name": { "short": "Portfolio Manager", "full": "Portfolio Manager — Alpha Intelligence for M365 Copilot" },
+    "description": {
+        "short": "Elite Investment Banking Portfolio Manager with interactive UI widgets",
+        "full": "Portfolio Manager connects to your SharePoint portfolio and Finnhub market data to deliver real-time stock quotes, analyst consensus, stress testing, risk analysis, intelligence feeds, and an interactive Portfolio Command Center — all rendered as rich side-panel widgets inside M365 Copilot."
+    },
+    "accentColor": "#0D1117",
+    "composeExtensions": [],
+    "permissions": ["identity", "messageTeamMembers"],
+    "copilotAgents": {
+        "declarativeAgents": [{ "id": "declarativeAgent", "file": "declarativeAgent.json" }]
+    },
+    "validDomains": ["*.azurecontainerapps.io", "*.devtunnels.ms", "graph.microsoft.com"]
+}

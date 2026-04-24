@@ -1,0 +1,84 @@
+{
+    "$schema": "https://developer.microsoft.com/json-schemas/copilot/plugin/v2.4/schema.json",
+    "schema_version": "v2.4",
+    "name_for_human": "Finnhub Market Data",
+    "description_for_human": "Real-time market data, analyst consensus, and interactive portfolio widgets via Finnhub",
+    "namespace": "finnhubmcp",
+    "functions": [
+        { "name": "show-portfolio-dashboard", "description": "Portfolio Command Center with live prices and drill-down." },
+        { "name": "show-stock-quote", "description": "Stock quote card with price and financials." },
+        { "name": "show-news-feed", "description": "Market news intelligence feed." },
+        { "name": "show-company-news", "description": "Company-specific news." },
+        { "name": "show-analyst-consensus", "description": "Analyst recommendation trends." },
+        { "name": "get-basic-financials", "description": "Key financial metrics." },
+        { "name": "get-peers", "description": "Peer companies." },
+        { "name": "get-insider-transactions", "description": "Insider buying/selling." },
+        { "name": "search-symbol", "description": "Search symbols." },
+        { "name": "show-morning-briefing", "description": "Morning Briefing with news and C-Suite moves." },
+        { "name": "show-stress-test", "description": "Macro Stress Test dashboard." },
+        { "name": "show-concentration-risk", "description": "Concentration Risk dashboard." },
+        { "name": "show-relative-value", "description": "Relative Value Analysis." },
+        { "name": "show-rv-shifts", "description": "RV Shift Detection — what changed in relative valuations this week." },
+        { "name": "show-challenge-holdings", "description": "Challenge Your Holdings — flag expensive positions with weak consensus." },
+        { "name": "show-benchmark-comparison", "description": "Benchmark Comparison — fund vs benchmark sector weights and active positions." },
+        { "name": "prepare-add-holding", "description": "Form to add a holding." },
+        { "name": "prepare-update-holding", "description": "Form to update a holding." },
+        { "name": "show-client-360", "description": "Client 360 View." },
+        { "name": "get-fx-rate", "description": "Live FX rates." },
+        { "name": "get-fx-candles", "description": "FX price history." },
+        { "name": "get-earnings-calendar", "description": "Upcoming earnings dates." },
+        { "name": "get-ipo-calendar", "description": "Upcoming IPOs." },
+        { "name": "get-sec-filings", "description": "SEC filings." },
+        { "name": "get-reported-financials", "description": "Reported financials from filings." },
+        { "name": "get-insider-sentiment", "description": "Insider sentiment ratio." }
+    ],
+    "runtimes": [
+        {
+            "type": "RemoteMCPServer",
+            "run_for_functions": [
+                "show-portfolio-dashboard", "show-stock-quote", "show-news-feed",
+                "show-company-news", "show-analyst-consensus", "get-basic-financials",
+                "get-peers", "get-insider-transactions", "search-symbol", "show-morning-briefing",
+                "show-stress-test", "show-concentration-risk", "show-relative-value",
+                "show-rv-shifts", "show-challenge-holdings", "show-benchmark-comparison",
+                "prepare-add-holding", "prepare-update-holding", "show-client-360",
+                "get-fx-rate", "get-fx-candles", "get-earnings-calendar", "get-ipo-calendar",
+                "get-sec-filings", "get-reported-financials", "get-insider-sentiment"
+            ],
+            "spec": {
+                "url": "${{MCP_ENDPOINT}}",
+                "x-mcp_tool_description": {
+                    "tools": [
+                        { "name": "show-portfolio-dashboard", "description": "Portfolio Command Center.", "inputSchema": { "type": "object", "properties": { "symbols": { "type": "string" }, "positions": { "type": "string" }, "types": { "type": "string" }, "sectors": { "type": "string" } }, "required": ["symbols"] }, "annotations": { "readOnlyHint": true }, "_meta": { "openai/outputTemplate": "ui://widget/portfolio-dashboard.html", "openai/widgetAccessible": true } },
+                        { "name": "show-stock-quote", "description": "Stock quote card.", "inputSchema": { "type": "object", "properties": { "symbol": { "type": "string" } }, "required": ["symbol"] }, "annotations": { "readOnlyHint": true }, "_meta": { "openai/outputTemplate": "ui://widget/stock-quote.html", "openai/widgetAccessible": true } },
+                        { "name": "show-news-feed", "description": "Market news feed.", "inputSchema": { "type": "object", "properties": { "category": { "type": "string" } } }, "annotations": { "readOnlyHint": true }, "_meta": { "openai/outputTemplate": "ui://widget/news-feed.html", "openai/widgetAccessible": true } },
+                        { "name": "show-company-news", "description": "Company news.", "inputSchema": { "type": "object", "properties": { "symbol": { "type": "string" }, "from": { "type": "string" }, "to": { "type": "string" } }, "required": ["symbol", "from", "to"] }, "annotations": { "readOnlyHint": true }, "_meta": { "openai/outputTemplate": "ui://widget/news-feed.html", "openai/widgetAccessible": true } },
+                        { "name": "show-analyst-consensus", "description": "Analyst recommendations.", "inputSchema": { "type": "object", "properties": { "symbol": { "type": "string" } }, "required": ["symbol"] }, "annotations": { "readOnlyHint": true }, "_meta": { "openai/outputTemplate": "ui://widget/analyst-consensus.html", "openai/widgetAccessible": true } },
+                        { "name": "show-morning-briefing", "description": "Morning Briefing.", "inputSchema": { "type": "object", "properties": { "prospects": { "type": "string" }, "clients": { "type": "string" } } }, "annotations": { "readOnlyHint": true }, "_meta": { "openai/outputTemplate": "ui://widget/morning-briefing.html", "openai/widgetAccessible": true } },
+                        { "name": "show-stress-test", "description": "Stress Test.", "inputSchema": { "type": "object", "properties": { "symbols": { "type": "string" }, "positions": { "type": "string" } }, "required": ["symbols"] }, "annotations": { "readOnlyHint": true }, "_meta": { "openai/outputTemplate": "ui://widget/stress-test.html", "openai/widgetAccessible": true } },
+                        { "name": "show-concentration-risk", "description": "Concentration Risk.", "inputSchema": { "type": "object", "properties": { "symbols": { "type": "string" }, "positions": { "type": "string" } }, "required": ["symbols"] }, "annotations": { "readOnlyHint": true }, "_meta": { "openai/outputTemplate": "ui://widget/concentration-risk.html", "openai/widgetAccessible": true } },
+                        { "name": "show-relative-value", "description": "Relative Value.", "inputSchema": { "type": "object", "properties": { "symbols": { "type": "string" }, "positions": { "type": "string" } }, "required": ["symbols"] }, "annotations": { "readOnlyHint": true }, "_meta": { "openai/outputTemplate": "ui://widget/relative-value.html", "openai/widgetAccessible": true } },
+                        { "name": "show-rv-shifts", "description": "RV Shift Detection — what changed in relative valuations.", "inputSchema": { "type": "object", "properties": { "symbols": { "type": "string" }, "positions": { "type": "string" }, "types": { "type": "string" }, "sectors": { "type": "string" } }, "required": ["symbols"] }, "annotations": { "readOnlyHint": true }, "_meta": { "openai/outputTemplate": "ui://widget/rv-shift.html", "openai/widgetAccessible": true } },
+                        { "name": "show-challenge-holdings", "description": "Challenge Your Holdings — flag expensive positions.", "inputSchema": { "type": "object", "properties": { "symbols": { "type": "string" }, "positions": { "type": "string" }, "types": { "type": "string" }, "sectors": { "type": "string" } }, "required": ["symbols"] }, "annotations": { "readOnlyHint": true }, "_meta": { "openai/outputTemplate": "ui://widget/challenge-holdings.html", "openai/widgetAccessible": true } },
+                        { "name": "show-benchmark-comparison", "description": "Benchmark Comparison — fund vs benchmark.", "inputSchema": { "type": "object", "properties": { "symbols": { "type": "string" }, "positions": { "type": "string" }, "types": { "type": "string" }, "sectors": { "type": "string" } }, "required": ["symbols"] }, "annotations": { "readOnlyHint": true }, "_meta": { "openai/outputTemplate": "ui://widget/benchmark-comparison.html", "openai/widgetAccessible": true } },
+                        { "name": "prepare-add-holding", "description": "Add holding form.", "inputSchema": { "type": "object", "properties": { "company": { "type": "string" }, "ticker": { "type": "string" }, "sector": { "type": "string" }, "shares": { "type": "string" } } }, "annotations": { "readOnlyHint": true }, "_meta": { "openai/outputTemplate": "ui://widget/crud-form.html", "openai/widgetAccessible": true } },
+                        { "name": "prepare-update-holding", "description": "Update holding form.", "inputSchema": { "type": "object", "properties": { "ticker": { "type": "string" } }, "required": ["ticker"] }, "annotations": { "readOnlyHint": true }, "_meta": { "openai/outputTemplate": "ui://widget/crud-form.html", "openai/widgetAccessible": true } },
+                        { "name": "show-client-360", "description": "Client 360 View.", "inputSchema": { "type": "object", "properties": { "symbols": { "type": "string" } }, "required": ["symbols"] }, "annotations": { "readOnlyHint": true }, "_meta": { "openai/outputTemplate": "ui://widget/client-360.html", "openai/widgetAccessible": true } },
+                        { "name": "get-basic-financials", "description": "Financial metrics.", "inputSchema": { "type": "object", "properties": { "symbol": { "type": "string" } }, "required": ["symbol"] }, "annotations": { "readOnlyHint": true } },
+                        { "name": "get-peers", "description": "Peer companies.", "inputSchema": { "type": "object", "properties": { "symbol": { "type": "string" } }, "required": ["symbol"] }, "annotations": { "readOnlyHint": true } },
+                        { "name": "get-insider-transactions", "description": "Insider trades.", "inputSchema": { "type": "object", "properties": { "symbol": { "type": "string" } }, "required": ["symbol"] }, "annotations": { "readOnlyHint": true } },
+                        { "name": "search-symbol", "description": "Symbol search.", "inputSchema": { "type": "object", "properties": { "query": { "type": "string" } }, "required": ["query"] }, "annotations": { "readOnlyHint": true } },
+                        { "name": "get-fx-rate", "description": "FX rates.", "inputSchema": { "type": "object", "properties": { "base": { "type": "string" } } }, "annotations": { "readOnlyHint": true } },
+                        { "name": "get-fx-candles", "description": "FX history.", "inputSchema": { "type": "object", "properties": { "symbol": { "type": "string" } }, "required": ["symbol"] }, "annotations": { "readOnlyHint": true } },
+                        { "name": "get-earnings-calendar", "description": "Earnings dates.", "inputSchema": { "type": "object", "properties": { "symbol": { "type": "string" }, "days": { "type": "string" } } }, "annotations": { "readOnlyHint": true } },
+                        { "name": "get-ipo-calendar", "description": "IPO calendar.", "inputSchema": { "type": "object", "properties": { "days": { "type": "string" } } }, "annotations": { "readOnlyHint": true } },
+                        { "name": "get-sec-filings", "description": "SEC filings.", "inputSchema": { "type": "object", "properties": { "symbol": { "type": "string" } }, "required": ["symbol"] }, "annotations": { "readOnlyHint": true } },
+                        { "name": "get-reported-financials", "description": "Reported financials.", "inputSchema": { "type": "object", "properties": { "symbol": { "type": "string" }, "freq": { "type": "string" } }, "required": ["symbol"] }, "annotations": { "readOnlyHint": true } },
+                        { "name": "get-insider-sentiment", "description": "Insider sentiment.", "inputSchema": { "type": "object", "properties": { "symbol": { "type": "string" } }, "required": ["symbol"] }, "annotations": { "readOnlyHint": true } }
+                    ]
+                }
+            },
+            "auth": { "type": "None" }
+        }
+    ]
+}

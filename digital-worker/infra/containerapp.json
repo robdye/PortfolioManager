@@ -1,0 +1,82 @@
+{
+  "properties": {
+    "managedEnvironmentId": "/subscriptions/afae635b-b494-4d71-b5b8-91d2d6a61860/resourceGroups/rg-portfolio-agent/providers/Microsoft.App/managedEnvironments/portfolio-agent-mcp-cae",
+    "configuration": {
+      "ingress": {
+        "external": true,
+        "targetPort": 3978
+      },
+      "registries": [
+        {
+          "server": "portfolioagentacr.azurecr.io",
+          "identity": "system"
+        }
+      ]
+    },
+    "template": {
+      "containers": [
+        {
+          "name": "portfolio-manager-worker",
+          "image": "portfolioagentacr.azurecr.io/digital-worker:v4",
+          "resources": {
+            "cpu": 0.5,
+            "memory": "1Gi"
+          },
+          "env": [
+            { "name": "NODE_ENV", "value": "production" },
+            { "name": "PORT", "value": "3978" },
+            { "name": "HOST", "value": "0.0.0.0" },
+            { "name": "MANAGER_EMAIL", "value": "admin@ABSx68251802.onmicrosoft.com" },
+            { "name": "MANAGER_NAME", "value": "Robert Dye" },
+            { "name": "PRICE_CHANGE_THRESHOLD", "value": "2.0" },
+            { "name": "FX_CHANGE_THRESHOLD", "value": "1.0" },
+            { "name": "MCP_FINNHUB_ENDPOINT", "value": "https://portfolio-agent-app.jollysand-88b78b02.eastus.azurecontainerapps.io/finnhub/mcp" },
+            { "name": "MCP_CRM_ENDPOINT", "value": "https://portfolio-agent-app.jollysand-88b78b02.eastus.azurecontainerapps.io/crm/mcp" },
+            { "name": "MCP_PORTFOLIO_ENDPOINT", "value": "https://portfolio-agent-app.jollysand-88b78b02.eastus.azurecontainerapps.io/portfolio/mcp" },
+            { "name": "USE_AGENTIC_AUTH", "value": "true" },
+            { "name": "connections__service_connection__settings__clientId", "value": "f474b197-7795-4c14-a01f-4ac8517145eb" },
+            { "name": "connections__service_connection__settings__clientSecret", "secretRef": "sp-client-secret" },
+            { "name": "connections__service_connection__settings__tenantId", "value": "ee6a68ea-3123-4f78-b587-822d823c4f56" },
+            { "name": "connectionsMap__0__serviceUrl", "value": "*" },
+            { "name": "connectionsMap__0__connection", "value": "service_connection" },
+            { "name": "agentic_type", "value": "agentic" },
+            { "name": "agentic_altBlueprintConnectionName", "value": "service_connection" },
+            { "name": "agentic_scopes", "value": "https://graph.microsoft.com/.default" },
+            { "name": "agent_id", "value": "f474b197-7795-4c14-a01f-4ac8517145eb" },
+            { "name": "CHANNEL_WEBHOOK_URL", "secretRef": "channel-webhook-url" },
+            { "name": "SCHEDULED_SECRET", "secretRef": "scheduler-secret" }
+          ],
+          "probes": [
+            {
+              "type": "startup",
+              "httpGet": {
+                "path": "/api/health",
+                "port": 3978
+              },
+              "initialDelaySeconds": 15,
+              "periodSeconds": 10,
+              "failureThreshold": 30,
+              "timeoutSeconds": 5
+            },
+            {
+              "type": "liveness",
+              "httpGet": {
+                "path": "/api/health",
+                "port": 3978
+              },
+              "initialDelaySeconds": 60,
+              "periodSeconds": 30,
+              "failureThreshold": 3,
+              "timeoutSeconds": 5
+            }
+          ]
+        }
+      ],
+      "scale": {
+        "minReplicas": 1,
+        "maxReplicas": 1
+      }
+    }
+  },
+  "location": "eastus"
+}
