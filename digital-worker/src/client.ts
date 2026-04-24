@@ -19,9 +19,9 @@ import {
   Builder,
   InferenceOperationType,
   AgentDetails,
-  TenantDetails,
   InferenceDetails,
   Agent365ExporterOptions,
+  Request as ObservabilityRequest,
 } from '@microsoft/agents-a365-observability';
 import { OpenAIAgentsTraceInstrumentor } from '@microsoft/agents-a365-observability-extensions-openai';
 import { tokenResolver } from './token-cache';
@@ -246,14 +246,13 @@ class OpenAIClient implements Client {
     const agentDetails: AgentDetails = {
       agentId: 'portfolio-manager-digital-worker',
       agentName: 'Portfolio Manager Digital Worker',
+    };
+
+    const request: ObservabilityRequest = {
       conversationId: `conv-${Date.now()}`,
     };
 
-    const tenantDetails: TenantDetails = {
-      tenantId: process.env.connections__service_connection__settings__tenantId || 'default-tenant',
-    };
-
-    const scope = InferenceScope.start(inferenceDetails, agentDetails, tenantDetails);
+    const scope = InferenceScope.start(request, inferenceDetails, agentDetails);
     try {
       await scope.withActiveSpanAsync(async () => {
         try {
