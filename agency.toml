@@ -5,3 +5,7 @@ portfolio = { auth = "None", type = "remote", url = "https://<YOUR_MCP_APP>.azur
 calendar = { type = "calendar" }
 mail = { type = "mail" }
 teams = { type = "teams" }
+
+[mcps.servers]
+drawio = { tools = ["*"], type = "http", url = "https://mcp.draw.io/mcp" }
+workiq = { args = ["-y", "@microsoft/workiq@latest", "mcp"], command = "npx", tools = ["*"], type = "stdio" }

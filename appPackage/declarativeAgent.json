@@ -20,6 +20,18 @@
         { "id": "portfoliocrud", "file": "portfolio-plugin.json" },
         { "id": "crmmcp", "file": "crm-plugin.json" }
     ],
+    "tools_settings": {
+        "tool_overrides": [
+            { "tool": "simulate_trade", "hitl": "required" },
+            { "tool": "create_order", "hitl": "required" },
+            { "tool": "update_holding", "hitl": "required" },
+            { "tool": "close_position", "hitl": "required" },
+            { "tool": "rebalance", "hitl": "required" },
+            { "tool": "send_alert", "hitl": "optional" },
+            { "tool": "send_email", "hitl": "optional" },
+            { "tool": "post_to_channel", "hitl": "optional" }
+        ]
+    },
     "conversation_starters": [
         { "title": "Portfolio Command Center", "text": "Read my portfolio and show me the Portfolio Command Center with live market data for all holdings." },
         { "title": "Morning Briefing", "text": "Read my portfolio and generate my Morning Briefing. Use the Type column to classify each holding as Client or Prospect." },

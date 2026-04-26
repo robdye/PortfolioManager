@@ -2,7 +2,8 @@
 // Toggled via Teams chat commands ("enable voice" / "disable voice").
 // Default: disabled — voice must be explicitly enabled before each demo.
 
-let _enabled = false;
+// Auto-enable when VOICELIVE_ENDPOINT is configured
+let _enabled = !!process.env.VOICELIVE_ENDPOINT;
 
 export function isVoiceEnabled(): boolean {
   return _enabled;

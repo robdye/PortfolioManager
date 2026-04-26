@@ -154,9 +154,9 @@ export function securityHeaders(req: Request, res: Response, next: NextFunction)
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  // Mission Control is a self-contained HTML page with inline styles/scripts
-  if (req.path === '/mission-control') {
-    res.setHeader('Content-Security-Policy', "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'");
+  // Mission Control and Voice are self-contained HTML pages with inline styles/scripts
+  if (req.path === '/mission-control' || req.path === '/voice') {
+    res.setHeader('Content-Security-Policy', "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' wss: ws:");
   } else {
     res.setHeader('Content-Security-Policy', "default-src 'self'");
   }
