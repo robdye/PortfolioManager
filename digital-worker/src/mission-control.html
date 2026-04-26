@@ -683,24 +683,52 @@ function renderAgentMind(analytics, actions, workday) {
   }).join('');
 }
 
-// ── Neural Core: Force-Directed Graph ──
-const TOOL_GROUPS = {
-  'Market Data': { color: '#58a6ff', match: /quote|financial|analyst|relative|earnings|morning/i },
-  'Portfolio': { color: '#3fb950', match: /portfolio|concentration|stress|position/i },
-  'CRM': { color: '#f0883e', match: /crm|client|pipeline|deal|crud/i },
-  'News': { color: '#79c0ff', match: /news|search_news/i },
-  'Actions': { color: '#bc8cff', match: /action|acknowledge|dismiss|defer|act_on|pending/i },
-  'Workflows': { color: '#f85149', match: /workflow|active_workflows/i },
-  'Memory': { color: '#d2a8ff', match: /memory|save|load|recall/i },
-  'System': { color: '#8b949e', match: /.*/i },
-};
+// ── Neural Core: Multi-Agent Force-Directed Graph ──
+// 3-tier hierarchical layout: Orchestrator → Specialist Workers → Tools
+// Mirrors ITSM Operations pattern with PM-domain agents
 
-function categorize(toolName) {
-  for (const [group, cfg] of Object.entries(TOOL_GROUPS)) {
-    if (cfg.match.test(toolName) && group !== 'System') return { group, color: cfg.color };
-  }
-  return { group: 'System', color: '#8b949e' };
-}
+const WORKER_DEFS = [
+  // Tier 1 — Core Specialists (inner ring)
+  { id: 'market-researcher', label: 'Market Researcher', tier: 1, color: '#58a6ff',
+    tools: ['get_stock_quote','get_financials','get_analyst_consensus','get_relative_value','get_earnings_calendar','search_news','get_news_feed','get_morning_briefing'] },
+  { id: 'risk-analyst', label: 'Risk Analyst', tier: 1, color: '#f85149',
+    tools: ['get_stress_test','get_concentration_risk','get_portfolio_compliance','run_trade_simulation','monte_carlo_scenario'] },
+  { id: 'trader', label: 'Trader', tier: 1, color: '#3fb950',
+    tools: ['get_portfolio_dashboard','get_fx_rates','simulate_trade','create_order','rebalance','close_position'] },
+  { id: 'compliance-officer', label: 'Compliance Officer', tier: 1, color: '#bc8cff',
+    tools: ['content_safety_check','dlp_classify','purview_label','audit_log','conditional_access_check'] },
+  { id: 'client-relationship', label: 'Client Relationship', tier: 1, color: '#f778ba',
+    tools: ['get_crm_pipeline','get_crm_account','get_client_360','get_crud_form','client_briefing'] },
+  // Tier 2 — Extended Capabilities (outer ring)
+  { id: 'vision-processor', label: 'Vision Processor', tier: 2, color: '#79c0ff',
+    tools: ['ingest_document','extract_pdf','analyse_screenshot','ocr_termsheet'] },
+  { id: 'computer-use-agent', label: 'Computer Use Agent', tier: 2, color: '#d2a8ff',
+    tools: ['bloomberg_navigate','broker_portal_action','fund_admin_submit','screen_capture'] },
+  { id: 'a2a-federation', label: 'A2A Federation', tier: 2, color: '#ffa657',
+    tools: ['broker_settlement','custodian_query','counterparty_negotiate','agent_card_publish'] },
+];
+
+// Shared tools — not owned by any single worker
+const SHARED_TOOLS = [
+  { id: 'send_email', label: 'send email' },
+  { id: 'post_to_teams_channel', label: 'post to Teams' },
+  { id: 'save_persistent_memory', label: 'save memory' },
+  { id: 'load_persistent_memory', label: 'load memory' },
+  { id: 'search_memories', label: 'search memory' },
+  { id: 'reasoning_trace', label: 'reasoning trace' },
+];
+
+// Collaboration edges — workers that delegate to each other
+const COLLAB_EDGES = [
+  { from: 'market-researcher', to: 'risk-analyst' },
+  { from: 'risk-analyst', to: 'trader' },
+  { from: 'trader', to: 'compliance-officer' },
+  { from: 'compliance-officer', to: 'trader' },
+  { from: 'client-relationship', to: 'market-researcher' },
+  { from: 'market-researcher', to: 'a2a-federation' },
+  { from: 'vision-processor', to: 'market-researcher' },
+  { from: 'computer-use-agent', to: 'trader' },
+];
 
 function initGraph() {
   graphInitialized = true;
@@ -711,125 +739,179 @@ function initGraph() {
   const ctx = canvas.getContext('2d');
   const cx = canvas.width / 2, cy = canvas.height / 2;
 
-  // Center node
-  graphNodes = [{ id: '__center__', label: 'Portfolio Manager', group: 'Core', color: '#f0883e', x: cx, y: cy, vx: 0, vy: 0, size: 22, fixed: true, calls: 0 }];
+  // ── Tier 0: Command Center (fixed center) ──
+  graphNodes = [{
+    id: '__center__', label: 'Command Center', group: 'orchestrator', tier: 0,
+    color: '#f0883e', x: cx, y: cy, vx: 0, vy: 0, size: 26, fixed: true, calls: 0
+  }];
+
+  // ── Tier 1-2: Specialist Workers ──
+  const innerRadius = 180, outerRadius = 320;
+  WORKER_DEFS.forEach((w, i) => {
+    const sameT = WORKER_DEFS.filter(d => d.tier === w.tier);
+    const idx = sameT.indexOf(w);
+    const count = sameT.length;
+    const angle = (idx / count) * Math.PI * 2 - Math.PI / 2;
+    const radius = w.tier === 1 ? innerRadius : outerRadius;
+    graphNodes.push({
+      id: w.id, label: w.label, group: 'worker', tier: w.tier,
+      color: w.color, x: cx + Math.cos(angle) * radius, y: cy + Math.sin(angle) * radius,
+      vx: 0, vy: 0, size: w.tier === 1 ? 16 : 12, fixed: false, calls: 0,
+    });
+    // Delegation edge: orchestrator → worker
+    graphEdges.push({ source: '__center__', target: w.id, type: 'delegation' });
+
+    // Tool nodes hanging from each worker
+    w.tools.forEach((tool, ti) => {
+      const toolAngle = angle + ((ti - w.tools.length / 2) * 0.18);
+      const toolDist = radius + 70 + Math.random() * 30;
+      graphNodes.push({
+        id: tool, label: tool.replace(/^get_/, '').replace(/_/g, ' '),
+        group: 'tool', tier: w.tier + 10, color: w.color,
+        x: cx + Math.cos(toolAngle) * toolDist, y: cy + Math.sin(toolAngle) * toolDist,
+        vx: 0, vy: 0, size: 4, fixed: false, calls: 0, parent: w.id,
+      });
+      graphEdges.push({ source: w.id, target: tool, type: 'tool' });
+    });
+  });
+
+  // ── Shared Tools (orbit around center) ──
+  SHARED_TOOLS.forEach((st, i) => {
+    const angle = (i / SHARED_TOOLS.length) * Math.PI * 2 + Math.PI / 4;
+    const dist = outerRadius + 100;
+    graphNodes.push({
+      id: st.id, label: st.label, group: 'shared', tier: 99,
+      color: '#e3b341', x: cx + Math.cos(angle) * dist, y: cy + Math.sin(angle) * dist,
+      vx: 0, vy: 0, size: 5, fixed: false, calls: 0,
+    });
+    graphEdges.push({ source: '__center__', target: st.id, type: 'shared' });
+  });
+
+  // ── Collaboration edges (worker ↔ worker) ──
+  for (const c of COLLAB_EDGES) {
+    graphEdges.push({ source: c.from, target: c.to, type: 'collaboration' });
+  }
 
   // Build legend
   const legend = document.getElementById('graph-legend');
-  legend.innerHTML = Object.entries(TOOL_GROUPS).filter(([g]) => g !== 'System').map(([g, c]) =>
-    `<div class="legend-item"><div class="legend-dot" style="background:${c.color}"></div>${g}</div>`
-  ).join('');
+  legend.innerHTML = [
+    { color: '#f0883e', label: 'Orchestrator' },
+    { color: '#58a6ff', label: 'Tier 1 — Core' },
+    { color: '#79c0ff', label: 'Tier 2 — Extended' },
+    { color: '#e3b341', label: 'Shared Tools' },
+    { color: 'rgba(240,136,62,0.5)', label: '── Delegation' },
+    { color: 'rgba(0,200,200,0.5)', label: '╌╌ Collaboration' },
+  ].map(l => `<div class="legend-item"><div class="legend-dot" style="background:${l.color}"></div>${l.label}</div>`).join('');
 
-  // Populate with known tools from analytics if available, or default set
-  const defaultTools = [
-    'get_stock_quote','get_financials','get_analyst_consensus','get_relative_value','get_earnings_calendar',
-    'get_portfolio_dashboard','get_concentration_risk','get_stress_test','get_morning_briefing',
-    'get_crm_pipeline','get_crm_account','get_client_360','get_crud_form',
-    'search_news','get_news_feed',
-    'list_pending_actions','acknowledge_action','act_on_recommendation','dismiss_action','defer_action','get_action_summary','recent_actions',
-    'list_active_workflows','get_workflow_details','get_workflow_summary',
-    'send_email','post_to_teams_channel',
-    'save_persistent_memory','load_persistent_memory','search_memories',
-    'get_fx_rates','run_trade_simulation','get_portfolio_compliance',
-  ];
-  for (const tool of defaultTools) {
-    const cat = categorize(tool);
-    const angle = Math.random() * Math.PI * 2;
-    const dist = 120 + Math.random() * 180;
-    graphNodes.push({
-      id: tool, label: tool.replace(/^get_/, '').replace(/_/g, ' '),
-      group: cat.group, color: cat.color,
-      x: cx + Math.cos(angle) * dist, y: cy + Math.sin(angle) * dist,
-      vx: 0, vy: 0, size: 6, fixed: false, calls: 0,
-    });
-    graphEdges.push({ source: '__center__', target: tool });
-  }
-
-  // Group-level links (connect tools in same group)
-  const grouped = {};
-  for (const n of graphNodes) { if (n.id !== '__center__') { (grouped[n.group] = grouped[n.group] || []).push(n.id); } }
-  for (const tools of Object.values(grouped)) {
-    for (let i = 1; i < tools.length; i++) graphEdges.push({ source: tools[0], target: tools[i] });
-  }
-
-  // ── Pulse Particles — animated dots traveling along edges to show data flow ──
+  // ── Pulse Particles — animated message flow between agents ──
   const particles = [];
   const PARTICLE_SPEED = 0.008;
-  const MAX_PARTICLES = 80;
+  const MAX_PARTICLES = 100;
 
   function spawnParticle() {
     if (particles.length >= MAX_PARTICLES) return;
-    const centerEdges = graphEdges.filter(e => e.source === '__center__' || e.target === '__center__');
-    const edge = centerEdges[Math.floor(Math.random() * centerEdges.length)] || graphEdges[Math.floor(Math.random() * graphEdges.length)];
+    // Weight towards delegation and collaboration edges (more visible)
+    const delegationEdges = graphEdges.filter(e => e.type === 'delegation' || e.type === 'collaboration');
+    const allEdges = graphEdges;
+    const pool = Math.random() > 0.4 ? delegationEdges : allEdges;
+    const edge = pool[Math.floor(Math.random() * pool.length)];
     if (!edge) return;
-    const outward = Math.random() > 0.3; // 70% outward (data flowing out), 30% inward
+    const outward = Math.random() > 0.3;
+    const isDelegation = edge.type === 'delegation' || edge.type === 'collaboration';
     particles.push({
       edge,
       progress: 0,
       speed: PARTICLE_SPEED + Math.random() * 0.006,
       outward,
-      size: 1.5 + Math.random() * 2,
-      opacity: 0.6 + Math.random() * 0.4,
+      size: isDelegation ? (2.5 + Math.random() * 1.5) : (1 + Math.random() * 1.5),
+      opacity: isDelegation ? (0.5 + Math.random() * 0.5) : (0.6 + Math.random() * 0.4),
     });
   }
 
   // Spawn initial burst
-  for (let i = 0; i < 25; i++) spawnParticle();
-  // Continuously spawn new particles
+  for (let i = 0; i < 30; i++) spawnParticle();
   setInterval(() => { for (let i = 0; i < 3; i++) spawnParticle(); }, 200);
 
-  // Animation loop
+  // ── Animation Loop ──
   function animate() {
     if (!document.getElementById('view-neural-core').classList.contains('active')) { requestAnimationFrame(animate); return; }
-    // Resize check
     if (canvas.width !== container.clientWidth || canvas.height !== container.clientHeight) {
       canvas.width = container.clientWidth; canvas.height = container.clientHeight;
       graphNodes[0].x = canvas.width / 2; graphNodes[0].y = canvas.height / 2;
     }
     const W = canvas.width, H = canvas.height;
-    // Physics
+
+    // ── Physics: tier-aware repulsion ──
     for (let i = 0; i < graphNodes.length; i++) {
       if (graphNodes[i].fixed) continue;
       for (let j = i + 1; j < graphNodes.length; j++) {
         const a = graphNodes[i], b = graphNodes[j];
         let dx = b.x - a.x, dy = b.y - a.y;
         const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-        const repel = 800 / (dist * dist);
+        // Stronger repulsion between same-tier nodes to spread them out
+        const sameTier = a.tier === b.tier;
+        const repel = (sameTier ? 1200 : 600) / (dist * dist);
         if (!a.fixed) { a.vx -= dx / dist * repel; a.vy -= dy / dist * repel; }
         if (!b.fixed) { b.vx += dx / dist * repel; b.vy += dy / dist * repel; }
       }
     }
+
+    // ── Spring forces along edges ──
     for (const e of graphEdges) {
       const s = graphNodes.find(n => n.id === e.source), t = graphNodes.find(n => n.id === e.target);
       if (!s || !t) continue;
       let dx = t.x - s.x, dy = t.y - s.y;
       const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-      const ideal = s.id === '__center__' ? 200 : 60;
-      const force = (dist - ideal) * 0.005;
+      let ideal, stiffness;
+      switch (e.type) {
+        case 'delegation': ideal = 180; stiffness = 0.008; break;
+        case 'collaboration': ideal = 200; stiffness = 0.004; break;
+        case 'shared': ideal = 200; stiffness = 0.004; break;
+        case 'tool': ideal = 80; stiffness = 0.006; break;
+        default: ideal = 150; stiffness = 0.005;
+      }
+      const force = (dist - ideal) * stiffness;
       if (!s.fixed) { s.vx += dx / dist * force; s.vy += dy / dist * force; }
       if (!t.fixed) { t.vx -= dx / dist * force; t.vy -= dy / dist * force; }
     }
+
+    // Gravity + damping
     for (const n of graphNodes) {
       if (n.fixed) continue;
-      n.vx += (W / 2 - n.x) * 0.0005;
-      n.vy += (H / 2 - n.y) * 0.0005;
-      n.vx *= 0.92; n.vy *= 0.92;
+      n.vx += (W / 2 - n.x) * 0.0003;
+      n.vy += (H / 2 - n.y) * 0.0003;
+      n.vx *= 0.90; n.vy *= 0.90;
       n.x += n.vx; n.y += n.vy;
       n.x = Math.max(30, Math.min(W - 30, n.x));
       n.y = Math.max(30, Math.min(H - 30, n.y));
     }
-    // Draw
+
+    // ── Draw ──
     ctx.clearRect(0, 0, W, H);
-    // Edges
+
+    // Edges — type-differentiated rendering
     for (const e of graphEdges) {
       const s = graphNodes.find(n => n.id === e.source), t = graphNodes.find(n => n.id === e.target);
       if (!s || !t) continue;
-      ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(t.x, t.y);
-      ctx.strokeStyle = s.id === '__center__' ? 'rgba(240,136,62,0.35)' : 'rgba(88,166,255,0.2)';
-      ctx.lineWidth = s.id === '__center__' ? 1.5 : 0.8;
+      ctx.beginPath();
+      ctx.moveTo(s.x, s.y); ctx.lineTo(t.x, t.y);
+      switch (e.type) {
+        case 'delegation':
+          ctx.strokeStyle = 'rgba(240,136,62,0.40)'; ctx.lineWidth = 2; ctx.setLineDash([]); break;
+        case 'collaboration':
+          ctx.strokeStyle = 'rgba(0,200,200,0.25)'; ctx.lineWidth = 1.2; ctx.setLineDash([3, 5]); break;
+        case 'shared':
+          ctx.strokeStyle = 'rgba(227,179,65,0.30)'; ctx.lineWidth = 1; ctx.setLineDash([4, 4]); break;
+        case 'tool':
+          ctx.strokeStyle = (s.color || t.color) + '55'; ctx.lineWidth = 0.8; ctx.setLineDash([]); break;
+        default:
+          ctx.strokeStyle = 'rgba(88,166,255,0.2)'; ctx.lineWidth = 0.8; ctx.setLineDash([]);
+      }
       ctx.stroke();
+      ctx.setLineDash([]);
     }
-    // Pulse particles — animate along edges to show data flow direction
+
+    // Pulse particles
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
       p.progress += p.speed;
@@ -837,15 +919,12 @@ function initGraph() {
       const s = graphNodes.find(n => n.id === p.edge.source);
       const t = graphNodes.find(n => n.id === p.edge.target);
       if (!s || !t) { particles.splice(i, 1); continue; }
-      // Direction: outward = source→target, inward = target→source
       const from = p.outward ? s : t, to = p.outward ? t : s;
       const px = from.x + (to.x - from.x) * p.progress;
       const py = from.y + (to.y - from.y) * p.progress;
-      // Fade in/out at start and end
       const fadeIn = Math.min(p.progress * 5, 1);
       const fadeOut = Math.min((1 - p.progress) * 5, 1);
       const alpha = p.opacity * fadeIn * fadeOut;
-      // Get color from target node for outward, source for inward
       const colorNode = p.outward ? t : s;
       const pColor = colorNode.id === '__center__' ? '#f0883e' : colorNode.color;
       // Glow trail
@@ -854,28 +933,35 @@ function initGraph() {
       trailGlow.addColorStop(0, pColor + Math.round(alpha * 60).toString(16).padStart(2, '0'));
       trailGlow.addColorStop(1, 'transparent');
       ctx.fillStyle = trailGlow; ctx.fill();
-      // Core dot
       ctx.beginPath(); ctx.arc(px, py, p.size, 0, Math.PI * 2);
       ctx.fillStyle = pColor;
       ctx.globalAlpha = alpha;
       ctx.fill();
       ctx.globalAlpha = 1;
     }
-    // Nodes
+
+    // Nodes — tier-differentiated rendering
     for (const n of graphNodes) {
-      const sz = n.size + (n.calls > 0 ? Math.min(n.calls * 0.5, 8) : 0);
-      // Glow
-      if (sz > 10) {
-        ctx.beginPath(); ctx.arc(n.x, n.y, sz + 6, 0, Math.PI * 2);
-        const glow = ctx.createRadialGradient(n.x, n.y, sz, n.x, n.y, sz + 6);
-        glow.addColorStop(0, n.color + '40'); glow.addColorStop(1, 'transparent');
+      const sz = n.size + (n.calls > 0 ? Math.min(n.calls * 0.3, 6) : 0);
+      // Glow for orchestrator and workers
+      if (n.group === 'orchestrator' || n.group === 'worker') {
+        ctx.beginPath(); ctx.arc(n.x, n.y, sz + 8, 0, Math.PI * 2);
+        const glow = ctx.createRadialGradient(n.x, n.y, sz, n.x, n.y, sz + 8);
+        glow.addColorStop(0, n.color + '30'); glow.addColorStop(1, 'transparent');
         ctx.fillStyle = glow; ctx.fill();
       }
+      // Core fill
       ctx.beginPath(); ctx.arc(n.x, n.y, sz, 0, Math.PI * 2);
       ctx.fillStyle = n.color; ctx.fill();
+      // Ring outline for workers
+      if (n.group === 'worker') {
+        ctx.beginPath(); ctx.arc(n.x, n.y, sz + 1, 0, Math.PI * 2);
+        ctx.strokeStyle = n.color + 'aa'; ctx.lineWidth = 1.5; ctx.stroke();
+      }
       // Label
       ctx.fillStyle = '#8b949e';
-      ctx.font = `${sz > 10 ? 11 : 9}px -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif`;
+      const fontSize = n.group === 'orchestrator' ? 12 : n.group === 'worker' ? 10 : n.group === 'shared' ? 8 : 8;
+      ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif`;
       ctx.textAlign = 'center';
       ctx.fillText(n.label, n.x, n.y + sz + 14);
     }
@@ -888,25 +974,7 @@ function updateGraph(analytics) {
   if (!graphInitialized || !analytics || !analytics.tools) return;
   for (const t of analytics.tools) {
     const node = graphNodes.find(n => n.id === t.name);
-    if (node) {
-      // Spawn burst of particles when new calls detected
-      if (t.callCount > node.calls && typeof particles !== 'undefined') {
-        const edge = graphEdges.find(e => e.target === t.name && e.source === '__center__');
-        if (edge) {
-          for (let i = 0; i < Math.min(t.callCount - node.calls, 5); i++) {
-            particles.push({
-              edge,
-              progress: Math.random() * 0.2,
-              speed: 0.01 + Math.random() * 0.008,
-              outward: true,
-              size: 2.5 + Math.random() * 1.5,
-              opacity: 0.8 + Math.random() * 0.2,
-            });
-          }
-        }
-      }
-      node.calls = t.callCount;
-    }
+    if (node) node.calls = t.callCount;
   }
 }
 
