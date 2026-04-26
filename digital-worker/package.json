@@ -55,7 +55,7 @@
   },
   "devDependencies": {
     "@microsoft/m365agentsplayground": "^0.2.18",
-    "@types/express": "^4.17.21",
+    "@types/express": "^5.0.6",
     "@types/node": "^20.14.9",
     "nodemon": "^3.1.10",
     "rimraf": "^5.0.0",
