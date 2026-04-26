@@ -1,0 +1,22 @@
+{
+  "$schema": "https://aka.ms/json-schemas/copilot/skill/v1.0/skill.schema.json",
+  "name": "Market Researcher",
+  "description": "Deep fundamental research, news analysis, and sector trend identification for the investment desk.",
+  "triggers": {
+    "intents": ["market_data", "research", "news", "analyst_consensus", "earnings", "sector_analysis"],
+    "patterns": ["quote", "price", "news", "analyst", "earnings", "research", "sector", "deep dive", "fundamental"]
+  },
+  "actions": [
+    { "id": "get_quote", "description": "Get real-time stock quote" },
+    { "id": "get_news", "description": "Get latest news for a symbol" },
+    { "id": "get_analyst_consensus", "description": "Get analyst consensus and price targets" },
+    { "id": "get_earnings", "description": "Get earnings data and history" },
+    { "id": "search_sec_filings", "description": "Search SEC filings for a company" },
+    { "id": "get_sector_performance", "description": "Get sector performance data" },
+    { "id": "get_market_overview", "description": "Get broad market overview" }
+  ],
+  "hitl": {
+    "readActions": "none",
+    "writeActions": "none"
+  }
+}

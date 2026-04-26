@@ -1,0 +1,21 @@
+{
+  "$schema": "https://aka.ms/json-schemas/copilot/skill/v1.0/skill.schema.json",
+  "name": "Client Relationship",
+  "description": "CRM engagement, meeting preparation, and client communications for the investment desk.",
+  "triggers": {
+    "intents": ["client_management", "meeting_prep", "crm", "client_communication", "pipeline"],
+    "patterns": ["client", "CRM", "meeting", "pipeline", "opportunity", "relationship", "client 360", "brief", "report", "draft email", "send email", "communicate"]
+  },
+  "actions": [
+    { "id": "get_crm_accounts", "description": "Get CRM account details" },
+    { "id": "get_crm_contacts", "description": "Get CRM contacts" },
+    { "id": "get_crm_pipeline", "description": "Get CRM pipeline opportunities" },
+    { "id": "client_360", "description": "Get comprehensive client 360 view" },
+    { "id": "send_email", "description": "Send client email", "hitl": "required" },
+    { "id": "send_briefing", "description": "Send client briefing", "hitl": "required" }
+  ],
+  "hitl": {
+    "readActions": "none",
+    "writeActions": "required"
+  }
+}

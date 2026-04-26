@@ -1,0 +1,20 @@
+{
+  "$schema": "https://aka.ms/json-schemas/copilot/skill/v1.0/skill.schema.json",
+  "name": "Compliance Officer",
+  "description": "Regulatory checks, limit monitoring, and audit trail oversight for the investment desk.",
+  "triggers": {
+    "intents": ["compliance_check", "regulatory", "limit_breach", "audit", "mandate"],
+    "patterns": ["compliance", "regulatory", "limit breach", "restricted", "audit", "mandate", "guideline", "policy", "check limits"]
+  },
+  "actions": [
+    { "id": "compliance_digest", "description": "Generate compliance digest" },
+    { "id": "concentration_risk", "description": "Check concentration limits" },
+    { "id": "check_limits", "description": "Check portfolio against mandate limits" },
+    { "id": "get_audit_trail", "description": "Get audit trail entries" },
+    { "id": "get_restricted_list", "description": "Get restricted securities list" }
+  ],
+  "hitl": {
+    "readActions": "none",
+    "writeActions": "none"
+  }
+}

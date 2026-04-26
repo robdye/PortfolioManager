@@ -1,0 +1,21 @@
+{
+  "$schema": "https://aka.ms/json-schemas/copilot/skill/v1.0/skill.schema.json",
+  "name": "Trader",
+  "description": "Trade idea generation, execution planning, and relative value analysis. All trades require human approval.",
+  "triggers": {
+    "intents": ["trade_execution", "trade_idea", "rebalance", "relative_value", "benchmark"],
+    "patterns": ["trade", "buy", "sell", "execute", "order", "position", "rebalance", "relative value", "benchmark", "simulate", "close position"]
+  },
+  "actions": [
+    { "id": "simulate_trade", "description": "Simulate a trade and assess portfolio impact", "hitl": "required" },
+    { "id": "create_order", "description": "Create a trade order", "hitl": "required" },
+    { "id": "get_relative_value", "description": "Get relative value comparison" },
+    { "id": "benchmark_comparison", "description": "Compare portfolio against benchmark" },
+    { "id": "close_position", "description": "Close a portfolio position", "hitl": "required" },
+    { "id": "rebalance", "description": "Rebalance portfolio to target weights", "hitl": "required" }
+  ],
+  "hitl": {
+    "readActions": "none",
+    "writeActions": "required"
+  }
+}

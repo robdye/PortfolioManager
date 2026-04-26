@@ -204,6 +204,75 @@ export class AgentHarness {
   }
 }
 
+// ── Worker Definition (multi-agent support) ─────────────────────────
+// Used by worker-definitions.ts, worker-delegation.ts, escalation-chain.ts
+
+export interface WorkerDefinition {
+  id: string;
+  name: string;
+  /** Domain practice area (e.g., 'risk-management', 'trade-execution') */
+  itilPractice: string;
+  /** System prompt instructions for the worker */
+  instructions: string;
+  /** Tools this worker is allowed to use */
+  scopedTools: string[];
+}
+
+export interface PromptContext {
+  userMessage: string;
+  displayName?: string;
+  conversationId?: string;
+  sessionState?: Record<string, unknown>;
+}
+
+export interface HarnessResult {
+  output: string;
+  workerId: string;
+  crossPractice?: boolean;
+  durationMs?: number;
+  toolCalls?: Array<{ name: string; args: Record<string, unknown> }>;
+}
+
+/**
+ * Run a specialist worker with scoped tools.
+ * Creates a task from the worker definition and executes it.
+ */
+export async function runWorker(
+  worker: WorkerDefinition,
+  prompt: string,
+  ctx?: PromptContext,
+): Promise<HarnessResult> {
+  const startTime = Date.now();
+  const contextPrefix = ctx?.displayName ? `[User: ${ctx.displayName}] ` : '';
+  const fullPrompt = `${contextPrefix}${prompt}`;
+
+  console.log(`[Worker:${worker.id}] Executing with ${worker.scopedTools.length} scoped tools`);
+
+  const harness = new AgentHarness({ maxTaskMs: 120_000 });
+  const task: TaskDefinition = {
+    name: `worker-${worker.id}`,
+    description: worker.name,
+    prompt: fullPrompt,
+    allowedTools: worker.scopedTools.length > 0 ? worker.scopedTools : undefined,
+    tags: [worker.id, worker.itilPractice],
+  };
+
+  try {
+    const result = await harness.executeTask(task);
+    return {
+      output: result.status === 'success' ? result.output : `Error in ${worker.name}: ${result.error || 'Unknown error'}`,
+      workerId: worker.id,
+      durationMs: Date.now() - startTime,
+    };
+  } catch (err) {
+    return {
+      output: `Error in ${worker.name}: ${(err as Error).message}`,
+      workerId: worker.id,
+      durationMs: Date.now() - startTime,
+    };
+  }
+}
+
 // ── Adaptive Summarization ──────────────────────────────────────────
 // Compress long outputs to prevent context overflow in subsequent tasks
 

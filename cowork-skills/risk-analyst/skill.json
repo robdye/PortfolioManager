@@ -1,0 +1,25 @@
+{
+  "$schema": "https://aka.ms/json-schemas/copilot/skill/v1.0/skill.schema.json",
+  "name": "Risk Analyst",
+  "description": "Portfolio risk assessment, scenario analysis, and limit monitoring. Uses reasoning model for complex decisions.",
+  "triggers": {
+    "intents": ["risk_assessment", "stress_test", "scenario_analysis", "concentration_risk", "hedging"],
+    "patterns": ["risk", "stress test", "scenario", "concentration", "exposure", "VaR", "drawdown", "hedge", "volatility", "worst case", "downside"]
+  },
+  "actions": [
+    { "id": "get_portfolio", "description": "Get current portfolio holdings" },
+    { "id": "stress_test", "description": "Run stress test under macro scenario" },
+    { "id": "concentration_risk", "description": "Assess concentration risk" },
+    { "id": "fx_exposure", "description": "Calculate FX exposure" },
+    { "id": "challenge_holdings", "description": "Devil's advocate analysis on holdings" },
+    { "id": "get_portfolio_analytics", "description": "Get portfolio analytics and metrics" }
+  ],
+  "hitl": {
+    "readActions": "none",
+    "writeActions": "none"
+  },
+  "model": {
+    "preference": "reasoning",
+    "fallback": "standard"
+  }
+}
