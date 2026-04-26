@@ -1,0 +1,68 @@
+name: Foundry Evaluations
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'digital-worker/src/**'
+      - 'mcp-server/src/**'
+      - 'cowork-skills/**'
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: |
+            digital-worker/package-lock.json
+            mcp-server/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd digital-worker && npm ci
+          cd ../mcp-server && npm ci
+
+      - name: Run unit tests with coverage
+        run: |
+          cd digital-worker && npx vitest run --coverage
+          cd ../mcp-server && npx vitest run --coverage
+
+      - name: Run golden dataset evaluation
+        if: env.FOUNDRY_ENDPOINT != ''
+        env:
+          FOUNDRY_ENDPOINT: ${{ secrets.FOUNDRY_ENDPOINT }}
+          FOUNDRY_API_KEY: ${{ secrets.FOUNDRY_API_KEY }}
+          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+        run: |
+          cd digital-worker && node --loader ts-node/esm src/__tests__/eval-runner.ts
+
+      - name: Publish test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            digital-worker/coverage/
+            mcp-server/coverage/
+            digital-worker/eval-results.json
+          retention-days: 30
+
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run prompt injection scan
+        run: |
+          echo "Running prompt injection scan against golden dataset..."
+          echo "Prompt injection scan complete (placeholder - configure FOUNDRY_ENDPOINT)"

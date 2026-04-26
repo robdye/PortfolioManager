@@ -20,6 +20,25 @@
         { "id": "portfoliocrud", "file": "portfolio-plugin.json" },
         { "id": "crmmcp", "file": "crm-plugin.json" }
     ],
+    "agent_extensibility": {
+        "connected_agents": [
+            {
+                "id": "broker-settlement-bot",
+                "protocol": "a2a",
+                "capabilities": ["settle-trade", "confirm-allocation", "query-settlement-status"]
+            },
+            {
+                "id": "custodian-agent",
+                "protocol": "a2a",
+                "capabilities": ["query-holdings", "confirm-receipt", "corporate-actions"]
+            },
+            {
+                "id": "market-data-agent",
+                "protocol": "mcp",
+                "capabilities": ["real-time-quotes", "historical-data", "analytics"]
+            }
+        ]
+    },
     "tools_settings": {
         "tool_overrides": [
             { "tool": "simulate_trade", "hitl": "required" },
