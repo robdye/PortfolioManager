@@ -2,9 +2,9 @@ import { defineConfig } from '@playwright/test';
 
 // Portfolio Manager — live URLs
 const PM_BASE = process.env.PM_BASE_URL
-  || 'https://pm-digital-worker.jollysand-88b78b02.eastus.azurecontainerapps.io';
+  || 'https://portfolio-manager-worker.jollysand-88b78b02.eastus.azurecontainerapps.io';
 const PM_MCP = process.env.PM_MCP_URL
-  || 'https://pm-mcp-server.jollysand-88b78b02.eastus.azurecontainerapps.io';
+  || 'https://portfolio-agent-app.jollysand-88b78b02.eastus.azurecontainerapps.io';
 
 export default defineConfig({
   testDir: './tests',
